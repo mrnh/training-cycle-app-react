@@ -128,6 +128,8 @@ export default function Settings({ state }) {
         <h2>Reset</h2>
         <button className="danger" onClick={resetAll}>Delete all data</button>
       </section>
+
+      <p className="muted small center">Version {__APP_VERSION__}</p>
     </div>
   )
 }

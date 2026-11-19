@@ -12,6 +12,19 @@ The week-9 single at 105% is the re-test and becomes the 1RM for the next cycle.
 
 Data is stored locally in the browser (IndexedDB). Use **Export backup** in Settings to keep a copy.
 
+<p>
+  <img src="docs/screenshots/v0.1.0/plan.jpg" width="200" alt="Plan screen">
+  <img src="docs/screenshots/v0.1.0/session.jpg" width="200" alt="Session screen">
+</p>
+
+See the [changelog](CHANGELOG.md) for how the app has developed, with screenshots of each version.
+
+## Releasing a new version
+
+1. Bump `version` in `package.json` (`npm version minor --no-git-tag-version` or `patch`).
+2. Add screenshots to `docs/screenshots/vX.Y.Z/` and a new entry at the top of `CHANGELOG.md`.
+3. Commit, then tag and push: `git tag -a vX.Y.Z -m "vX.Y.Z" && git push --follow-tags`.
+
 ## Development
 
 ```bash
