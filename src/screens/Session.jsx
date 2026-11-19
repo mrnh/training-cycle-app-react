@@ -1,5 +1,6 @@
 import Note from '../components/Note'
-import NumInput from '../components/NumInput'
+import { useState } from 'react'
+import WeightDialog from '../components/WeightDialog'
 import SetRow, { SetHeader } from '../components/SetRow'
 import {
   ALL_SESSIONS, exerciseHistory, fmt, liftName, parseKey, sessionPlan,
@@ -70,6 +71,7 @@ function PrimaryBlock({ cycle, plan, p }) {
   const target = targetWeight(cycle, p)
   const keys = Array.from({ length: p.sets }, (_, i) => setKey(plan.key, p.lift, i))
   const w = cycle.logs[keys[0]]?.w ?? target
+  const [editing, setEditing] = useState(false)
   const setWeight = (v) =>
     updateCycle((c) => {
       for (const k of keys) c.logs[k] = { ...c.logs[k], w: v }
@@ -84,14 +86,25 @@ function PrimaryBlock({ cycle, plan, p }) {
             {p.sets}×{p.reps} @ {p.pct}% · {fmt(target)} kg
           </p>
         </div>
-        <label className="weight-used">
+        <div className="weight-used">
           <span>Weight used</span>
-          <span className="weight-input">
-            <NumInput value={w} label={`${liftName(p.lift)} weight used`} onChange={setWeight} />
-            kg
+          <span className="weight-value">
+            <strong className={w !== target ? 'changed' : undefined}>{fmt(w)} kg</strong>
+            <button className="pen" aria-label={`Change ${liftName(p.lift)} weight`} onClick={() => setEditing(true)}>
+              ✎
+            </button>
           </span>
-        </label>
+        </div>
       </div>
+      {editing && (
+        <WeightDialog
+          title={`${liftName(p.lift)} · weight used`}
+          value={w}
+          planned={target}
+          onSave={setWeight}
+          onClose={() => setEditing(false)}
+        />
+      )}
       {p.retest && (
         <p className="small">Tick the single you actually lifted. Its weight becomes your 1RM for the next cycle.</p>
       )}
