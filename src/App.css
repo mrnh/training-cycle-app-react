@@ -145,6 +145,33 @@ main.fit { padding-bottom: calc(var(--tabbar-h) + env(safe-area-inset-bottom)); 
 .set-row.is-done input.num { background: var(--success-soft); border-color: transparent; }
 .stepper { display: flex; gap: 6px; flex-shrink: 0; }
 
+/* Main lifts: one row — reps, kg, then a toggle per set */
+.primary-row {
+  display: grid;
+  grid-template-columns: 48px 64px 1fr;
+  column-gap: 8px;
+  row-gap: 4px;
+  align-items: center;
+}
+.col-label { font-size: 0.75rem; color: var(--muted); text-align: center; }
+.sets-label { text-align: left; padding-left: 2px; }
+.primary-row input.num { text-align: center; padding: 8px 2px; }
+.set-toggles { display: flex; gap: 5px; }
+.set-toggle {
+  flex: 1 1 0;
+  max-width: 44px;
+  min-width: 0;
+  aspect-ratio: 1;
+  height: auto;
+  min-height: 0;
+  padding: 0;
+  border-radius: 50%;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--muted);
+}
+.set-toggle.is-done { background: var(--success); border-color: var(--success); color: #fff; }
+
 /* Lists */
 .list { gap: 0; padding: 4px 14px; }
 .list-title { font-weight: 600; padding: 10px 0 6px; font-size: 0.9rem; }

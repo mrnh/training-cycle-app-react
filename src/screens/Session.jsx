@@ -1,4 +1,5 @@
 import Note from '../components/Note'
+import NumInput from '../components/NumInput'
 import SetRow, { SetHeader } from '../components/SetRow'
 import {
   ALL_SESSIONS, exerciseHistory, fmt, liftName, parseKey, sessionPlan,
@@ -74,26 +75,51 @@ function PrimaryBlock({ cycle, plan, p }) {
       {p.retest && (
         <p className="small">Tick the single you actually lifted. Its weight becomes your 1RM for the next cycle.</p>
       )}
-      <SetHeader />
-      {Array.from({ length: p.sets }, (_, i) => {
-        const key = setKey(plan.key, p.lift, i)
-        const log = cycle.logs[key]
-        const w = log?.w ?? target
-        const r = log?.r ?? p.reps
-        return (
-          <SetRow
-            key={i}
-            index={i}
-            weight={w}
-            reps={r}
-            done={!!log?.done}
-            onChange={(patch) => setLog(key, patch)}
-            onToggle={() => setLog(key, { w, r, done: !log?.done })}
-          />
-        )
-      })}
+      <PrimaryRow cycle={cycle} plan={plan} p={p} target={target} />
       <Note value={cycle.notes[`${plan.key}:${p.lift}`]} onChange={(t) => setNote(`${plan.key}:${p.lift}`, t)} />
     </section>
+  )
+}
+
+/**
+ * Main lifts use the same weight and reps for every set, so they get one row:
+ * reps and weight on the left, then one toggle per set. Each set is still stored on its own
+ * (same shape as before), so history and the re-test keep working.
+ */
+function PrimaryRow({ cycle, plan, p, target }) {
+  const keys = Array.from({ length: p.sets }, (_, i) => setKey(plan.key, p.lift, i))
+  const first = cycle.logs[keys[0]]
+  const w = first?.w ?? target
+  const r = first?.r ?? p.reps
+  const setAll = (patch) =>
+    updateCycle((c) => {
+      for (const k of keys) c.logs[k] = { ...c.logs[k], ...patch }
+    })
+
+  return (
+    <div className="primary-row">
+      <span className="col-label">Reps</span>
+      <span className="col-label">kg</span>
+      <span className="col-label sets-label">Sets</span>
+      <NumInput value={r} label={`${liftName(p.lift)} reps`} onChange={(v) => setAll({ r: v })} />
+      <NumInput value={w} label={`${liftName(p.lift)} weight`} onChange={(v) => setAll({ w: v })} />
+      <div className="set-toggles">
+        {keys.map((k, i) => {
+          const done = !!cycle.logs[k]?.done
+          return (
+            <button
+              key={k}
+              className={`set-toggle ${done ? 'is-done' : ''}`}
+              aria-pressed={done}
+              aria-label={`Set ${i + 1}${done ? ', done' : ''}`}
+              onClick={() => setLog(k, { w, r, done: !done })}
+            >
+              {i + 1}
+            </button>
+          )
+        })}
+      </div>
+    </div>
   )
 }
 
