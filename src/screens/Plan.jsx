@@ -77,15 +77,23 @@ function NextCycle({ state }) {
 
   return (
     <div className="card highlight">
-      <strong>Re-test done</strong>
+      <strong>Cycle complete</strong>
+      <p className="muted small">New 1RMs from the week-9 re-test:</p>
       {cycle.primaries.map((id) => (
         <div className="row small" key={id}>
           <span>{exerciseName(state, id)}</span>
-          <span>
-            {fmt(cycle.oneRM[id])} → <strong>{fmt(newRM[id])} kg</strong>
-          </span>
+          {results[id] != null ? (
+            <span>
+              {fmt(cycle.oneRM[id])} → <strong>{fmt(newRM[id])} kg</strong>
+            </span>
+          ) : (
+            <span>
+              <strong>{fmt(newRM[id])} kg</strong> <span className="muted">kept, re-test not ticked</span>
+            </span>
+          )}
         </div>
       ))}
+      <p className="muted small">You can still change them in Settings after starting.</p>
       <label className="field">
         <span>Next cycle starts</span>
         <input type="date" value={date} onChange={(e) => setDate(e.target.value)} />

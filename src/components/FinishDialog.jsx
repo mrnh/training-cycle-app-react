@@ -28,7 +28,7 @@ export default function FinishDialog({ title, unticked, onConfirm, onClose }) {
           <div className="warning small">
             {unticked.map((u) => (
               <p key={u.id}>
-                {u.missing} of {u.total} {u.name.toLowerCase()} sets not ticked
+                {u.missing} of {u.total} {u.name.toLowerCase()} {u.total === 1 ? 'set' : 'sets'} not ticked
               </p>
             ))}
           </div>
