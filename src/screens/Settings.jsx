@@ -1,10 +1,12 @@
 import { useRef, useState } from 'react'
 import NumInput from '../components/NumInput'
-import { PRIMARY, fmt, todayIso } from '../program'
-import { DATA_VERSION, currentCycle, replaceState, updateCycle } from '../store'
+import Groups from '../components/Groups'
+import { exerciseName, fmt, todayIso } from '../program'
+import { currentCycle, migrate, replaceState, updateCycle } from '../store'
 
 export default function Settings({ state }) {
   const cycle = currentCycle(state)
+  const PRIMARY = cycle.primaries.map((id) => ({ id, name: exerciseName(state, id) }))
   const [draft, setDraft] = useState(null) // 1RM values being edited; null = not editing
   const [rmError, setRmError] = useState('')
 
@@ -35,10 +37,9 @@ export default function Settings({ state }) {
     e.target.value = ''
     if (!file) return
     try {
-      const data = JSON.parse(await file.text())
-      if (data?.version !== DATA_VERSION || !Array.isArray(data.cycles) || !data.cycles.length) {
-        throw new Error('not a backup')
-      }
+      // Older backups are converted to the current format
+      const data = migrate(JSON.parse(await file.text()))
+      if (!data) throw new Error('not a backup')
       if (!confirm('Replace all current data with this backup?')) return
       replaceState(data)
       setMessage('Backup restored')
@@ -112,6 +113,8 @@ export default function Settings({ state }) {
           </div>
         )}
       </section>
+
+      <Groups state={state} />
 
       <section className="card">
         <h2>Backup</h2>

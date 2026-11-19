@@ -3,8 +3,8 @@ import { useState } from 'react'
 import WeightDialog from '../components/WeightDialog'
 import SetRow, { SetHeader } from '../components/SetRow'
 import {
-  ALL_SESSIONS, exerciseHistory, fmt, liftName, parseKey, sessionPlan,
-  setKey, setsSummary, targetWeight, weekRange,
+  ALL_SESSIONS, exerciseHistory, exerciseName, fmt, liftOf, parseKey, secondaryKey,
+  sessionPlan, setKey, setsSummary, targetWeight, weekRange,
 } from '../program'
 import { currentCycle, updateCycle } from '../store'
 
@@ -24,7 +24,7 @@ export default function Session({ state, sessionKey, onNavigate }) {
   const idx = ALL_SESSIONS.findIndex((p) => p.key === sessionKey)
   const prev = ALL_SESSIONS[idx - 1]
   const next = ALL_SESSIONS[idx + 1]
-  const secondaries = state.secondary.filter((e) => e.group === plan.group)
+  const secondaries = state.groups[plan.group].map((id) => state.catalog.find((e) => e.id === id)).filter(Boolean)
 
   return (
     <div className="screen">
@@ -44,14 +44,14 @@ export default function Session({ state, sessionKey, onNavigate }) {
       </header>
 
       {plan.primaries.map((p) => (
-        <PrimaryBlock key={p.lift} cycle={cycle} plan={plan} p={p} />
+        <PrimaryBlock key={p.slot} state={state} cycle={cycle} plan={plan} p={p} />
       ))}
 
       {secondaries.map((ex) => (
         <SecondaryBlock key={ex.id} state={state} cycle={cycle} plan={plan} ex={ex} />
       ))}
       {secondaries.length === 0 && (
-        <p className="muted small center">No secondary exercises in group {plan.group} yet. Add them under Exercises.</p>
+        <p className="muted small center">No secondary exercises in group {plan.group} yet. Add them in Settings.</p>
       )}
 
       <section className="card">
@@ -67,9 +67,11 @@ export default function Session({ state, sessionKey, onNavigate }) {
  * ("Weight used", applies to all sets) and each set is a toggle across the card.
  * Sets are still stored one by one, so history and the week-9 re-test keep working.
  */
-function PrimaryBlock({ cycle, plan, p }) {
+function PrimaryBlock({ state, cycle, plan, p }) {
+  const lift = liftOf(cycle, p)
+  const name = exerciseName(state, lift)
   const target = targetWeight(cycle, p)
-  const keys = Array.from({ length: p.sets }, (_, i) => setKey(plan.key, p.lift, i))
+  const keys = Array.from({ length: p.sets }, (_, i) => setKey(plan.key, lift, i))
   const w = cycle.logs[keys[0]]?.w ?? target
   const [editing, setEditing] = useState(false)
   const setWeight = (v) =>
@@ -81,7 +83,7 @@ function PrimaryBlock({ cycle, plan, p }) {
     <section className={`card ${p.retest ? 'highlight' : ''}`}>
       <div className="lift-head">
         <div>
-          <h2>{liftName(p.lift)}</h2>
+          <h2>{name}</h2>
           <p className="muted small">
             {p.sets}×{p.reps} @ {p.pct}% · <strong className="planned">{fmt(target)} kg</strong>
           </p>
@@ -90,7 +92,7 @@ function PrimaryBlock({ cycle, plan, p }) {
           <span>Weight used</span>
           <span className="weight-value">
             <strong className={w !== target ? 'changed' : undefined}>{fmt(w)} kg</strong>
-            <button className="pen" aria-label={`Change ${liftName(p.lift)} weight`} onClick={() => setEditing(true)}>
+            <button className="pen" aria-label={`Change ${name} weight`} onClick={() => setEditing(true)}>
               ✎
             </button>
           </span>
@@ -98,7 +100,7 @@ function PrimaryBlock({ cycle, plan, p }) {
       </div>
       {editing && (
         <WeightDialog
-          title={`${liftName(p.lift)} · weight used`}
+          title={`${name} · weight used`}
           value={w}
           planned={target}
           onSave={setWeight}
@@ -124,7 +126,7 @@ function PrimaryBlock({ cycle, plan, p }) {
           )
         })}
       </div>
-      <Note value={cycle.notes[`${plan.key}:${p.lift}`]} onChange={(t) => setNote(`${plan.key}:${p.lift}`, t)} />
+      <Note value={cycle.notes[`${plan.key}:${lift}`]} onChange={(t) => setNote(`${plan.key}:${lift}`, t)} />
     </section>
   )
 }
@@ -132,15 +134,16 @@ function PrimaryBlock({ cycle, plan, p }) {
 function SecondaryBlock({ state, cycle, plan, ex }) {
   const cycleIdx = state.cycles.length - 1
   const order = ALL_SESSIONS.findIndex((s) => s.key === plan.key)
-  const last = exerciseHistory(state, ex.id)
+  const entry = secondaryKey(ex.id)
+  const last = exerciseHistory(state, entry)
     .filter((h) => h.cycle < cycleIdx || (h.cycle === cycleIdx && h.order < order))
     .at(-1)
-  const countKey = `${plan.key}:${ex.id}`
+  const countKey = `${plan.key}:${entry}`
   const count = cycle.setCounts[countKey] ?? Math.max(last?.sets.length ?? 3, 1)
   const setCount = (n) =>
     updateCycle((c) => {
       const clamped = Math.max(1, Math.min(12, n))
-      for (let i = clamped; i < count; i++) delete c.logs[setKey(plan.key, ex.id, i)]
+      for (let i = clamped; i < count; i++) delete c.logs[setKey(plan.key, entry, i)]
       c.setCounts[countKey] = clamped
     })
 
@@ -148,14 +151,14 @@ function SecondaryBlock({ state, cycle, plan, ex }) {
     <section className="card">
       <div className="row">
         <h2>{ex.name}</h2>
-        <span className="badge">Group {ex.group}</span>
+        <span className="badge">Group {plan.group}</span>
       </div>
       <p className="muted small">
         {last ? `Last time (W${last.week} S${last.session}): ${setsSummary(last.sets)}` : 'First time, no history yet'}
       </p>
       <SetHeader />
       {Array.from({ length: count }, (_, i) => {
-        const key = setKey(plan.key, ex.id, i)
+        const key = setKey(plan.key, entry, i)
         const log = cycle.logs[key]
         const hint = last?.sets[i] ?? last?.sets.at(-1)
         return (

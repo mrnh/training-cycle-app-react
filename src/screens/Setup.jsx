@@ -1,6 +1,8 @@
 import { useState } from 'react'
 import NumInput from '../components/NumInput'
-import { PRIMARY, todayIso } from '../program'
+import { DEFAULT_CATALOG, DEFAULT_PRIMARIES, todayIso } from '../program'
+
+const PRIMARY = DEFAULT_PRIMARIES.map((id) => DEFAULT_CATALOG.find((e) => e.id === id))
 import { initialState, replaceState } from '../store'
 
 export default function Setup() {

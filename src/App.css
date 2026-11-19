@@ -222,7 +222,6 @@ dialog.sheet form { display: flex; flex-direction: column; gap: 10px; padding: 2
 .history li { display: grid; grid-template-columns: 70px 1fr; gap: 2px 8px; }
 .note-line { grid-column: 2; font-style: italic; }
 .add-row { display: flex; gap: 8px; padding: 8px 0; }
-.add-row select { width: 64px; flex-shrink: 0; }
 .add-row button { flex-shrink: 0; }
 
 /* Setup */
@@ -261,3 +260,11 @@ dialog.sheet form { display: flex; flex-direction: column; gap: 10px; padding: 2
 /* Row that opens another screen */
 .chevron { color: var(--muted); font-size: 1.4rem; line-height: 1; }
 .icon-spacer { width: 44px; flex-shrink: 0; }
+
+/* Settings: secondary groups */
+.group { display: flex; flex-direction: column; gap: 4px; padding-top: 8px; border-top: 1px solid var(--border); }
+.group:first-of-type { border-top: none; }
+.group-list { list-style: none; margin: 0; padding: 0; }
+.group-list li { min-height: 44px; }
+.group-list .icon-btn { margin-right: -12px; }
+.add-row select { flex: 1; width: auto; }

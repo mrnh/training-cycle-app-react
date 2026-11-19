@@ -19,6 +19,8 @@ export default function App() {
   const state = useStore()
   const [tab, setTab] = useState('plan')
   const [selected, setSelected] = useState(null)
+  // Bumped on every tab tap, so tapping the open tab returns it to its first screen
+  const [tabTaps, setTabTaps] = useState(0)
 
   if (state === undefined) return <div className="screen muted center">Loading…</div>
   if (state === null) return <Setup />
@@ -36,6 +38,7 @@ export default function App() {
     // Tapping the Session tab opens the next open session.
     if (id === 'session') setSelected(upcoming())
     setTab(id)
+    setTabTaps((n) => n + 1)
     window.scrollTo(0, 0)
   }
 
@@ -44,7 +47,7 @@ export default function App() {
       <main className={tab === 'plan' ? 'fit' : undefined}>
         {tab === 'plan' && <Plan state={state} onOpen={openSession} />}
         {tab === 'session' && <Session state={state} sessionKey={sessionKey} onNavigate={openSession} />}
-        {tab === 'exercises' && <Exercises state={state} />}
+        {tab === 'exercises' && <Exercises key={tabTaps} state={state} />}
         {tab === 'settings' && <Settings state={state} />}
       </main>
       <nav className="tabbar">

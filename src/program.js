@@ -1,10 +1,13 @@
 // Russian Masters Squat Routine, adapted for three lifts.
-export const PRIMARY = [
+// Every exercise lives in the catalog; squat, bench and deadlift are ordinary entries.
+export const DEFAULT_CATALOG = [
   { id: 'squat', name: 'Squat' },
   { id: 'bench', name: 'Bench press' },
   { id: 'deadlift', name: 'Deadlift' },
 ]
-export const liftName = (id) => PRIMARY.find((p) => p.id === id)?.name ?? id
+// The three main-lift slots of a cycle point at catalog exercises (stored per cycle).
+export const DEFAULT_PRIMARIES = ['squat', 'bench', 'deadlift']
+export const exerciseName = (state, id) => state.catalog.find((e) => e.id === id)?.name ?? 'Deleted exercise'
 
 export const WEEKS = 9
 export const SESSIONS_PER_WEEK = 3
@@ -24,11 +27,12 @@ export const V2 = [
   { sets: 1, reps: 1, pct: 105 }, // re-test
 ]
 
-// Each session: one lift on variant 2, another on variant 1, plus a secondary group.
+// Each session: one main-lift slot on variant 2, another on variant 1, plus a secondary group.
+// Slots 0, 1, 2 are squat, bench and deadlift by default (see cycle.primaries).
 export const ROTATION = [
-  { v2: 'squat', v1: 'deadlift', group: 'A' },
-  { v2: 'bench', v1: 'squat', group: 'B' },
-  { v2: 'deadlift', v1: 'bench', group: 'C' },
+  { v2: 0, v1: 2, group: 'A' },
+  { v2: 1, v1: 0, group: 'B' },
+  { v2: 2, v1: 1, group: 'C' },
 ]
 
 export const round1 = (x) => Math.round(x * 10) / 10
@@ -40,6 +44,9 @@ export function parseKey(key) {
   return { week: +w, session: +s }
 }
 export const setKey = (sKey, exId, i) => `${sKey}:${exId}:${i}`
+// Secondary entries get their own key ("+id"), so a main lift can also be a secondary
+// exercise in the same session without their sets mixing.
+export const secondaryKey = (exId) => `+${exId}`
 
 export function sessionPlan(week, session) {
   const r = ROTATION[session - 1]
@@ -49,8 +56,8 @@ export function sessionPlan(week, session) {
     key: sessionKey(week, session),
     group: r.group,
     primaries: [
-      { lift: r.v2, variant: 2, ...V2[week - 1], retest: week === WEEKS },
-      { lift: r.v1, variant: 1, ...V1, retest: false },
+      { slot: r.v2, variant: 2, ...V2[week - 1], retest: week === WEEKS },
+      { slot: r.v1, variant: 1, ...V1, retest: false },
     ],
   }
 }
@@ -59,7 +66,9 @@ export const ALL_SESSIONS = Array.from({ length: WEEKS * SESSIONS_PER_WEEK }, (_
   sessionPlan(Math.floor(i / SESSIONS_PER_WEEK) + 1, (i % SESSIONS_PER_WEEK) + 1),
 )
 
-export const targetWeight = (cycle, p) => round1((cycle.oneRM[p.lift] * p.pct) / 100)
+/** Catalog id of the exercise in a planned main-lift slot for this cycle. */
+export const liftOf = (cycle, p) => cycle.primaries[p.slot]
+export const targetWeight = (cycle, p) => round1((cycle.oneRM[liftOf(cycle, p)] * p.pct) / 100)
 
 /** Sets ticked / total for the primary lifts (secondary sets are optional). */
 export function sessionProgress(cycle, plan) {
@@ -68,7 +77,7 @@ export function sessionProgress(cycle, plan) {
   for (const p of plan.primaries) {
     for (let i = 0; i < p.sets; i++) {
       total++
-      if (cycle.logs[setKey(plan.key, p.lift, i)]?.done) done++
+      if (cycle.logs[setKey(plan.key, liftOf(cycle, p), i)]?.done) done++
     }
   }
   return { done, total, complete: done === total }
@@ -80,12 +89,12 @@ export const nextSession = (cycle) =>
 /** The ticked week-9 single for each lift, or null if not done yet. */
 export function retestResults(cycle) {
   const out = {}
-  for (const { id } of PRIMARY) {
-    const s = ROTATION.findIndex((r) => r.v2 === id) + 1
+  cycle.primaries.forEach((id, slot) => {
+    const s = ROTATION.findIndex((r) => r.v2 === slot) + 1
     const plan = sessionPlan(WEEKS, s)
     const log = cycle.logs[setKey(plan.key, id, 0)]
     out[id] = log?.done ? (log.w ?? targetWeight(cycle, plan.primaries[0])) : null
-  }
+  })
   return out
 }
 
@@ -112,7 +121,7 @@ export const todayIso = () => {
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
 }
 
-/** All logged sets of an exercise across every cycle, oldest first. */
+/** All ticked sets of an entry (main-lift id, or secondaryKey(id)) across every cycle, oldest first. */
 export function exerciseHistory(state, exId) {
   const out = []
   state.cycles.forEach((cycle, ci) => {

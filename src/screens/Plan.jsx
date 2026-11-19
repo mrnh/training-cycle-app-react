@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import {
-  ALL_SESSIONS, PRIMARY, WEEKS, fmt, liftName, nextSession, retestComplete,
+  ALL_SESSIONS, WEEKS, exerciseName, fmt, liftOf, nextSession, retestComplete,
   retestResults, sessionProgress, todayIso, weekRange,
 } from '../program'
 import { currentCycle, newCycle, update } from '../store'
@@ -17,7 +17,7 @@ export default function Plan({ state, onOpen }) {
           <span className="muted small">Next up</span>
           <strong>Week {next.week} · Session {next.session}</strong>
           <span className="small">
-            {next.primaries.map((p) => `${liftName(p.lift)} ${p.sets}×${p.reps} @ ${p.pct}%`).join(' · ')}
+            {next.primaries.map((p) => `${exerciseName(state, liftOf(cycle, p))} ${p.sets}×${p.reps} @ ${p.pct}%`).join(' · ')}
           </span>
         </button>
       )}
@@ -67,21 +67,22 @@ function NextCycle({ state }) {
   const cycle = currentCycle(state)
   const results = retestResults(cycle)
   const [date, setDate] = useState(todayIso())
-  const newRM = Object.fromEntries(PRIMARY.map((p) => [p.id, results[p.id] ?? cycle.oneRM[p.id]]))
+  // A re-test that wasn't ticked keeps the old 1RM (it can be changed in Settings)
+  const newRM = Object.fromEntries(cycle.primaries.map((id) => [id, results[id] ?? cycle.oneRM[id]]))
 
   function start() {
     if (!confirm('Start a new 9-week cycle with these 1RMs? This cycle stays in your history.')) return
-    update((d) => d.cycles.push(newCycle(date, newRM)))
+    update((d) => d.cycles.push(newCycle(date, newRM, cycle.primaries)))
   }
 
   return (
     <div className="card highlight">
       <strong>Re-test done</strong>
-      {PRIMARY.map((p) => (
-        <div className="row small" key={p.id}>
-          <span>{p.name}</span>
+      {cycle.primaries.map((id) => (
+        <div className="row small" key={id}>
+          <span>{exerciseName(state, id)}</span>
           <span>
-            {fmt(cycle.oneRM[p.id])} → <strong>{fmt(newRM[p.id])} kg</strong>
+            {fmt(cycle.oneRM[id])} → <strong>{fmt(newRM[id])} kg</strong>
           </span>
         </div>
       ))}
