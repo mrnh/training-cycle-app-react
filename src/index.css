@@ -1,0 +1,48 @@
+:root {
+  --bg: #f4f4f8;
+  --card: #ffffff;
+  --border: #e2e2ea;
+  --muted: #6b6b78;
+  --text: #1c1c24;
+  --accent: #6e56cf;
+  --accent-soft: #eeeafd;
+  --success: #2f9e5b;
+  --success-soft: #e3f5ea;
+  --danger: #d93d42;
+  --warning: #8a5a00;
+  --warning-soft: #fdf3dc;
+  --tabbar-h: 64px;
+  font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
+  color: var(--text);
+  -webkit-text-size-adjust: 100%;
+  -webkit-tap-highlight-color: transparent;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #121217;
+    --card: #1d1d25;
+    --border: #30303c;
+    --muted: #9a9aa8;
+    --text: #ececf1;
+    --accent: #9b87f5;
+    --accent-soft: #2a2443;
+    --success: #4cc27c;
+    --success-soft: #1b3326;
+    --danger: #f2555a;
+    --warning: #f0b84a;
+    --warning-soft: #33280f;
+  }
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  min-height: 100dvh;
+}
+
+button, input, select, textarea { font: inherit; color: inherit; }
+/* 16px stops iOS from zooming into focused fields */
+input, select, textarea { font-size: 16px; }
