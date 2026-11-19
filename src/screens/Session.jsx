@@ -5,8 +5,9 @@ import FinishedSession from '../components/FinishedSession'
 import WeightDialog from '../components/WeightDialog'
 import SetRow, { SetHeader } from '../components/SetRow'
 import {
-  ALL_SESSIONS, draftSecondaries, exerciseHistory, exerciseName, finishSession, fmt, liftOf, parseKey,
-  secondaryKey, sessionPlan, setKey, setsSummary, targetWeight, todayIso, untickedSets, weekRange,
+  ALL_SESSIONS, activeSession, clockTime, draftSecondaries, exerciseHistory, exerciseName, finishSession, fmt,
+  liftOf, parseKey, secondaryKey, sessionPlan, setKey, setsSummary, startSession, startableSession, targetWeight,
+  todayIso, untickedSets, weekRange,
 } from '../program'
 import { currentCycle, update, updateCycle } from '../store'
 
@@ -27,11 +28,22 @@ export default function Session({ state, sessionKey, onNavigate }) {
   const prev = ALL_SESSIONS[idx - 1]
   const next = ALL_SESSIONS[idx + 1]
   const record = cycle.finished[plan.key]
-  const [finishing, setFinishing] = useState(false)
+  const active = activeSession(cycle)
+  const isOpen = active?.key === plan.key
+  const canStart = !record && !isOpen && startableSession(cycle)?.key === plan.key
+  const [dialog, setDialog] = useState(null) // 'finish' | 'start'
+  const label = (p) => `Week ${p.week} · Session ${p.session}`
+  const unticked = (p) => untickedSets(cycle, p).map((u) => ({ ...u, name: exerciseName(state, u.id) }))
   const finish = () =>
     update((d) => {
       finishSession(d, currentCycle(d), plan, todayIso())
     })
+  const start = () =>
+    update((d) => {
+      startSession(d, currentCycle(d), plan)
+    })
+  // Starting finishes an open session first, so that needs a confirmation
+  const onStart = () => (active ? setDialog('start') : start())
 
   return (
     <div className="screen">
@@ -53,45 +65,82 @@ export default function Session({ state, sessionKey, onNavigate }) {
       {record ? (
         <FinishedSession record={record} />
       ) : (
-        <Draft state={state} cycle={cycle} plan={plan} onFinish={() => setFinishing(true)} />
+        <>
+          {isOpen && <p className="in-progress small">● In progress since {clockTime(cycle.active.startedAt)}</p>}
+          {canStart && (
+            <div className="card start-card">
+              {active && <p className="small">{label(active)} is still open. Starting this session finishes it.</p>}
+              <button className="primary" onClick={onStart}>Start session</button>
+            </div>
+          )}
+          {!isOpen && !canStart && <NotYet cycle={cycle} active={active} label={label} onNavigate={onNavigate} />}
+          <Draft state={state} cycle={cycle} plan={plan} open={isOpen} onFinish={() => setDialog('finish')} />
+        </>
       )}
-      {finishing && (
+      {dialog === 'finish' && (
+        <FinishDialog title={label(plan)} unticked={unticked(plan)} onConfirm={finish} onClose={() => setDialog(null)} />
+      )}
+      {dialog === 'start' && (
         <FinishDialog
-          title={`Week ${week} · Session ${session}`}
-          unticked={untickedSets(cycle, plan).map((u) => ({ ...u, name: exerciseName(state, u.id) }))}
-          onConfirm={finish}
-          onClose={() => setFinishing(false)}
+          heading="Start this session?"
+          message={`${label(active)} is still open. Starting ${label(plan)} finishes it as it is and saves it permanently.`}
+          confirmLabel="Finish it and start"
+          title={label(active)}
+          unticked={unticked(active)}
+          onConfirm={start}
+          onClose={() => setDialog(null)}
         />
       )}
     </div>
   )
 }
 
-/** An open session: every change is saved to the device straight away (the draft). */
-function Draft({ state, cycle, plan, onFinish }) {
+/** A session that can't be started yet: points to the one to do first. */
+function NotYet({ cycle, active, label, onNavigate }) {
+  const first = active ?? startableSession(cycle)
+  if (!first) return null
+  return (
+    <p className="muted small center">
+      Preview. Sessions are done in order:{' '}
+      <button className="link inline" onClick={() => onNavigate(first.key)}>
+        {active ? `${label(first)} is open` : `start ${label(first)}`}
+      </button>
+    </p>
+  )
+}
+
+/**
+ * The open session: every change is saved to the device straight away (the draft).
+ * Any other unfinished session is shown the same way as a preview, with all controls disabled.
+ */
+function Draft({ state, cycle, plan, open, onFinish }) {
   const secondaries = draftSecondaries(state, cycle, plan)
   return (
-    <>
+    <fieldset className="draft" disabled={!open}>
       {plan.primaries.map((p) => (
-        <PrimaryBlock key={p.slot} state={state} cycle={cycle} plan={plan} p={p} />
+        <PrimaryBlock key={p.slot} state={state} cycle={cycle} plan={plan} p={p} open={open} />
       ))}
 
       {secondaries.map((id) => (
-        <SecondaryBlock key={id} state={state} cycle={cycle} plan={plan} id={id} />
+        <SecondaryBlock key={id} state={state} cycle={cycle} plan={plan} id={id} open={open} />
       ))}
       {secondaries.length === 0 && (
         <p className="muted small center">No secondary exercises in group {plan.group} yet. Add them in Settings.</p>
       )}
 
-      <section className="card">
-        <h2>Session note</h2>
-        <Note label="Add a session note" value={cycle.notes[plan.key]} onChange={(t) => setNote(plan.key, t)} />
-      </section>
+      {open && (
+        <>
+          <section className="card">
+            <h2>Session note</h2>
+            <Note label="Add a session note" value={cycle.notes[plan.key]} onChange={(t) => setNote(plan.key, t)} />
+          </section>
 
-      <button className="primary finish" onClick={onFinish}>
-        Finish session
-      </button>
-    </>
+          <button className="primary finish" onClick={onFinish}>
+            Finish session
+          </button>
+        </>
+      )}
+    </fieldset>
   )
 }
 
@@ -100,7 +149,7 @@ function Draft({ state, cycle, plan, onFinish }) {
  * ("Weight used", applies to all sets) and each set is a toggle across the card.
  * Sets are still stored one by one, so history and the week-9 re-test keep working.
  */
-function PrimaryBlock({ state, cycle, plan, p }) {
+function PrimaryBlock({ state, cycle, plan, p, open }) {
   const lift = liftOf(cycle, p)
   const name = exerciseName(state, lift)
   const target = targetWeight(cycle, p)
@@ -125,9 +174,11 @@ function PrimaryBlock({ state, cycle, plan, p }) {
           <span>Weight used</span>
           <span className="weight-value">
             <strong className={w !== target ? 'changed' : undefined}>{fmt(w)} kg</strong>
-            <button className="pen" aria-label={`Change ${name} weight`} onClick={() => setEditing(true)}>
-              ✎
-            </button>
+            {open && (
+              <button className="pen" aria-label={`Change ${name} weight`} onClick={() => setEditing(true)}>
+                ✎
+              </button>
+            )}
           </span>
         </div>
       </div>
@@ -159,12 +210,12 @@ function PrimaryBlock({ state, cycle, plan, p }) {
           )
         })}
       </div>
-      <Note value={cycle.notes[`${plan.key}:${lift}`]} onChange={(t) => setNote(`${plan.key}:${lift}`, t)} />
+      {open && <Note value={cycle.notes[`${plan.key}:${lift}`]} onChange={(t) => setNote(`${plan.key}:${lift}`, t)} />}
     </section>
   )
 }
 
-function SecondaryBlock({ state, cycle, plan, id }) {
+function SecondaryBlock({ state, cycle, plan, id, open }) {
   const cycleIdx = state.cycles.length - 1
   const order = ALL_SESSIONS.findIndex((s) => s.key === plan.key)
   const entry = secondaryKey(id)
@@ -208,13 +259,15 @@ function SecondaryBlock({ state, cycle, plan, id }) {
           />
         )
       })}
-      <div className="row">
-        <Note value={cycle.notes[countKey]} onChange={(t) => setNote(countKey, t)} />
-        <span className="stepper">
-          <button className="small-btn" aria-label="Remove a set" onClick={() => setCount(count - 1)}>−</button>
-          <button className="small-btn" aria-label="Add a set" onClick={() => setCount(count + 1)}>+ Set</button>
-        </span>
-      </div>
+      {open && (
+        <div className="row">
+          <Note value={cycle.notes[countKey]} onChange={(t) => setNote(countKey, t)} />
+          <span className="stepper">
+            <button className="small-btn" aria-label="Remove a set" onClick={() => setCount(count - 1)}>−</button>
+            <button className="small-btn" aria-label="Add a set" onClick={() => setCount(count + 1)}>+ Set</button>
+          </span>
+        </div>
+      )}
     </section>
   )
 }

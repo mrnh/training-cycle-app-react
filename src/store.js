@@ -6,7 +6,7 @@ import { get, set, del } from 'idb-keyval'
 
 // All app data lives in one object in IndexedDB. Every change is saved immediately.
 const KEY = 'training-plan'
-export const DATA_VERSION = 3
+export const DATA_VERSION = 4
 // Untouched copy of the data from before an upgrade, kept in case a conversion goes wrong
 const BACKUP_KEY = (v) => `training-plan-before-v${v}`
 
@@ -67,6 +67,7 @@ export function newCycle(startDate, oneRM, primaries = DEFAULT_PRIMARIES) {
     notes: {}, // sessionKey, sessionKey:liftId or sessionKey:+exerciseId -> text
     setCounts: {}, // sessionKey:+exerciseId -> number of rows (secondary only)
     finished: {}, // sessionKey -> permanent record (see buildRecord in program.js)
+    active: null, // the one open session: { key, startedAt }
   }
 }
 
@@ -123,6 +124,15 @@ export function migrate(data) {
       }
     }
     data = next
+  }
+  if (data.version === 3) {
+    // v4: only one session is open at a time (cycle.active). Drafts from before were test data
+    // and are dropped; finished sessions stay.
+    data = {
+      ...data,
+      version: 4,
+      cycles: data.cycles.map((c) => ({ ...c, logs: {}, notes: {}, setCounts: {}, active: null })),
+    }
   }
   return data.version === DATA_VERSION ? data : null
 }

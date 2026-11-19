@@ -1,7 +1,12 @@
 import { useEffect, useRef } from 'react'
 
-/** Confirms finishing a session; lists main-lift sets that weren't ticked. */
-export default function FinishDialog({ title, unticked, onConfirm, onClose }) {
+/**
+ * Confirms finishing a session; lists main-lift sets that weren't ticked. Also used when
+ * starting the next session finishes the open one (heading, message and button differ).
+ */
+export default function FinishDialog({
+  title, unticked, onConfirm, onClose, heading = 'Finish session?', message, confirmLabel = 'Finish session',
+}) {
   const ref = useRef(null)
 
   useEffect(() => {
@@ -20,10 +25,8 @@ export default function FinishDialog({ title, unticked, onConfirm, onClose }) {
     // Escape / backdrop "cancel" closes without finishing
     <dialog ref={ref} className="sheet" onCancel={onClose} onClick={(e) => e.target === ref.current && onClose()}>
       <form onSubmit={confirm}>
-        <h2>Finish session?</h2>
-        <p className="small">
-          {title} is saved permanently and can't be changed afterwards.
-        </p>
+        <h2>{heading}</h2>
+        <p className="small">{message ?? `${title} is saved permanently and can't be changed afterwards.`}</p>
         {unticked.length > 0 && (
           <div className="warning small">
             {unticked.map((u) => (
@@ -35,7 +38,7 @@ export default function FinishDialog({ title, unticked, onConfirm, onClose }) {
         )}
         <div className="button-row end">
           <button type="button" onClick={onClose}>Cancel</button>
-          <button type="submit" className="primary">Finish session</button>
+          <button type="submit" className="primary">{confirmLabel}</button>
         </div>
       </form>
     </dialog>

@@ -1,20 +1,21 @@
 import { useState } from 'react'
 import {
-  ALL_SESSIONS, WEEKS, cycleComplete, exerciseName, fmt, isFinished, isStarted, liftOf, nextSession,
+  ALL_SESSIONS, WEEKS, activeSession, cycleComplete, exerciseName, fmt, isFinished, liftOf, nextSession,
   retestResults, todayIso, weekRange,
 } from '../program'
 import { currentCycle, newCycle, update } from '../store'
 
 export default function Plan({ state, onOpen }) {
   const cycle = currentCycle(state)
-  const next = nextSession(cycle)
+  const active = activeSession(cycle)
+  const next = active ?? nextSession(cycle)
   const doneCount = ALL_SESSIONS.filter((p) => isFinished(cycle, p)).length
 
   return (
     <div className="screen plan">
       {next && (
         <button className="card next-up" onClick={() => onOpen(next.key)}>
-          <span className="muted small">Next up</span>
+          <span className="muted small">{active ? 'In progress' : 'Next up'}</span>
           <strong>Week {next.week} · Session {next.session}</strong>
           <span className="small">
             {next.primaries.map((p) => `${exerciseName(state, liftOf(cycle, p))} ${p.sets}×${p.reps} @ ${p.pct}%`).join(' · ')}
@@ -37,12 +38,12 @@ export default function Plan({ state, onOpen }) {
                 {[1, 2, 3].map((s) => {
                   const plan = ALL_SESSIONS[(week - 1) * 3 + s - 1]
                   const complete = isFinished(cycle, plan)
-                  const cls = complete ? 'done' : next?.key === plan.key ? 'next' : isStarted(cycle, plan) ? 'partial' : ''
+                  const cls = complete ? 'done' : active?.key === plan.key ? 'partial' : next?.key === plan.key ? 'next' : ''
                   return (
                     <button
                       key={s}
                       className={`dot ${cls}`}
-                      aria-label={`Week ${week} session ${s}${complete ? ', done' : ''}`}
+                      aria-label={`Week ${week} session ${s}${complete ? ', done' : cls === 'partial' ? ', in progress' : ''}`}
                       onClick={() => onOpen(plan.key)}
                     >
                       {s}

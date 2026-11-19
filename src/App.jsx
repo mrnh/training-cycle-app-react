@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import './App.css'
-import { ALL_SESSIONS, nextSession } from './program'
+import { ALL_SESSIONS, activeSession, nextSession } from './program'
 import Exercises from './screens/Exercises'
 import Plan from './screens/Plan'
 import Session from './screens/Session'
@@ -26,7 +26,8 @@ export default function App() {
   if (state === null) return <Setup />
 
   const cycle = currentCycle(state)
-  const upcoming = () => nextSession(cycle)?.key ?? ALL_SESSIONS.at(-1).key
+  // The open session, else the next one to start
+  const upcoming = () => (activeSession(cycle) ?? nextSession(cycle))?.key ?? ALL_SESSIONS.at(-1).key
   // Pinned when the tab opens, so ticking the last set doesn't jump to the next session.
   const sessionKey = selected ?? upcoming()
   const openSession = (key) => {
@@ -35,7 +36,7 @@ export default function App() {
     window.scrollTo(0, 0)
   }
   const switchTab = (id) => {
-    // Tapping the Session tab opens the next open session.
+    // Tapping the Session tab opens the session in progress, or the next one to start.
     if (id === 'session') setSelected(upcoming())
     setTab(id)
     setTabTaps((n) => n + 1)
@@ -46,7 +47,7 @@ export default function App() {
     <>
       <main className={tab === 'plan' ? 'fit' : undefined}>
         {tab === 'plan' && <Plan state={state} onOpen={openSession} />}
-        {tab === 'session' && <Session state={state} sessionKey={sessionKey} onNavigate={openSession} />}
+        {tab === 'session' && <Session key={sessionKey} state={state} sessionKey={sessionKey} onNavigate={openSession} />}
         {tab === 'exercises' && <Exercises key={tabTaps} state={state} />}
         {tab === 'settings' && <Settings state={state} />}
       </main>

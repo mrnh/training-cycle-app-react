@@ -92,11 +92,26 @@ export function sessionProgress(cycle, plan) {
   return { done, total, complete: done === total }
 }
 
-/** Has the draft of this session any ticked set (main or secondary)? */
-export const isStarted = (cycle, plan) =>
-  Object.entries(cycle.logs).some(([k, v]) => v?.done && k.startsWith(`${plan.key}:`))
-
 export const nextSession = (cycle) => ALL_SESSIONS.find((p) => !isFinished(cycle, p)) ?? null
+
+/**
+ * One session is open at a time (cycle.active = { key, startedAt }). Only an open session can
+ * be logged; the others are previews. Sessions are started in order: the one after the open
+ * session, or the first unfinished one when none is open.
+ */
+export const activeSession = (cycle) => (cycle.active ? ALL_SESSIONS.find((p) => p.key === cycle.active.key) : null)
+export function startableSession(cycle) {
+  const active = activeSession(cycle)
+  if (!active) return nextSession(cycle)
+  return ALL_SESSIONS[ALL_SESSIONS.indexOf(active) + 1] ?? null
+}
+
+/** Start a session (mutates). An open session is finished as it is first. */
+export function startSession(state, cycle, plan, now = new Date()) {
+  const open = activeSession(cycle)
+  if (open && open.key !== plan.key) finishSession(state, cycle, open, isoDay(now))
+  cycle.active = { key: plan.key, startedAt: now.toISOString() }
+}
 
 /** Catalog ids of the secondary exercises in a draft: its group, plus any already logged. */
 export function draftSecondaries(state, cycle, plan) {
@@ -149,6 +164,7 @@ export function finishSession(state, cycle, plan, finishedAt) {
   for (const obj of [cycle.logs, cycle.notes, cycle.setCounts]) {
     for (const k of Object.keys(obj)) if (own(k)) delete obj[k]
   }
+  if (cycle.active?.key === plan.key) cycle.active = null
 }
 
 /** Main-lift sets not ticked, per lift, for the Finish dialog. */
@@ -192,10 +208,11 @@ export const weekRange = (cycle, week) =>
 /** crypto.randomUUID only exists on https/localhost; phones on the local network use plain http. */
 export const newId = () =>
   crypto.randomUUID?.() ?? `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 10)}`
-export const todayIso = () => {
-  const d = new Date()
-  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
-}
+const isoDay = (d) =>
+  `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
+export const todayIso = () => isoDay(new Date())
+/** "18:05" */
+export const clockTime = (iso) => new Date(iso).toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' })
 
 /**
  * Finished sessions of an exercise across every cycle, oldest first. `kind` is 'main' or
