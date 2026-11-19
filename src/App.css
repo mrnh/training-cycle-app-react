@@ -153,7 +153,23 @@ main.fit { padding-bottom: calc(var(--tabbar-h) + env(safe-area-inset-bottom)); 
 .weight-value { display: flex; align-items: center; gap: 2px; }
 .weight-value strong { font-weight: 400; }
 .weight-value strong.changed { color: var(--accent); }
-button.pen { min-height: 0; width: 40px; height: 40px; padding: 0; border: none; background: none; font-size: 1.2rem; color: var(--accent); }
+/* Pen sits flush with the right edge of "Weight used"; the negative margin keeps a ~40px tap area
+   without pushing the icon inwards or adding height to the row */
+button.pen {
+  min-height: 0;
+  width: auto;
+  height: auto;
+  padding: 10px 0 10px 10px;
+  margin: -10px 0 -10px -4px;
+  border: none;
+  background: none;
+  font-size: 0.95rem;
+  line-height: 1;
+  color: var(--accent);
+  position: relative;
+}
+/* Invisible extra touch area around the pen (about 44px), no effect on layout */
+button.pen::after { content: ''; position: absolute; inset: -6px -10px -6px -10px; }
 
 /* Dialog for changing the weight used */
 dialog.sheet {
