@@ -61,48 +61,40 @@ export default function Session({ state, sessionKey, onNavigate }) {
   )
 }
 
+/**
+ * Main lifts use the same reps and weight for every set: the weight sits top right
+ * ("Weight used", applies to all sets) and each set is a toggle across the card.
+ * Sets are still stored one by one, so history and the week-9 re-test keep working.
+ */
 function PrimaryBlock({ cycle, plan, p }) {
   const target = targetWeight(cycle, p)
-  return (
-    <section className={`card ${p.retest ? 'highlight' : ''}`}>
-      <div className="row">
-        <h2>{liftName(p.lift)}</h2>
-        <span className="badge">{p.retest ? 'Re-test' : `Variant ${p.variant}`}</span>
-      </div>
-      <p className="muted small">
-        {p.sets}×{p.reps} @ {p.pct}% · {fmt(target)} kg
-      </p>
-      {p.retest && (
-        <p className="small">Tick the single you actually lifted. Its weight becomes your 1RM for the next cycle.</p>
-      )}
-      <PrimaryRow cycle={cycle} plan={plan} p={p} target={target} />
-      <Note value={cycle.notes[`${plan.key}:${p.lift}`]} onChange={(t) => setNote(`${plan.key}:${p.lift}`, t)} />
-    </section>
-  )
-}
-
-/**
- * Main lifts use the same weight and reps for every set, so they get one row:
- * reps and weight on the left, then one toggle per set. Each set is still stored on its own
- * (same shape as before), so history and the re-test keep working.
- */
-function PrimaryRow({ cycle, plan, p, target }) {
   const keys = Array.from({ length: p.sets }, (_, i) => setKey(plan.key, p.lift, i))
-  const first = cycle.logs[keys[0]]
-  const w = first?.w ?? target
-  const r = first?.r ?? p.reps
-  const setAll = (patch) =>
+  const w = cycle.logs[keys[0]]?.w ?? target
+  const setWeight = (v) =>
     updateCycle((c) => {
-      for (const k of keys) c.logs[k] = { ...c.logs[k], ...patch }
+      for (const k of keys) c.logs[k] = { ...c.logs[k], w: v }
     })
 
   return (
-    <div className="primary-row">
-      <span className="col-label">Reps</span>
-      <span className="col-label">kg</span>
-      <span className="col-label sets-label">Sets</span>
-      <NumInput value={r} label={`${liftName(p.lift)} reps`} onChange={(v) => setAll({ r: v })} />
-      <NumInput value={w} label={`${liftName(p.lift)} weight`} onChange={(v) => setAll({ w: v })} />
+    <section className={`card ${p.retest ? 'highlight' : ''}`}>
+      <div className="lift-head">
+        <div>
+          <h2>{liftName(p.lift)}</h2>
+          <p className="muted small">
+            {p.sets}×{p.reps} @ {p.pct}% · {fmt(target)} kg
+          </p>
+        </div>
+        <label className="weight-used">
+          <span>Weight used</span>
+          <span className="weight-input">
+            <NumInput value={w} label={`${liftName(p.lift)} weight used`} onChange={setWeight} />
+            kg
+          </span>
+        </label>
+      </div>
+      {p.retest && (
+        <p className="small">Tick the single you actually lifted. Its weight becomes your 1RM for the next cycle.</p>
+      )}
       <div className="set-toggles">
         {keys.map((k, i) => {
           const done = !!cycle.logs[k]?.done
@@ -112,14 +104,15 @@ function PrimaryRow({ cycle, plan, p, target }) {
               className={`set-toggle ${done ? 'is-done' : ''}`}
               aria-pressed={done}
               aria-label={`Set ${i + 1}${done ? ', done' : ''}`}
-              onClick={() => setLog(k, { w, r, done: !done })}
+              onClick={() => setLog(k, { w, r: p.reps, done: !done })}
             >
               {i + 1}
             </button>
           )
         })}
       </div>
-    </div>
+      <Note value={cycle.notes[`${plan.key}:${p.lift}`]} onChange={(t) => setNote(`${plan.key}:${p.lift}`, t)} />
+    </section>
   )
 }
 
