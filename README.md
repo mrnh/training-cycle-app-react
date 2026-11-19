@@ -34,3 +34,7 @@ npm run dev
 ```
 
 Program rules live in `src/program.js`, storage in `src/store.js`, screens in `src/screens/`.
+
+## License
+
+[MIT](LICENSE): free to use, change and share, including in other projects.
