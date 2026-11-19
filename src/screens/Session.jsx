@@ -82,8 +82,8 @@ function PrimaryBlock({ cycle, plan, p }) {
       <div className="lift-head">
         <div>
           <h2>{liftName(p.lift)}</h2>
-          <p className="muted small">
-            {p.sets}×{p.reps} @ {p.pct}% · {fmt(target)} kg
+          <p className="prescription">
+            {p.sets}×{p.reps} @ {p.pct}% · <strong>{fmt(target)} kg</strong>
           </p>
         </div>
         <div className="weight-used">
