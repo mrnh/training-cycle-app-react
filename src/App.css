@@ -149,7 +149,9 @@ main.fit { padding-bottom: calc(var(--tabbar-h) + env(safe-area-inset-bottom)); 
 .lift-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; }
 .lift-head p { margin-top: 2px; }
 .weight-used { display: flex; flex-direction: column; align-items: flex-end; gap: 2px; font-size: 0.75rem; color: var(--muted); flex-shrink: 0; }
-.weight-value { display: flex; align-items: center; gap: 2px; font-size: 1.05rem; color: var(--text); }
+/* The weight value inherits the "Weight used" label style (size, colour), not bold */
+.weight-value { display: flex; align-items: center; gap: 2px; }
+.weight-value strong { font-weight: 400; }
 .weight-value strong.changed { color: var(--accent); }
 button.pen { min-height: 0; width: 40px; height: 40px; padding: 0; border: none; background: none; font-size: 1.2rem; color: var(--accent); }
 
