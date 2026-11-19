@@ -257,3 +257,7 @@ dialog.sheet form { display: flex; flex-direction: column; gap: 10px; padding: 2
 }
 .tabbar button span { font-size: 1.3rem; line-height: 1; }
 .tabbar button.active { color: var(--accent); font-weight: 600; }
+
+/* Row that opens another screen */
+.chevron { color: var(--muted); font-size: 1.4rem; line-height: 1; }
+.icon-spacer { width: 44px; flex-shrink: 0; }

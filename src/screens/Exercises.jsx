@@ -1,12 +1,22 @@
 import { useState } from 'react'
-import { GROUPS, PRIMARY, exerciseHistory, fmt, newId, retestResults, setsSummary } from '../program'
-import { currentCycle, update } from '../store'
+import { GROUPS, PRIMARY, exerciseHistory, newId, setsSummary } from '../program'
+import { update } from '../store'
+import ExerciseHistory from './ExerciseHistory'
 
 export default function Exercises({ state }) {
-  const cycle = currentCycle(state)
-  const retest = retestResults(cycle)
   const [open, setOpen] = useState(null)
   const toggle = (id) => setOpen(open === id ? null : id)
+  // Exercise whose history screen is shown; leaving the tab resets it
+  const [detail, setDetail] = useState(null)
+  const show = (id) => {
+    setDetail(id)
+    window.scrollTo(0, 0)
+  }
+
+  if (detail) {
+    const ex = PRIMARY.find((p) => p.id === detail)
+    return <ExerciseHistory name={ex.name} onBack={() => show(null)} />
+  }
 
   return (
     <div className="screen">
@@ -16,13 +26,10 @@ export default function Exercises({ state }) {
       <div className="card list">
         {PRIMARY.map((p) => (
           <div key={p.id}>
-            <button className="list-row" onClick={() => toggle(p.id)} aria-expanded={open === p.id}>
+            <button className="list-row" onClick={() => show(p.id)}>
               <span>{p.name}</span>
-              <span className="muted">
-                1RM {fmt(cycle.oneRM[p.id])} kg{retest[p.id] != null && ` → ${fmt(retest[p.id])}`}
-              </span>
+              <span className="chevron" aria-hidden="true">›</span>
             </button>
-            {open === p.id && <History state={state} exId={p.id} />}
           </div>
         ))}
       </div>
