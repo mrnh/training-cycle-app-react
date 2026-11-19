@@ -37,4 +37,6 @@ Program rules live in `src/program.js`, storage in `src/store.js`, screens in `s
 
 ## License
 
-[MIT](LICENSE): free to use, change and share, including in other projects.
+[GNU General Public License v3.0 or later](LICENSE). Anyone may use, change and share this app.
+Software that includes it or is built on it must be released under the same license, with its
+source code.
