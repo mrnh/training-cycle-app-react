@@ -9,6 +9,34 @@ The current version is shown at the bottom of **Settings**.
 
 ---
 
+## 0.2.0 — 2026-11-19 · Redesigned session cards
+
+The main lifts in a session are now one compact card each: tap a numbered button per set instead
+of filling in a row per set.
+
+| Session | Changing the weight | Plan | Exercises | Settings |
+|---|---|---|---|---|
+| ![Session](docs/screenshots/v0.2.0/session.jpg) | ![Weight dialog](docs/screenshots/v0.2.0/weight-dialog.jpg) | ![Plan](docs/screenshots/v0.2.0/plan.jpg) | ![Exercises](docs/screenshots/v0.2.0/exercises.jpg) | ![Settings](docs/screenshots/v0.2.0/settings.jpg) |
+
+### Changed
+- **Main-lift cards:** one card per lift with numbered set buttons (48 px) spread across the card,
+  instead of a row with weight, reps and tick for every set. Ticked sets turn green.
+- **Prescription line** "6×3 @ 80% · **80 kg**": the planned weight is bold, in the lift name's
+  colour (black, or white in dark mode).
+- **Weight used** is shown top right as text with a pen icon, aligned with its label. Removed the
+  "Variant" pill and the reps field (reps come from the prescription).
+
+### Added
+- **Weight dialog:** the pen opens a dialog showing the planned weight, with a number field,
+  "Use planned weight", Cancel and Save. The new weight applies to all sets of that lift; a weight
+  that differs from the plan is shown in purple.
+
+### Fixed
+- Exercise history and "last time" only count sets that were actually ticked. Before, changing the
+  weight of a lift before training showed up as six empty sets in its history.
+
+---
+
 ## 0.1.0 — 2026-11-19 · First version
 
 The first usable version: a 9-week cycle of the Russian Masters Squat Routine, adapted for squat,

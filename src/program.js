@@ -120,7 +120,9 @@ export function exerciseHistory(state, exId) {
       const sets = []
       for (let i = 0; i < 12; i++) {
         const log = cycle.logs[setKey(plan.key, exId, i)]
-        if (log && (log.done || log.w != null || log.r != null)) sets.push({ i, ...log })
+        // Only ticked sets count as done work. An adjusted "weight used" on sets that weren't
+        // ticked (yet) must not show up in history or as "last time".
+        if (log?.done) sets.push({ i, ...log })
       }
       if (sets.length) out.push({ cycle: ci, order: si, week: plan.week, session: plan.session, sets, note: cycle.notes[`${plan.key}:${exId}`] })
     })
