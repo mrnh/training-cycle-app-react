@@ -1,12 +1,14 @@
 import Note from '../components/Note'
 import { useState } from 'react'
+import FinishDialog from '../components/FinishDialog'
+import FinishedSession from '../components/FinishedSession'
 import WeightDialog from '../components/WeightDialog'
 import SetRow, { SetHeader } from '../components/SetRow'
 import {
-  ALL_SESSIONS, exerciseHistory, exerciseName, fmt, liftOf, parseKey, secondaryKey,
-  sessionPlan, setKey, setsSummary, targetWeight, weekRange,
+  ALL_SESSIONS, draftSecondaries, exerciseHistory, exerciseName, finishSession, fmt, liftOf, parseKey,
+  secondaryKey, sessionPlan, setKey, setsSummary, targetWeight, todayIso, untickedSets, weekRange,
 } from '../program'
-import { currentCycle, updateCycle } from '../store'
+import { currentCycle, update, updateCycle } from '../store'
 
 const setLog = (key, patch) =>
   updateCycle((c) => {
@@ -24,7 +26,12 @@ export default function Session({ state, sessionKey, onNavigate }) {
   const idx = ALL_SESSIONS.findIndex((p) => p.key === sessionKey)
   const prev = ALL_SESSIONS[idx - 1]
   const next = ALL_SESSIONS[idx + 1]
-  const secondaries = state.groups[plan.group].map((id) => state.catalog.find((e) => e.id === id)).filter(Boolean)
+  const record = cycle.finished[plan.key]
+  const [finishing, setFinishing] = useState(false)
+  const finish = () =>
+    update((d) => {
+      finishSession(d, currentCycle(d), plan, todayIso())
+    })
 
   return (
     <div className="screen">
@@ -43,12 +50,34 @@ export default function Session({ state, sessionKey, onNavigate }) {
         </button>
       </header>
 
+      {record ? (
+        <FinishedSession record={record} />
+      ) : (
+        <Draft state={state} cycle={cycle} plan={plan} onFinish={() => setFinishing(true)} />
+      )}
+      {finishing && (
+        <FinishDialog
+          title={`Week ${week} · Session ${session}`}
+          unticked={untickedSets(cycle, plan).map((u) => ({ ...u, name: exerciseName(state, u.id) }))}
+          onConfirm={finish}
+          onClose={() => setFinishing(false)}
+        />
+      )}
+    </div>
+  )
+}
+
+/** An open session: every change is saved to the device straight away (the draft). */
+function Draft({ state, cycle, plan, onFinish }) {
+  const secondaries = draftSecondaries(state, cycle, plan)
+  return (
+    <>
       {plan.primaries.map((p) => (
         <PrimaryBlock key={p.slot} state={state} cycle={cycle} plan={plan} p={p} />
       ))}
 
-      {secondaries.map((ex) => (
-        <SecondaryBlock key={ex.id} state={state} cycle={cycle} plan={plan} ex={ex} />
+      {secondaries.map((id) => (
+        <SecondaryBlock key={id} state={state} cycle={cycle} plan={plan} id={id} />
       ))}
       {secondaries.length === 0 && (
         <p className="muted small center">No secondary exercises in group {plan.group} yet. Add them in Settings.</p>
@@ -58,7 +87,11 @@ export default function Session({ state, sessionKey, onNavigate }) {
         <h2>Session note</h2>
         <Note label="Add a session note" value={cycle.notes[plan.key]} onChange={(t) => setNote(plan.key, t)} />
       </section>
-    </div>
+
+      <button className="primary finish" onClick={onFinish}>
+        Finish session
+      </button>
+    </>
   )
 }
 
@@ -131,11 +164,11 @@ function PrimaryBlock({ state, cycle, plan, p }) {
   )
 }
 
-function SecondaryBlock({ state, cycle, plan, ex }) {
+function SecondaryBlock({ state, cycle, plan, id }) {
   const cycleIdx = state.cycles.length - 1
   const order = ALL_SESSIONS.findIndex((s) => s.key === plan.key)
-  const entry = secondaryKey(ex.id)
-  const last = exerciseHistory(state, entry)
+  const entry = secondaryKey(id)
+  const last = exerciseHistory(state, id, 'secondary')
     .filter((h) => h.cycle < cycleIdx || (h.cycle === cycleIdx && h.order < order))
     .at(-1)
   const countKey = `${plan.key}:${entry}`
@@ -150,7 +183,7 @@ function SecondaryBlock({ state, cycle, plan, ex }) {
   return (
     <section className="card">
       <div className="row">
-        <h2>{ex.name}</h2>
+        <h2>{exerciseName(state, id)}</h2>
         <span className="badge">Group {plan.group}</span>
       </div>
       <p className="muted small">

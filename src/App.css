@@ -268,3 +268,19 @@ dialog.sheet form { display: flex; flex-direction: column; gap: 10px; padding: 2
 .group-list li { min-height: 44px; }
 .group-list .icon-btn { margin-right: -12px; }
 .add-row select { flex: 1; width: auto; }
+
+/* Finishing a session */
+button.finish { margin-top: 4px; }
+.finished-banner {
+  background: var(--success-soft);
+  color: var(--success);
+  border-radius: 10px;
+  padding: 10px 12px;
+  font-weight: 600;
+}
+.set-toggle.static { display: flex; align-items: center; justify-content: center; border: 1px solid var(--border); background: var(--card); }
+.set-toggle.static.is-done { background: var(--success); border-color: var(--success); color: #fff; }
+.note-text { font-style: italic; color: var(--muted); font-size: 0.9rem; white-space: pre-wrap; }
+.done-sets { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 4px; }
+.done-sets li { display: grid; grid-template-columns: 32px 1fr 24px; align-items: center; }
+.done-sets li.is-done span:last-child { color: var(--success); font-weight: 700; }

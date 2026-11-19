@@ -1,14 +1,14 @@
 import { useState } from 'react'
 import {
-  ALL_SESSIONS, WEEKS, exerciseName, fmt, liftOf, nextSession, retestComplete,
-  retestResults, sessionProgress, todayIso, weekRange,
+  ALL_SESSIONS, WEEKS, cycleComplete, exerciseName, fmt, isFinished, isStarted, liftOf, nextSession,
+  retestResults, todayIso, weekRange,
 } from '../program'
 import { currentCycle, newCycle, update } from '../store'
 
 export default function Plan({ state, onOpen }) {
   const cycle = currentCycle(state)
   const next = nextSession(cycle)
-  const doneCount = ALL_SESSIONS.filter((p) => sessionProgress(cycle, p).complete).length
+  const doneCount = ALL_SESSIONS.filter((p) => isFinished(cycle, p)).length
 
   return (
     <div className="screen plan">
@@ -22,7 +22,7 @@ export default function Plan({ state, onOpen }) {
         </button>
       )}
 
-      {retestComplete(cycle) && <NextCycle state={state} />}
+      {cycleComplete(cycle) && <NextCycle state={state} />}
 
       <div className="weeks">
         {Array.from({ length: WEEKS }, (_, w) => {
@@ -36,8 +36,8 @@ export default function Plan({ state, onOpen }) {
               <span className="dots">
                 {[1, 2, 3].map((s) => {
                   const plan = ALL_SESSIONS[(week - 1) * 3 + s - 1]
-                  const { done, complete } = sessionProgress(cycle, plan)
-                  const cls = complete ? 'done' : next?.key === plan.key ? 'next' : done > 0 ? 'partial' : ''
+                  const complete = isFinished(cycle, plan)
+                  const cls = complete ? 'done' : next?.key === plan.key ? 'next' : isStarted(cycle, plan) ? 'partial' : ''
                   return (
                     <button
                       key={s}

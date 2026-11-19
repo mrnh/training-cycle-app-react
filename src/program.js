@@ -70,7 +70,16 @@ export const ALL_SESSIONS = Array.from({ length: WEEKS * SESSIONS_PER_WEEK }, (_
 export const liftOf = (cycle, p) => cycle.primaries[p.slot]
 export const targetWeight = (cycle, p) => round1((cycle.oneRM[liftOf(cycle, p)] * p.pct) / 100)
 
-/** Sets ticked / total for the primary lifts (secondary sets are optional). */
+/**
+ * Two levels of storage:
+ * - Draft: an open session lives in cycle.logs / notes / setCounts. Every tap is saved to the
+ *   device straight away, so nothing is lost if the app crashes mid-workout.
+ * - Finished: "Finish" turns the draft into a permanent record in cycle.finished[sessionKey]
+ *   (see buildRecord) and clears the draft. Later group or name changes don't touch it.
+ */
+export const isFinished = (cycle, plan) => !!cycle.finished[plan.key]
+
+/** Main-lift sets ticked / total in a draft. */
 export function sessionProgress(cycle, plan) {
   let done = 0
   let total = 0
@@ -83,23 +92,90 @@ export function sessionProgress(cycle, plan) {
   return { done, total, complete: done === total }
 }
 
-export const nextSession = (cycle) =>
-  ALL_SESSIONS.find((p) => !sessionProgress(cycle, p).complete) ?? null
+/** Has the draft of this session any ticked set (main or secondary)? */
+export const isStarted = (cycle, plan) =>
+  Object.entries(cycle.logs).some(([k, v]) => v?.done && k.startsWith(`${plan.key}:`))
 
-/** The ticked week-9 single for each lift, or null if not done yet. */
+export const nextSession = (cycle) => ALL_SESSIONS.find((p) => !isFinished(cycle, p)) ?? null
+
+/** Catalog ids of the secondary exercises in a draft: its group, plus any already logged. */
+export function draftSecondaries(state, cycle, plan) {
+  const ids = [...state.groups[plan.group]]
+  for (const obj of [cycle.logs, cycle.setCounts, cycle.notes]) {
+    for (const k of Object.keys(obj)) {
+      const [sk, entry] = k.split(':')
+      if (sk === plan.key && entry?.startsWith('+') && !ids.includes(entry.slice(1))) ids.push(entry.slice(1))
+    }
+  }
+  return ids
+}
+
+/** The permanent record of a session, built from its draft. */
+export function buildRecord(state, cycle, plan, finishedAt) {
+  const main = plan.primaries.map((p) => {
+    const id = liftOf(cycle, p)
+    const keys = Array.from({ length: p.sets }, (_, i) => setKey(plan.key, id, i))
+    const planned = targetWeight(cycle, p)
+    return {
+      kind: 'main',
+      exerciseId: id,
+      name: exerciseName(state, id),
+      sets: p.sets,
+      reps: p.reps,
+      pct: p.pct,
+      retest: p.retest,
+      planned,
+      weight: cycle.logs[keys[0]]?.w ?? planned,
+      done: keys.map((k) => !!cycle.logs[k]?.done),
+      note: cycle.notes[`${plan.key}:${id}`] || undefined,
+    }
+  })
+  const secondary = draftSecondaries(state, cycle, plan).map((id) => {
+    const entry = secondaryKey(id)
+    const sets = []
+    for (let i = 0; i < 12; i++) {
+      const log = cycle.logs[setKey(plan.key, entry, i)]
+      if (log && (log.done || log.w != null || log.r != null)) sets.push({ w: log.w ?? null, r: log.r ?? null, done: !!log.done })
+    }
+    return { kind: 'secondary', exerciseId: id, name: exerciseName(state, id), sets, note: cycle.notes[`${plan.key}:${entry}`] || undefined }
+  })
+  return { finishedAt, group: plan.group, note: cycle.notes[plan.key] || undefined, entries: [...main, ...secondary] }
+}
+
+/** Move a session from draft to finished (mutates the cycle). */
+export function finishSession(state, cycle, plan, finishedAt) {
+  cycle.finished[plan.key] = buildRecord(state, cycle, plan, finishedAt)
+  const own = (k) => k === plan.key || k.startsWith(`${plan.key}:`)
+  for (const obj of [cycle.logs, cycle.notes, cycle.setCounts]) {
+    for (const k of Object.keys(obj)) if (own(k)) delete obj[k]
+  }
+}
+
+/** Main-lift sets not ticked, per lift, for the Finish dialog. */
+export function untickedSets(cycle, plan) {
+  return plan.primaries
+    .map((p) => {
+      const id = liftOf(cycle, p)
+      const done = Array.from({ length: p.sets }, (_, i) => cycle.logs[setKey(plan.key, id, i)]?.done).filter(Boolean).length
+      return { id, missing: p.sets - done, total: p.sets }
+    })
+    .filter((x) => x.missing > 0)
+}
+
+/** The ticked week-9 single for each main lift, from the finished re-test sessions; null if not ticked. */
 export function retestResults(cycle) {
   const out = {}
   cycle.primaries.forEach((id, slot) => {
     const s = ROTATION.findIndex((r) => r.v2 === slot) + 1
-    const plan = sessionPlan(WEEKS, s)
-    const log = cycle.logs[setKey(plan.key, id, 0)]
-    out[id] = log?.done ? (log.w ?? targetWeight(cycle, plan.primaries[0])) : null
+    const rec = cycle.finished[sessionKey(WEEKS, s)]
+    const e = rec?.entries.find((x) => x.kind === 'main' && x.retest)
+    out[id] = e?.done[0] ? e.weight : null
   })
   return out
 }
 
-export const retestComplete = (cycle) =>
-  [1, 2, 3].every((s) => sessionProgress(cycle, sessionPlan(WEEKS, s)).complete)
+/** The cycle is complete once its last session (week 9, session 3) is finished. */
+export const cycleComplete = (cycle) => !!cycle.finished[sessionKey(WEEKS, SESSIONS_PER_WEEK)]
 
 export function addDays(isoDate, days) {
   const d = new Date(isoDate + 'T00:00:00')
@@ -121,22 +197,33 @@ export const todayIso = () => {
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
 }
 
-/** All ticked sets of an entry (main-lift id, or secondaryKey(id)) across every cycle, oldest first. */
-export function exerciseHistory(state, exId) {
+/**
+ * Finished sessions of an exercise across every cycle, oldest first. `kind` is 'main' or
+ * 'secondary'. Only ticked sets count as done work.
+ */
+export function exerciseHistory(state, exId, kind) {
   const out = []
   state.cycles.forEach((cycle, ci) => {
     ALL_SESSIONS.forEach((plan, si) => {
-      const sets = []
-      for (let i = 0; i < 12; i++) {
-        const log = cycle.logs[setKey(plan.key, exId, i)]
-        // Only ticked sets count as done work. An adjusted "weight used" on sets that weren't
-        // ticked (yet) must not show up in history or as "last time".
-        if (log?.done) sets.push({ i, ...log })
+      const rec = cycle.finished[plan.key]
+      if (!rec) return
+      for (const e of rec.entries) {
+        if (e.exerciseId !== exId || e.kind !== kind) continue
+        const sets =
+          e.kind === 'main'
+            ? e.done.flatMap((d) => (d ? [{ w: e.weight, r: e.reps, done: true }] : []))
+            : e.sets.filter((x) => x.done)
+        if (sets.length) out.push({ cycle: ci, order: si, week: plan.week, session: plan.session, sets, note: e.note })
       }
-      if (sets.length) out.push({ cycle: ci, order: si, week: plan.week, session: plan.session, sets, note: cycle.notes[`${plan.key}:${exId}`] })
     })
   })
   return out
 }
 
 export const setsSummary = (sets) => sets.map((s) => `${fmt(s.w)}×${s.r ?? '–'}`).join(', ')
+
+/** "2026-11-19" -> "19.11.2026" */
+export const fmtDate = (iso) => {
+  const [y, m, d] = iso.split('-')
+  return `${+d}.${+m}.${y}`
+}

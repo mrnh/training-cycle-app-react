@@ -1,10 +1,12 @@
-import { DEFAULT_CATALOG, DEFAULT_PRIMARIES, GROUPS, newId, secondaryKey } from './program'
+import {
+  ALL_SESSIONS, DEFAULT_CATALOG, DEFAULT_PRIMARIES, GROUPS, finishSession, newId, secondaryKey, sessionProgress,
+} from './program'
 import { useSyncExternalStore } from 'react'
 import { get, set, del } from 'idb-keyval'
 
 // All app data lives in one object in IndexedDB. Every change is saved immediately.
 const KEY = 'training-plan'
-export const DATA_VERSION = 2
+export const DATA_VERSION = 3
 // Untouched copy of the data from before an upgrade, kept in case a conversion goes wrong
 const BACKUP_KEY = (v) => `training-plan-before-v${v}`
 
@@ -64,6 +66,7 @@ export function newCycle(startDate, oneRM, primaries = DEFAULT_PRIMARIES) {
     logs: {}, // setKey -> { w, r, done }
     notes: {}, // sessionKey, sessionKey:liftId or sessionKey:+exerciseId -> text
     setCounts: {}, // sessionKey:+exerciseId -> number of rows (secondary only)
+    finished: {}, // sessionKey -> permanent record (see buildRecord in program.js)
   }
 }
 
@@ -107,6 +110,19 @@ export function migrate(data) {
         setCounts: rekey(c.setCounts),
       })),
     }
+  }
+  if (data.version === 2) {
+    // v3: finished sessions become permanent records. Sessions whose main-lift sets were all
+    // ticked count as finished (date unknown); everything else stays a draft.
+    const next = structuredClone(data)
+    next.version = 3
+    for (const c of next.cycles) {
+      c.finished = {}
+      for (const plan of ALL_SESSIONS) {
+        if (sessionProgress(c, plan).complete) finishSession(next, c, plan, null)
+      }
+    }
+    data = next
   }
   return data.version === DATA_VERSION ? data : null
 }
