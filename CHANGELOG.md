@@ -9,6 +9,45 @@ The current version is shown at the bottom of **Settings**.
 
 ---
 
+## 0.3.0 — 2026-11-19 · Exercise catalog and finishing sessions
+
+Exercises now live in one catalog that the groups pick from, and a session is saved permanently
+once you finish it.
+
+| Plan | Session | Finishing | Finished session |
+|---|---|---|---|
+| ![Plan](docs/screenshots/v0.3.0/plan.jpg) | ![Session](docs/screenshots/v0.3.0/session.jpg) | ![Finish dialog](docs/screenshots/v0.3.0/finish-dialog.jpg) | ![Finished session](docs/screenshots/v0.3.0/finished-session.jpg) |
+
+| Exercises | One exercise | Groups (Settings) | Cycle complete |
+|---|---|---|---|
+| ![Exercises](docs/screenshots/v0.3.0/exercises.jpg) | ![Exercise](docs/screenshots/v0.3.0/exercise.jpg) | ![Groups](docs/screenshots/v0.3.0/settings-groups.jpg) | ![Cycle complete](docs/screenshots/v0.3.0/cycle-complete.jpg) |
+
+### Added
+- **Exercise catalog:** the Exercises tab lists every exercise, including squat, bench press and
+  deadlift. Each row opens the exercise's screen (rename and delete for now; its history comes
+  later). Deleting is blocked while an exercise is a main lift or in a group.
+- **Groups in Settings:** groups A, B and C pick exercises from the catalog. One exercise can be in
+  several groups, and a main lift can also be a secondary exercise.
+- **Finish session:** an open session is a draft that is saved on every tap. "Finish session"
+  (confirmed in a dialog that lists main-lift sets not ticked) saves it permanently. Finished
+  sessions are shown read-only, and later group or name changes don't affect them.
+- **Cycle complete:** once week 9 session 3 is finished, Plan shows the new 1RMs and "Start next
+  cycle". A re-test that wasn't ticked keeps the old 1RM.
+
+### Changed
+- Plan dots, "x of 27 sessions done", "last time" hints and the re-test results count finished
+  sessions only.
+- Each cycle stores which exercises are its three main lifts (squat, bench press and deadlift;
+  there is no screen to change them yet).
+- Tapping the tab you're on returns it to its first screen.
+
+### Data
+- Stored data and older backups are converted automatically. Sessions whose main-lift sets were
+  all ticked become finished sessions; the rest stay drafts. A copy of the data from before each
+  conversion is kept on the device.
+
+---
+
 ## 0.2.0 — 2026-11-19 · Redesigned session cards
 
 The main lifts in a session are now one compact card each: tap a numbered button per set instead
