@@ -279,7 +279,34 @@ export function exerciseHistory(state, exId, kind) {
  * Without external weight (0 or empty) it's just the reps: "10 reps".
  */
 export const setText = (s) => (s.w ? `${s.r ?? '–'}@${fmt(s.w)}kg` : `${s.r ?? '–'} reps`)
-export const setsSummary = (sets) => sets.map(setText).join(', ')
+/**
+ * Compact summary of done sets for "Last time". Consecutive sets with the same weight form a
+ * group (order is kept, so 40, 45, 40 kg are three groups). A group with equal reps is "3×10",
+ * otherwise "10-9-7"; a single set is just "10". Each group gets "@ 40 kg"; when no set used
+ * external weight it ends in "reps" instead.
+ *   10,10,10 (0 kg)          -> "3×10 reps"
+ *   10,9,7 (0 kg)            -> "10-9-7 reps"
+ *   10,10 @40, 10,7 @45      -> "2×10 @ 40 kg, 10-7 @ 45 kg"
+ *   10,10 @0, 8 @10          -> "2×10 @ 0 kg, 8 @ 10 kg"
+ */
+export function setsSummary(sets) {
+  if (!sets.length) return ''
+  const groups = []
+  for (const s of sets) {
+    const w = s.w ?? 0
+    const g = groups.at(-1)
+    if (g && g.w === w) g.reps.push(s.r)
+    else groups.push({ w, reps: [s.r] })
+  }
+  const repsText = (reps) => {
+    const r = reps.map((x) => x ?? '–')
+    if (r.length === 1) return `${r[0]}`
+    return r.every((x) => x === r[0]) ? `${r.length}×${r[0]}` : r.join('-')
+  }
+  const bodyweightOnly = groups.length === 1 && groups[0].w === 0
+  if (bodyweightOnly) return `${repsText(groups[0].reps)} reps`
+  return groups.map((g) => `${repsText(g.reps)} @ ${fmt(g.w)} kg`).join(', ')
+}
 
 /** "2026-11-19" -> "19.11.2026" */
 export const fmtDate = (iso) => {
