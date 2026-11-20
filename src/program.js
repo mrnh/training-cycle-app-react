@@ -4,6 +4,16 @@ export const DEFAULT_CATALOG = [
   { id: 'squat', name: 'Squat' },
   { id: 'bench', name: 'Bench press' },
   { id: 'deadlift', name: 'Deadlift' },
+  { id: 'back-extensions', name: 'Back Extensions' },
+  { id: 'bulgarian-split-squat', name: 'Bulgarian Split Squat' },
+  { id: 'dips', name: 'Dips' },
+  { id: 'nordic-curls', name: 'Nordic Curls' },
+  { id: 'overhead-press', name: 'Overhead Press' },
+  { id: 'pullups', name: 'Pullups' },
+  { id: 'reverse-nordic-curls', name: 'Reverse Nordic Curls' },
+  { id: 'seal-rows', name: 'Seal Rows' },
+  { id: 'tuck-ups', name: 'Tuck-Ups' },
+  { id: 'v-ups', name: 'V-Ups' },
 ]
 // The three main-lift slots of a cycle point at catalog exercises (stored per cycle).
 export const DEFAULT_PRIMARIES = ['squat', 'bench', 'deadlift']

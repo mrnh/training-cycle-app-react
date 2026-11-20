@@ -6,7 +6,7 @@ import { get, set, del } from 'idb-keyval'
 
 // All app data lives in one object in IndexedDB. Every change is saved immediately.
 const KEY = 'training-plan'
-export const DATA_VERSION = 4
+export const DATA_VERSION = 5
 // Untouched copy of the data from before an upgrade, kept in case a conversion goes wrong
 const BACKUP_KEY = (v) => `training-plan-before-v${v}`
 
@@ -103,7 +103,8 @@ export function migrate(data) {
       )
     data = {
       version: 2,
-      catalog: [...DEFAULT_CATALOG.map((e) => ({ ...e })), ...secondary.map(({ id, name }) => ({ id, name }))],
+      // Only the main lifts were built in at v1; later defaults are added by the v5 step
+      catalog: [...DEFAULT_CATALOG.filter((e) => DEFAULT_PRIMARIES.includes(e.id)).map((e) => ({ ...e })), ...secondary.map(({ id, name }) => ({ id, name }))],
       groups: Object.fromEntries(GROUPS.map((g) => [g, secondary.filter((e) => e.group === g).map((e) => e.id)])),
       cycles: data.cycles.map((c) => ({
         ...c,
@@ -135,6 +136,13 @@ export function migrate(data) {
       version: 4,
       cycles: data.cycles.map((c) => ({ ...c, logs: {}, notes: {}, setCounts: {}, active: null })),
     }
+  }
+  if (data.version === 4) {
+    // v5: more default exercises. Added to the catalog unless one with the same name exists.
+    const names = new Set(data.catalog.map((e) => e.name.trim().toLowerCase()))
+    const ids = new Set(data.catalog.map((e) => e.id))
+    const added = DEFAULT_CATALOG.filter((e) => !ids.has(e.id) && !names.has(e.name.toLowerCase()))
+    data = { ...data, version: 5, catalog: [...data.catalog, ...added.map((e) => ({ ...e }))] }
   }
   return data.version === DATA_VERSION ? data : null
 }
