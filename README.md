@@ -4,8 +4,9 @@ A mobile-first React app for a 9-week strength cycle with three sessions a week,
 Russian Masters Squat Routine adapted for squat, bench press and deadlift.
 
 - **Plan:** all 27 sessions at a glance, with progress
-- **Session:** tick sets and log weight and reps; values save instantly, and "Finish session" stores
-  the workout permanently
+- **Session:** start the next session in order, tick sets and log weight and reps; values save
+  instantly, and "Finish session" stores the workout permanently. One session is open at a time;
+  the others are previews
 - **Exercises:** a catalog of all exercises, including the three main lifts (1RM-based percentages)
 - **Settings:** start date, 1RM, secondary groups A/B/C picked from the catalog, backup export/import
 
@@ -14,8 +15,8 @@ The week-9 single at 105% is the re-test and becomes the 1RM for the next cycle.
 Data is stored locally in the browser (IndexedDB). Use **Export backup** in Settings to keep a copy.
 
 <p>
-  <img src="docs/screenshots/v0.3.0/plan.jpg" width="200" alt="Plan screen">
-  <img src="docs/screenshots/v0.3.0/session.jpg" width="200" alt="Session screen">
+  <img src="docs/screenshots/v0.4.0/plan.jpg" width="200" alt="Plan screen">
+  <img src="docs/screenshots/v0.4.0/session.jpg" width="200" alt="Session screen">
 </p>
 
 See the [changelog](CHANGELOG.md) for how the app has developed, with screenshots of each version.

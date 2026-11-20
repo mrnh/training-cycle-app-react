@@ -9,6 +9,35 @@ The current version is shown at the bottom of **Settings**.
 
 ---
 
+## 0.4.0 — 2026-11-20 · Starting a session
+
+Sessions are now started and finished in order, with only one open at a time.
+
+| Plan | Session in progress | Starting the next one | Preview |
+|---|---|---|---|
+| ![Plan](docs/screenshots/v0.4.0/plan.jpg) | ![Session in progress](docs/screenshots/v0.4.0/session.jpg) | ![Start dialog](docs/screenshots/v0.4.0/start-dialog.jpg) | ![Preview](docs/screenshots/v0.4.0/preview.jpg) |
+
+### Added
+- **Start session:** the next session in order has a "Start session" button at the top. Only a
+  started session can be logged, and only it shows "Finish session" at the bottom. It shows
+  when it was started ("In progress since 18:05").
+- **One open session at a time:** starting the next session while one is still open finishes the
+  open one as it is, after a dialog that lists its main-lift sets not ticked.
+- **Preview:** every other unfinished session shows its planned lifts, weights and secondary
+  exercises without any controls, and links to the session to do first.
+
+### Changed
+- Plan: the top card says "In progress" while a session is open, otherwise "Next up". The open
+  session's dot is light green.
+- The Session tab opens the session in progress, otherwise the next one to start.
+
+### Data
+- Each cycle stores its open session. Sessions that were started but not finished before this
+  version are removed when the data is converted; finished sessions stay. A copy of the data from
+  before the conversion is kept on the device.
+
+---
+
 ## 0.3.0 — 2026-11-19 · Exercise catalog and finishing sessions
 
 Exercises now live in one catalog that the groups pick from, and a session is saved permanently
