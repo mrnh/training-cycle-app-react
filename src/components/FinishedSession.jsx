@@ -55,6 +55,11 @@ function SecondaryEntry({ e }) {
   return (
     <section className="card">
       <h2>{e.name}</h2>
+      {e.prescription && (
+        <p className="muted small">
+          {e.prescription.sets}×{e.prescription.reps} @ <strong className="planned">{fmt(e.prescription.weight)} kg</strong>
+        </p>
+      )}
       {e.sets.length === 0 ? (
         <p className="muted small">No sets logged</p>
       ) : (

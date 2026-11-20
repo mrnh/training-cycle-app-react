@@ -288,6 +288,15 @@ dialog.sheet form { display: flex; flex-direction: column; gap: var(--space-3); 
 .group-list { list-style: none; margin: 0; padding: 0; }
 .group-list li { min-height: var(--tap); }
 .group-list .icon-btn { margin-right: calc(-1 * var(--space-3)); }
+button.group-entry {
+  flex: 1; display: flex; flex-direction: column; align-items: flex-start; gap: var(--space-1);
+  border: none; background: none; padding: var(--space-2) 0; text-align: left; border-radius: 0;
+}
+/* Prescription dialog: label left, control right */
+.stepper-row { display: flex; justify-content: space-between; align-items: center; gap: var(--space-3); }
+.stepper-row .stepper { align-items: center; }
+.stepper-row .stepper strong { min-width: 4ch; text-align: center; font-variant-numeric: tabular-nums; }
+.stepper-row .weight-input input.num { width: 96px; text-align: center; }
 
 /* Finishing a session */
 button.finish { margin-top: var(--space-1); }

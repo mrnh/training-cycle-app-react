@@ -1,12 +1,12 @@
 import {
-  ALL_SESSIONS, DEFAULT_CATALOG, DEFAULT_PRIMARIES, GROUPS, finishSession, newId, secondaryKey, sessionProgress,
+  ALL_SESSIONS, DEFAULT_CATALOG, DEFAULT_PRESCRIPTION, DEFAULT_PRIMARIES, GROUPS, finishSession, newId, secondaryKey, sessionProgress,
 } from './program'
 import { useSyncExternalStore } from 'react'
 import { get, set, del } from 'idb-keyval'
 
 // All app data lives in one object in IndexedDB. Every change is saved immediately.
 const KEY = 'training-plan'
-export const DATA_VERSION = 5
+export const DATA_VERSION = 6
 // Untouched copy of the data from before an upgrade, kept in case a conversion goes wrong
 const BACKUP_KEY = (v) => `training-plan-before-v${v}`
 
@@ -77,7 +77,7 @@ export function initialState(startDate, oneRM) {
   return {
     version: DATA_VERSION,
     catalog: DEFAULT_CATALOG.map((e) => ({ ...e })), // [{ id, name }]
-    groups: Object.fromEntries(GROUPS.map((g) => [g, []])), // group -> ordered catalog ids
+    groups: Object.fromEntries(GROUPS.map((g) => [g, []])), // group -> ordered [{ id, sets, reps, weight, rest }]
     cycles: [newCycle(startDate, oneRM)],
   }
 }
@@ -143,6 +143,14 @@ export function migrate(data) {
     const ids = new Set(data.catalog.map((e) => e.id))
     const added = DEFAULT_CATALOG.filter((e) => !ids.has(e.id) && !names.has(e.name.toLowerCase()))
     data = { ...data, version: 5, catalog: [...data.catalog, ...added.map((e) => ({ ...e }))] }
+  }
+  if (data.version === 5) {
+    // v6: group entries carry a prescription and a rest interval instead of a bare exercise id
+    data = {
+      ...data,
+      version: 6,
+      groups: Object.fromEntries(GROUPS.map((g) => [g, (data.groups[g] ?? []).map((id) => ({ id, ...DEFAULT_PRESCRIPTION }))])),
+    }
   }
   return data.version === DATA_VERSION ? data : null
 }

@@ -3,7 +3,7 @@ import { update } from '../store'
 
 /** One exercise. The history itself comes later; for now: title, rename and delete. */
 export default function ExerciseHistory({ state, ex, onBack }) {
-  const groups = GROUPS.filter((g) => state.groups[g].includes(ex.id))
+  const groups = GROUPS.filter((g) => state.groups[g].some((e) => e.id === ex.id))
   const mainLift = state.cycles.some((c) => c.primaries.includes(ex.id))
 
   const rename = (name) => update((d) => void (d.catalog.find((e) => e.id === ex.id).name = name))

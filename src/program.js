@@ -93,7 +93,14 @@ export const targetWeight = (cycle, p) => round1((cycle.oneRM[liftOf(cycle, p)] 
 // cycle.rest. One timer runs at a time (cycle.timer = { card, startedAt }); it runs for
 // interval × number of sets.
 export const DEFAULT_REST = 120
-export const restOf = (cycle, card) => cycle.rest?.[card] ?? DEFAULT_REST
+export const restOf = (cycle, card, fallback = DEFAULT_REST) => cycle.rest?.[card] ?? fallback
+
+// Secondary exercises: each group entry carries its prescription (fixed for the cycle) and the
+// rest interval the timer starts with. Weight 0 = bodyweight.
+export const DEFAULT_PRESCRIPTION = { sets: 3, reps: 10, weight: 0, rest: DEFAULT_REST }
+export const groupEntry = (state, group, id) => state.groups[group].find((e) => e.id === id) ?? null
+/** "3×10 @ 30 kg" */
+export const prescriptionText = (p) => `${p.sets}×${p.reps} @ ${fmt(p.weight)} kg`
 /** 125 -> "2:05" */
 export const minSec = (s) => `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, '0')}`
 
@@ -135,7 +142,7 @@ export function startSession(state, cycle, plan, now = new Date()) {
 
 /** Catalog ids of the secondary exercises in a draft: its group, plus any already logged. */
 export function draftSecondaries(state, cycle, plan) {
-  const ids = [...state.groups[plan.group]]
+  const ids = state.groups[plan.group].map((e) => e.id)
   for (const obj of [cycle.logs, cycle.setCounts, cycle.notes]) {
     for (const k of Object.keys(obj)) {
       const [sk, entry] = k.split(':')
@@ -173,7 +180,15 @@ export function buildRecord(state, cycle, plan, finishedAt) {
       const log = cycle.logs[setKey(plan.key, entry, i)]
       if (log && (log.done || log.w != null || log.r != null)) sets.push({ w: log.w ?? null, r: log.r ?? null, done: !!log.done })
     }
-    return { kind: 'secondary', exerciseId: id, name: exerciseName(state, id), sets, rest: restOf(cycle, `${plan.key}:${entry}`), note: cycle.notes[`${plan.key}:${entry}`] || undefined }
+    const pres = groupEntry(state, plan.group, id)
+    return {
+      kind: 'secondary',
+      exerciseId: id,
+      name: exerciseName(state, id),
+      prescription: pres ? { sets: pres.sets, reps: pres.reps, weight: pres.weight } : undefined,
+      sets,
+      rest: restOf(cycle, `${plan.key}:${entry}`, pres?.rest),
+      note: cycle.notes[`${plan.key}:${entry}`] || undefined }
   })
   return { finishedAt, group: plan.group, note: cycle.notes[plan.key] || undefined, entries: [...main, ...secondary] }
 }

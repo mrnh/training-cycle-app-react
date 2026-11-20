@@ -23,8 +23,8 @@ function useNow(running) {
  * interval × sets from the moment Start is tapped; ticking sets doesn't change it. While paused,
  * a reset icon next to Resume clears the timer.
  */
-export default function RestTimer({ cycle, card, sets, label, note }) {
-  const rest = restOf(cycle, card)
+export default function RestTimer({ cycle, card, sets, label, note, defaultRest }) {
+  const rest = restOf(cycle, card, defaultRest)
   const total = rest * sets
   const mine = cycle.timer?.card === card
   const paused = mine && !!cycle.timer.pausedAt

@@ -6,7 +6,7 @@ import RestTimer from '../components/RestTimer'
 import WeightDialog from '../components/WeightDialog'
 import SetRow, { SetHeader } from '../components/SetRow'
 import {
-  ALL_SESSIONS, activeSession, sessionName, clockTime, draftSecondaries, exerciseHistory, exerciseName, finishSession, fmt,
+  ALL_SESSIONS, activeSession, groupEntry, sessionName, clockTime, draftSecondaries, exerciseHistory, exerciseName, finishSession, fmt,
   liftOf, parseKey, secondaryKey, sessionPlan, setKey, setsSummary, startSession, startableSession, targetWeight,
   todayIso, untickedSets, weekRange,
 } from '../program'
@@ -230,7 +230,9 @@ function SecondaryBlock({ state, cycle, plan, id, open }) {
     .filter((h) => h.cycle < cycleIdx || (h.cycle === cycleIdx && h.order < order))
     .at(-1)
   const countKey = `${plan.key}:${entry}`
-  const count = cycle.setCounts[countKey] ?? Math.max(last?.sets.length ?? 3, 1)
+  // The group's prescription sets the rows and pre-fills them; "last time" is for reference
+  const pres = groupEntry(state, plan.group, id)
+  const count = cycle.setCounts[countKey] ?? pres?.sets ?? Math.max(last?.sets.length ?? 3, 1)
   const setCount = (n) =>
     updateCycle((c) => {
       const clamped = Math.max(1, Math.min(12, n))
@@ -244,6 +246,11 @@ function SecondaryBlock({ state, cycle, plan, id, open }) {
         <h2>{exerciseName(state, id)}</h2>
         <span className="badge">Group {plan.group}</span>
       </div>
+      {pres && (
+        <p className="muted small">
+          {pres.sets}×{pres.reps} @ <strong className="planned">{fmt(pres.weight)} kg</strong>
+        </p>
+      )}
       <p className="muted small">
         {last ? `Last time (${sessionName(last)}): ${setsSummary(last.sets)}` : 'First time, no history yet'}
       </p>
@@ -251,7 +258,7 @@ function SecondaryBlock({ state, cycle, plan, id, open }) {
       {Array.from({ length: count }, (_, i) => {
         const key = setKey(plan.key, entry, i)
         const log = cycle.logs[key]
-        const hint = last?.sets[i] ?? last?.sets.at(-1)
+        const hint = pres ? { w: pres.weight, r: pres.reps } : (last?.sets[i] ?? last?.sets.at(-1))
         return (
           <SetRow
             key={i}
@@ -276,6 +283,7 @@ function SecondaryBlock({ state, cycle, plan, id, open }) {
             cycle={cycle}
             card={countKey}
             sets={count}
+            defaultRest={pres?.rest}
             label={exerciseName(state, id)}
             note={<Note value={cycle.notes[countKey]} onChange={(t) => setNote(countKey, t)} />}
           />
