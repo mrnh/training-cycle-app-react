@@ -78,14 +78,13 @@ export default function Session({ state, sessionKey, onNavigate }) {
         </>
       )}
       {dialog === 'finish' && (
-        <FinishDialog title={sessionName(plan)} unticked={unticked(plan)} onConfirm={finish} onClose={() => setDialog(null)} />
+        <FinishDialog unticked={unticked(plan)} onConfirm={finish} onClose={() => setDialog(null)} />
       )}
       {dialog === 'start' && (
         <FinishDialog
           heading="Start this session?"
           message={`${sessionName(active)} is still open. Starting ${sessionName(plan)} finishes it as it is and saves it permanently.`}
           confirmLabel="Finish it and start"
-          title={sessionName(active)}
           unticked={unticked(active)}
           onConfirm={start}
           onClose={() => setDialog(null)}
