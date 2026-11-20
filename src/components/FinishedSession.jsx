@@ -1,4 +1,4 @@
-import { fmt, fmtDate } from '../program'
+import { fmt, fmtDate, setText } from '../program'
 
 /** A finished session, read-only, shown from its permanent record. */
 export default function FinishedSession({ record }) {
@@ -62,7 +62,7 @@ function SecondaryEntry({ e }) {
           {e.sets.map((x, i) => (
             <li key={i} className={x.done ? 'is-done' : 'muted'}>
               <span className="set-no">{i + 1}</span>
-              <span>{fmt(x.w)} kg × {x.r ?? '–'}</span>
+              <span>{setText(x)}</span>
               <span aria-label={x.done ? 'done' : 'not done'}>{x.done ? '✓' : ''}</span>
             </li>
           ))}
