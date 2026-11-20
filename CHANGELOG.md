@@ -9,6 +9,52 @@ The current version is shown at the bottom of **Settings**.
 
 ---
 
+## 0.5.0 — 2026-11-20 · Rest timer and prescribed accessories
+
+Every exercise card gets an interval timer, secondary exercises get a prescription, and their
+cards are much more compact. The app is now online at
+[mrnh.github.io/training-cycle-app-react](https://mrnh.github.io/training-cycle-app-react/).
+
+| Session | Secondary exercises | Editing sets | Plan |
+|---|---|---|---|
+| ![Session](docs/screenshots/v0.5.0/session.jpg) | ![Secondary exercises](docs/screenshots/v0.5.0/secondary.jpg) | ![Sets dialog](docs/screenshots/v0.5.0/sets-dialog.jpg) | ![Plan](docs/screenshots/v0.5.0/plan.jpg) |
+
+| Groups (Settings) | Prescription | Exercises |
+|---|---|---|
+| ![Groups](docs/screenshots/v0.5.0/settings-groups.jpg) | ![Prescription dialog](docs/screenshots/v0.5.0/prescription-dialog.jpg) | ![Exercises](docs/screenshots/v0.5.0/exercises.jpg) |
+
+### Added
+- **Rest timer** on every exercise card in the open session: a bar with one segment per set,
+  "Set 2 · 1:12 left" and the total time. Start runs it for interval × sets; ticking sets doesn't
+  change it. Pause / Resume, and a reset icon while paused. One timer runs at a time, and it
+  keeps the right time after a reload or switching apps. The clock (default 2:00) opens a dialog
+  to set the interval, 0:15 to 10:00 in 15-second steps.
+- **Prescriptions for secondary exercises:** in Settings, each group entry holds sets, reps,
+  weight (0 = bodyweight) and its rest interval, edited in a dialog. Session cards show it
+  ("3×10 @ 30 kg"), pre-fill the sets with it and start the timer with its rest time. "Last time"
+  stays as a reference. Finished sessions keep the prescription they had.
+- **Ten more default exercises:** Back Extensions, Bulgarian Split Squat, Dips, Nordic Curls,
+  Overhead Press, Pullups, Reverse Nordic Curls, Seal Rows, Tuck-Ups and V-Ups.
+- **Online version** on GitHub Pages, published automatically from every push to `main`. Data
+  still stays on each device.
+
+### Changed
+- **Compact secondary cards:** numbered set toggles like the main lifts, each set's values under
+  it, and a pen that opens a dialog to edit weight and reps of all sets and add or remove sets.
+- Sessions are named "Session 1.2" everywhere (was "W1 S2" and "Week 1 · Session 2").
+- Sets are written reps@weight ("8@15kg"), matching "6×4 @ 80%"; without external weight just
+  "10 reps".
+- Finish dialog: "Marking this session as finished prevents it from being changed afterwards."
+- All sizes, colours, weights and spacing come from one set of design tokens (`index.css`):
+  five text sizes, two weights, a 4px spacing scale.
+
+### Data
+- Group entries now store their prescription and rest; existing ones get 3×10 @ 0 kg and 2:00.
+  The new default exercises are added unless one with the same name exists. A copy of the data
+  from before each conversion is kept on the device.
+
+---
+
 ## 0.4.0 — 2026-11-20 · Starting a session
 
 Sessions are now started and finished in order, with only one open at a time.
