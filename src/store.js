@@ -68,6 +68,8 @@ export function newCycle(startDate, oneRM, primaries = DEFAULT_PRIMARIES) {
     setCounts: {}, // sessionKey:+exerciseId -> number of rows (secondary only)
     finished: {}, // sessionKey -> permanent record (see buildRecord in program.js)
     active: null, // the one open session: { key, startedAt }
+    rest: {}, // card key (as in notes) -> rest interval in seconds
+    timer: null, // the one running rest timer: { card, startedAt }
   }
 }
 

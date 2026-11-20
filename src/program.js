@@ -77,6 +77,14 @@ export const targetWeight = (cycle, p) => round1((cycle.oneRM[liftOf(cycle, p)] 
  * - Finished: "Finish" turns the draft into a permanent record in cycle.finished[sessionKey]
  *   (see buildRecord) and clears the draft. Later group or name changes don't touch it.
  */
+// Rest timer: each exercise card has its own interval (seconds), stored per session card in
+// cycle.rest. One timer runs at a time (cycle.timer = { card, startedAt }); it runs for
+// interval × number of sets.
+export const DEFAULT_REST = 120
+export const restOf = (cycle, card) => cycle.rest?.[card] ?? DEFAULT_REST
+/** 125 -> "2:05" */
+export const minSec = (s) => `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, '0')}`
+
 export const isFinished = (cycle, plan) => !!cycle.finished[plan.key]
 
 /** Main-lift sets ticked / total in a draft. */
@@ -142,6 +150,7 @@ export function buildRecord(state, cycle, plan, finishedAt) {
       planned,
       weight: cycle.logs[keys[0]]?.w ?? planned,
       done: keys.map((k) => !!cycle.logs[k]?.done),
+      rest: restOf(cycle, `${plan.key}:${id}`),
       note: cycle.notes[`${plan.key}:${id}`] || undefined,
     }
   })
@@ -152,7 +161,7 @@ export function buildRecord(state, cycle, plan, finishedAt) {
       const log = cycle.logs[setKey(plan.key, entry, i)]
       if (log && (log.done || log.w != null || log.r != null)) sets.push({ w: log.w ?? null, r: log.r ?? null, done: !!log.done })
     }
-    return { kind: 'secondary', exerciseId: id, name: exerciseName(state, id), sets, note: cycle.notes[`${plan.key}:${entry}`] || undefined }
+    return { kind: 'secondary', exerciseId: id, name: exerciseName(state, id), sets, rest: restOf(cycle, `${plan.key}:${entry}`), note: cycle.notes[`${plan.key}:${entry}`] || undefined }
   })
   return { finishedAt, group: plan.group, note: cycle.notes[plan.key] || undefined, entries: [...main, ...secondary] }
 }
@@ -161,10 +170,11 @@ export function buildRecord(state, cycle, plan, finishedAt) {
 export function finishSession(state, cycle, plan, finishedAt) {
   cycle.finished[plan.key] = buildRecord(state, cycle, plan, finishedAt)
   const own = (k) => k === plan.key || k.startsWith(`${plan.key}:`)
-  for (const obj of [cycle.logs, cycle.notes, cycle.setCounts]) {
+  for (const obj of [cycle.logs, cycle.notes, cycle.setCounts, cycle.rest ?? {}]) {
     for (const k of Object.keys(obj)) if (own(k)) delete obj[k]
   }
   if (cycle.active?.key === plan.key) cycle.active = null
+  if (cycle.timer && own(cycle.timer.card)) cycle.timer = null
 }
 
 /** Main-lift sets not ticked, per lift, for the Finish dialog. */

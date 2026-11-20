@@ -2,6 +2,7 @@ import Note from '../components/Note'
 import { useState } from 'react'
 import FinishDialog from '../components/FinishDialog'
 import FinishedSession from '../components/FinishedSession'
+import RestTimer from '../components/RestTimer'
 import WeightDialog from '../components/WeightDialog'
 import SetRow, { SetHeader } from '../components/SetRow'
 import {
@@ -210,7 +211,15 @@ function PrimaryBlock({ state, cycle, plan, p, open }) {
           )
         })}
       </div>
-      {open && <Note value={cycle.notes[`${plan.key}:${lift}`]} onChange={(t) => setNote(`${plan.key}:${lift}`, t)} />}
+      {open && (
+        <RestTimer
+          cycle={cycle}
+          card={`${plan.key}:${lift}`}
+          sets={p.sets}
+          label={name}
+          note={<Note value={cycle.notes[`${plan.key}:${lift}`]} onChange={(t) => setNote(`${plan.key}:${lift}`, t)} />}
+        />
+      )}
     </section>
   )
 }
@@ -260,13 +269,19 @@ function SecondaryBlock({ state, cycle, plan, id, open }) {
         )
       })}
       {open && (
-        <div className="row">
-          <Note value={cycle.notes[countKey]} onChange={(t) => setNote(countKey, t)} />
-          <span className="stepper">
+        <>
+          <span className="stepper end">
             <button className="small-btn" aria-label="Remove a set" onClick={() => setCount(count - 1)}>−</button>
             <button className="small-btn" aria-label="Add a set" onClick={() => setCount(count + 1)}>+ Set</button>
           </span>
-        </div>
+          <RestTimer
+            cycle={cycle}
+            card={countKey}
+            sets={count}
+            label={exerciseName(state, id)}
+            note={<Note value={cycle.notes[countKey]} onChange={(t) => setNote(countKey, t)} />}
+          />
+        </>
       )}
     </section>
   )
