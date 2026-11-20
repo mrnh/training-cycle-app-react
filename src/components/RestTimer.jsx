@@ -75,8 +75,9 @@ export default function RestTimer({ cycle, card, sets, label, note, defaultRest 
       </div>
       <p className="rest-info muted small">
         {t == null ? (
+          // Before the start only the total; the interval is shown by the clock on the right
           <>
-            <span>{sets} × {minSec(rest)}</span>
+            <span />
             <span>{minSec(total)}</span>
           </>
         ) : done ? (

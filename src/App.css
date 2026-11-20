@@ -82,15 +82,6 @@ button.icon-btn {
 }
 .card.highlight { border-color: var(--accent); }
 .next-up { gap: var(--space-1); border-color: var(--accent); }
-.badge {
-  font-size: var(--text-xs);
-  background: var(--accent-soft);
-  color: var(--accent);
-  padding: var(--space-1) var(--space-2);
-  border-radius: var(--radius-full);
-  white-space: nowrap;
-  font-weight: var(--weight-bold);
-}
 
 /* Fields */
 .field { display: flex; flex-direction: column; gap: var(--space-1); font-size: var(--text-sm); }

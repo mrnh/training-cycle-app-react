@@ -256,10 +256,7 @@ function SecondaryBlock({ state, cycle, plan, id, open }) {
 
   return (
     <section className="card">
-      <div className="row">
-        <h2>{exerciseName(state, id)}</h2>
-        <span className="badge">Group {plan.group}</span>
-      </div>
+      <h2>{exerciseName(state, id)}</h2>
       {/* Prescription and last time on the left, the pen for editing all sets on the right */}
       <div className="sec-head">
         <div>
