@@ -4,9 +4,9 @@ import FinishDialog from '../components/FinishDialog'
 import FinishedSession from '../components/FinishedSession'
 import RestTimer from '../components/RestTimer'
 import WeightDialog from '../components/WeightDialog'
-import SetRow, { SetHeader } from '../components/SetRow'
+import SetsDialog from '../components/SetsDialog'
 import {
-  ALL_SESSIONS, activeSession, groupEntry, sessionName, clockTime, draftSecondaries, exerciseHistory, exerciseName, finishSession, fmt,
+  ALL_SESSIONS, activeSession, groupEntry, prescriptionText, sessionName, setText, clockTime, draftSecondaries, exerciseHistory, exerciseName, finishSession, fmt,
   liftOf, parseKey, secondaryKey, sessionPlan, setKey, setsSummary, startSession, startableSession, targetWeight,
   todayIso, untickedSets, weekRange,
 } from '../program'
@@ -233,12 +233,26 @@ function SecondaryBlock({ state, cycle, plan, id, open }) {
   // The group's prescription sets the rows and pre-fills them; "last time" is for reference
   const pres = groupEntry(state, plan.group, id)
   const count = cycle.setCounts[countKey] ?? pres?.sets ?? Math.max(last?.sets.length ?? 3, 1)
-  const setCount = (n) =>
+  const [editing, setEditing] = useState(false)
+  const keys = Array.from({ length: count }, (_, i) => setKey(plan.key, entry, i))
+  // What an empty set stands for: the prescription, else last time's set
+  const hints = keys.map((_, i) => (pres ? { w: pres.weight, r: pres.reps } : (last?.sets[i] ?? last?.sets.at(-1) ?? {})))
+  const shown = (i) => {
+    const log = cycle.logs[keys[i]]
+    return { w: log?.w ?? hints[i].w ?? null, r: log?.r ?? hints[i].r ?? null }
+  }
+  const toggle = (i) => setLog(keys[i], { ...shown(i), done: !cycle.logs[keys[i]]?.done })
+  // Save from the dialog: new set count, weight and reps per set (ticks stay)
+  const saveSets = (rows) =>
     updateCycle((c) => {
-      const clamped = Math.max(1, Math.min(12, n))
-      for (let i = clamped; i < count; i++) delete c.logs[setKey(plan.key, entry, i)]
-      c.setCounts[countKey] = clamped
+      for (let i = rows.length; i < count; i++) delete c.logs[setKey(plan.key, entry, i)]
+      rows.forEach((x, i) => {
+        const k = setKey(plan.key, entry, i)
+        c.logs[k] = { ...c.logs[k], w: x.w, r: x.r }
+      })
+      c.setCounts[countKey] = rows.length
     })
+  const cols = Math.min(count, 6)
 
   return (
     <section className="card">
@@ -254,31 +268,49 @@ function SecondaryBlock({ state, cycle, plan, id, open }) {
       <p className="muted small">
         {last ? `Last time (${sessionName(last)}): ${setsSummary(last.sets)}` : 'First time, no history yet'}
       </p>
-      <SetHeader />
-      {Array.from({ length: count }, (_, i) => {
-        const key = setKey(plan.key, entry, i)
-        const log = cycle.logs[key]
-        const hint = pres ? { w: pres.weight, r: pres.reps } : (last?.sets[i] ?? last?.sets.at(-1))
-        return (
-          <SetRow
-            key={i}
-            index={i}
-            weight={log?.w}
-            reps={log?.r}
-            hintW={hint?.w}
-            hintR={hint?.r}
-            done={!!log?.done}
-            onChange={(patch) => setLog(key, patch)}
-            onToggle={() => setLog(key, { w: log?.w ?? hint?.w ?? null, r: log?.r ?? hint?.r ?? null, done: !log?.done })}
-          />
-        )
-      })}
+      {/* Toggles in the top row, each set's reps@weight under it; lines of up to 6 sets, pen at the right */}
+      <div className="sec-sets" style={{ gridTemplateColumns: `repeat(${cols}, minmax(0, 1fr)) var(--tap)` }}>
+        {keys.map((k, i) => {
+          const log = cycle.logs[k]
+          const done = !!log?.done
+          const line = Math.floor(i / 6)
+          const col = (i % 6) + 1
+          const entered = log?.w != null || log?.r != null
+          return [
+            <button
+              key={`t${i}`}
+              className={`set-toggle ${done ? 'is-done' : ''}`}
+              style={{ gridRow: line * 2 + 1, gridColumn: col }}
+              aria-pressed={done}
+              aria-label={`Set ${i + 1}, ${setText(shown(i))}${done ? ', done' : ''}`}
+              onClick={() => toggle(i)}
+            >
+              {i + 1}
+            </button>,
+            <span key={`v${i}`} className={`sec-value ${entered ? '' : 'muted'}`} style={{ gridRow: line * 2 + 2, gridColumn: col }}>
+              {/* May break before "@" when the column is narrow (5–6 sets) */}
+              {setText(shown(i)).replace('@', '\u200B@')}
+            </span>,
+          ]
+        })}
+        {open && (
+          <button className="pen" style={{ gridRow: 2, gridColumn: cols + 1 }} aria-label={`Edit ${exerciseName(state, id)} sets`} onClick={() => setEditing(true)}>
+            ✎
+          </button>
+        )}
+      </div>
+      {editing && (
+        <SetsDialog
+          title={`${exerciseName(state, id)} · sets`}
+          planned={pres && prescriptionText(pres)}
+          rows={keys.map((k) => ({ w: cycle.logs[k]?.w ?? null, r: cycle.logs[k]?.r ?? null }))}
+          hints={hints}
+          onSave={saveSets}
+          onClose={() => setEditing(false)}
+        />
+      )}
       {open && (
         <>
-          <span className="stepper end">
-            <button className="small-btn" aria-label="Remove a set" onClick={() => setCount(count - 1)}>−</button>
-            <button className="small-btn" aria-label="Add a set" onClick={() => setCount(count + 1)}>+ Set</button>
-          </span>
           <RestTimer
             cycle={cycle}
             card={countKey}
