@@ -274,8 +274,11 @@ export function exerciseHistory(state, exId, kind) {
   return out
 }
 
-/** One set as reps@weight, like the main lifts' "6×4 @ 80%": 8 reps at 15 kg -> "8@15kg". */
-export const setText = (s) => `${s.r ?? '–'}${s.w == null ? '' : `@${fmt(s.w)}kg`}`
+/**
+ * One set as reps@weight, like the main lifts' "6×4 @ 80%": 8 reps at 15 kg -> "8@15kg".
+ * Without external weight (0 or empty) it's just the reps: "10 reps".
+ */
+export const setText = (s) => (s.w ? `${s.r ?? '–'}@${fmt(s.w)}kg` : `${s.r ?? '–'} reps`)
 export const setsSummary = (sets) => sets.map(setText).join(', ')
 
 /** "2026-11-19" -> "19.11.2026" */
