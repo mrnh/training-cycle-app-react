@@ -5,8 +5,10 @@ import { defineConfig } from 'vite'
 const { version } = JSON.parse(readFileSync(new URL('./package.json', import.meta.url), 'utf8'))
 
 // https://vite.dev/config/
-export default defineConfig({
+export default defineConfig(({ command }) => ({
   plugins: [react()],
+  // GitHub Pages serves the app from /training-cycle-app-react/; the dev server stays at /
+  base: command === 'build' ? '/training-cycle-app-react/' : '/',
   // Shown at the bottom of Settings; bump it in package.json and add a CHANGELOG entry per release.
   define: { __APP_VERSION__: JSON.stringify(version) },
-})
+}))

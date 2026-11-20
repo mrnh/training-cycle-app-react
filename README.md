@@ -12,7 +12,10 @@ Russian Masters Squat Routine adapted for squat, bench press and deadlift.
 
 The week-9 single at 105% is the re-test and becomes the 1RM for the next cycle.
 
-Data is stored locally in the browser (IndexedDB). Use **Export backup** in Settings to keep a copy.
+**Use it:** [mrnh.github.io/training-cycle-app-react](https://mrnh.github.io/training-cycle-app-react/)
+(published from `main` on every push).
+
+Data is stored locally in the browser (IndexedDB), on each device separately. Use **Export backup** in Settings to keep a copy.
 
 <p>
   <img src="docs/screenshots/v0.4.0/plan.jpg" width="200" alt="Plan screen">
