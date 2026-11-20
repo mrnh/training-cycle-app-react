@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import {
   ALL_SESSIONS, WEEKS, activeSession, sessionName, cycleComplete, exerciseName, fmt, isFinished, liftOf, nextSession,
-  retestResults, todayIso, weekRange,
+  retestResults, targetWeight, todayIso, weekRange,
 } from '../program'
 import { currentCycle, newCycle, update } from '../store'
 
@@ -18,7 +18,7 @@ export default function Plan({ state, onOpen }) {
           <span className="muted small">{active ? 'In progress' : 'Next up'}</span>
           <strong>{sessionName(next)}</strong>
           <span className="small">
-            {next.primaries.map((p) => `${exerciseName(state, liftOf(cycle, p))} ${p.sets}×${p.reps} @ ${p.pct}%`).join(' · ')}
+            {next.primaries.map((p) => `${exerciseName(state, liftOf(cycle, p))} ${p.sets}×${p.reps} @ ${fmt(targetWeight(cycle, p))} kg`).join(' · ')}
           </span>
         </button>
       )}
