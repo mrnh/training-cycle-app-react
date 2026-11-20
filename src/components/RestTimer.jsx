@@ -19,17 +19,21 @@ function useNow(running) {
 
 /**
  * Interval timer of one exercise card: a bar with one segment per set, then a row with the
- * comment (left), Start/Stop (centre) and the rest interval (right). It runs for
- * interval × sets from the moment Start is tapped; ticking sets doesn't change it.
+ * comment (left), Start/Pause/Resume (centre) and the rest interval (right). It runs for
+ * interval × sets from the moment Start is tapped; ticking sets doesn't change it. While paused,
+ * a reset icon next to Resume clears the timer.
  */
 export default function RestTimer({ cycle, card, sets, label, note }) {
   const rest = restOf(cycle, card)
   const total = rest * sets
   const mine = cycle.timer?.card === card
-  const now = useNow(mine)
+  const paused = mine && !!cycle.timer.pausedAt
+  const now = useNow(mine && !paused)
   const [editing, setEditing] = useState(false)
 
-  const t = mine ? Math.max(0, (now - Date.parse(cycle.timer.startedAt)) / 1000) : null
+  // A paused timer stands still at the moment it was paused
+  const until = paused ? Date.parse(cycle.timer.pausedAt) : now
+  const t = mine ? Math.max(0, (until - Date.parse(cycle.timer.startedAt)) / 1000) : null
   const done = t != null && t >= total
   const idx = t == null ? -1 : Math.min(sets - 1, Math.floor(t / rest))
   const fill = (i) => (t == null ? 0 : done || i < idx ? 1 : i === idx ? (t - idx * rest) / rest : 0)
@@ -39,7 +43,17 @@ export default function RestTimer({ cycle, card, sets, label, note }) {
     updateCycle((c) => {
       c.timer = { card, startedAt: new Date().toISOString() }
     })
-  const stop = () =>
+  const pause = () =>
+    updateCycle((c) => {
+      c.timer.pausedAt = new Date().toISOString()
+    })
+  // Resuming shifts the start by the time spent paused
+  const resume = () =>
+    updateCycle((c) => {
+      const pausedFor = Date.now() - Date.parse(c.timer.pausedAt)
+      c.timer = { card, startedAt: new Date(Date.parse(c.timer.startedAt) + pausedFor).toISOString() }
+    })
+  const reset = () =>
     updateCycle((c) => {
       c.timer = null
     })
@@ -69,20 +83,32 @@ export default function RestTimer({ cycle, card, sets, label, note }) {
           <span className="rest-done">Done · {minSec(total)}</span>
         ) : (
           <>
-            <span>Set {idx + 1} · {minSec(Math.ceil(rest - (t - idx * rest)))} left</span>
+            <span>{paused && 'Paused · '}Set {idx + 1} · {minSec(Math.ceil(rest - (t - idx * rest)))} left</span>
             <span>{minSec(Math.ceil(total - t))} total</span>
           </>
         )}
       </p>
       <div className="timer-row">
         {note}
-        {!mine ? (
-          <button className="small-btn timer-btn" onClick={start}>▶ Start</button>
-        ) : done ? (
-          <button className="small-btn timer-btn" onClick={start}>↻ Restart</button>
-        ) : (
-          <button className="small-btn timer-btn" onClick={stop}>■ Stop</button>
-        )}
+        <span className="timer-actions">
+          {!mine ? (
+            <button className="small-btn timer-btn" onClick={start}>▶ Start</button>
+          ) : done ? (
+            <button className="small-btn timer-btn" onClick={start}>↻ Restart</button>
+          ) : paused ? (
+            <button className="small-btn timer-btn" onClick={resume}>▶ Resume</button>
+          ) : (
+            <button className="small-btn timer-btn" onClick={pause}>❚❚ Pause</button>
+          )}
+          {paused && (
+            <button className="icon-btn timer-reset" aria-label="Reset timer" onClick={reset}>
+              <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M4 12a8 8 0 1 0 2.3-5.6" />
+                <path d="M4 4v4.5h4.5" />
+              </svg>
+            </button>
+          )}
+        </span>
         <button className="rest-time" aria-label={`Rest interval ${minSec(rest)}, change`} onClick={() => setEditing(true)}>
           <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
             <circle cx="12" cy="13" r="8" />
