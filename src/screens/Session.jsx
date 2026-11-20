@@ -166,7 +166,7 @@ function PrimaryBlock({ state, cycle, plan, p, open }) {
         <div>
           <h2>{name}</h2>
           <p className="muted small">
-            {p.sets}×{p.reps} @ {p.pct}% · <strong className="planned">{fmt(target)} kg</strong>
+            {p.sets}×{p.reps} @ <strong className="planned">{fmt(target)} kg</strong>
           </p>
         </div>
         <div className="weight-used">

@@ -29,7 +29,7 @@ function MainEntry({ e }) {
         <div>
           <h2>{e.name}</h2>
           <p className="muted small">
-            {e.sets}×{e.reps} @ {e.pct}% · <strong className="planned">{fmt(e.planned)} kg</strong>
+            {e.sets}×{e.reps} @ <strong className="planned">{fmt(e.planned)} kg</strong>
           </p>
         </div>
         <div className="weight-used">
