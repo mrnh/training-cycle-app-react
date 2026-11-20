@@ -6,7 +6,7 @@ import RestTimer from '../components/RestTimer'
 import WeightDialog from '../components/WeightDialog'
 import SetRow, { SetHeader } from '../components/SetRow'
 import {
-  ALL_SESSIONS, activeSession, clockTime, draftSecondaries, exerciseHistory, exerciseName, finishSession, fmt,
+  ALL_SESSIONS, activeSession, sessionName, clockTime, draftSecondaries, exerciseHistory, exerciseName, finishSession, fmt,
   liftOf, parseKey, secondaryKey, sessionPlan, setKey, setsSummary, startSession, startableSession, targetWeight,
   todayIso, untickedSets, weekRange,
 } from '../program'
@@ -33,7 +33,6 @@ export default function Session({ state, sessionKey, onNavigate }) {
   const isOpen = active?.key === plan.key
   const canStart = !record && !isOpen && startableSession(cycle)?.key === plan.key
   const [dialog, setDialog] = useState(null) // 'finish' | 'start'
-  const label = (p) => `Week ${p.week} · Session ${p.session}`
   const unticked = (p) => untickedSets(cycle, p).map((u) => ({ ...u, name: exerciseName(state, u.id) }))
   const finish = () =>
     update((d) => {
@@ -53,7 +52,7 @@ export default function Session({ state, sessionKey, onNavigate }) {
           ‹
         </button>
         <div>
-          <h1>Week {week} · Session {session}</h1>
+          <h1>{sessionName(plan)}</h1>
           <p className="muted small">
             {weekRange(cycle, week)} · Group {plan.group}
           </p>
@@ -70,23 +69,23 @@ export default function Session({ state, sessionKey, onNavigate }) {
           {isOpen && <p className="in-progress small">● In progress since {clockTime(cycle.active.startedAt)}</p>}
           {canStart && (
             <div className="card start-card">
-              {active && <p className="small">{label(active)} is still open. Starting this session finishes it.</p>}
+              {active && <p className="small">{sessionName(active)} is still open. Starting this session finishes it.</p>}
               <button className="primary" onClick={onStart}>Start session</button>
             </div>
           )}
-          {!isOpen && !canStart && <NotYet cycle={cycle} active={active} label={label} onNavigate={onNavigate} />}
+          {!isOpen && !canStart && <NotYet cycle={cycle} active={active} onNavigate={onNavigate} />}
           <Draft state={state} cycle={cycle} plan={plan} open={isOpen} onFinish={() => setDialog('finish')} />
         </>
       )}
       {dialog === 'finish' && (
-        <FinishDialog title={label(plan)} unticked={unticked(plan)} onConfirm={finish} onClose={() => setDialog(null)} />
+        <FinishDialog title={sessionName(plan)} unticked={unticked(plan)} onConfirm={finish} onClose={() => setDialog(null)} />
       )}
       {dialog === 'start' && (
         <FinishDialog
           heading="Start this session?"
-          message={`${label(active)} is still open. Starting ${label(plan)} finishes it as it is and saves it permanently.`}
+          message={`${sessionName(active)} is still open. Starting ${sessionName(plan)} finishes it as it is and saves it permanently.`}
           confirmLabel="Finish it and start"
-          title={label(active)}
+          title={sessionName(active)}
           unticked={unticked(active)}
           onConfirm={start}
           onClose={() => setDialog(null)}
@@ -97,14 +96,14 @@ export default function Session({ state, sessionKey, onNavigate }) {
 }
 
 /** A session that can't be started yet: points to the one to do first. */
-function NotYet({ cycle, active, label, onNavigate }) {
+function NotYet({ cycle, active, onNavigate }) {
   const first = active ?? startableSession(cycle)
   if (!first) return null
   return (
     <p className="muted small center">
       Preview. Sessions are done in order:{' '}
       <button className="link inline" onClick={() => onNavigate(first.key)}>
-        {active ? `${label(first)} is open` : `start ${label(first)}`}
+        {active ? `${sessionName(first)} is open` : `start ${sessionName(first)}`}
       </button>
     </p>
   )
@@ -247,7 +246,7 @@ function SecondaryBlock({ state, cycle, plan, id, open }) {
         <span className="badge">Group {plan.group}</span>
       </div>
       <p className="muted small">
-        {last ? `Last time (W${last.week} S${last.session}): ${setsSummary(last.sets)}` : 'First time, no history yet'}
+        {last ? `Last time (${sessionName(last)}): ${setsSummary(last.sets)}` : 'First time, no history yet'}
       </p>
       <SetHeader />
       {Array.from({ length: count }, (_, i) => {

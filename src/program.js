@@ -49,6 +49,8 @@ export const round1 = (x) => Math.round(x * 10) / 10
 export const fmt = (x) => (x == null || x === '' ? '–' : String(round1(x)))
 
 export const sessionKey = (week, session) => `w${week}s${session}`
+/** How sessions are named everywhere: "Session 1.2" = week 1, session 2. */
+export const sessionName = ({ week, session }) => `Session ${week}.${session}`
 export function parseKey(key) {
   const [, w, s] = key.match(/^w(\d+)s(\d+)$/)
   return { week: +w, session: +s }

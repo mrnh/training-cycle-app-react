@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import {
-  ALL_SESSIONS, WEEKS, activeSession, cycleComplete, exerciseName, fmt, isFinished, liftOf, nextSession,
+  ALL_SESSIONS, WEEKS, activeSession, sessionName, cycleComplete, exerciseName, fmt, isFinished, liftOf, nextSession,
   retestResults, todayIso, weekRange,
 } from '../program'
 import { currentCycle, newCycle, update } from '../store'
@@ -16,7 +16,7 @@ export default function Plan({ state, onOpen }) {
       {next && (
         <button className="card next-up" onClick={() => onOpen(next.key)}>
           <span className="muted small">{active ? 'In progress' : 'Next up'}</span>
-          <strong>Week {next.week} · Session {next.session}</strong>
+          <strong>{sessionName(next)}</strong>
           <span className="small">
             {next.primaries.map((p) => `${exerciseName(state, liftOf(cycle, p))} ${p.sets}×${p.reps} @ ${p.pct}%`).join(' · ')}
           </span>
@@ -43,7 +43,7 @@ export default function Plan({ state, onOpen }) {
                     <button
                       key={s}
                       className={`dot ${cls}`}
-                      aria-label={`Week ${week} session ${s}${complete ? ', done' : cls === 'partial' ? ', in progress' : ''}`}
+                      aria-label={`${sessionName(plan)}${complete ? ', done' : cls === 'partial' ? ', in progress' : ''}`}
                       onClick={() => onOpen(plan.key)}
                     >
                       {s}
