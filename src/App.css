@@ -337,12 +337,18 @@ button.rest-time {
 .rest-stepper button { width: 56px; height: 56px; border-radius: var(--radius-full); font-size: var(--text-xl); padding: 0; }
 
 /* Secondary exercises: set toggles with each set's reps@weight under it, pen opens the sets dialog */
-.sec-sets { display: grid; gap: var(--space-1) var(--space-2); align-items: center; justify-items: center; padding: var(--space-1) 0; }
+.sec-head { display: flex; justify-content: space-between; align-items: center; gap: var(--space-3); }
+.sec-head > div { display: flex; flex-direction: column; gap: var(--space-2); }
+button.sec-pen {
+  flex-shrink: 0; width: var(--tap); height: var(--tap); min-height: 0; padding: 0; margin-right: calc(-1 * var(--space-2));
+  border: none; background: none; color: var(--accent); font-size: var(--text-lg); line-height: 1;
+}
+/* Column gap matches the rest-bar segments, so each set sits above its segment */
+.sec-sets { display: grid; gap: var(--space-1); align-items: center; justify-items: center; padding: var(--space-1) 0 0; }
 .sec-sets .set-toggle { width: 100%; max-width: var(--tap); }
 .sec-value { font-size: var(--text-xs); text-align: center; line-height: 1.25; font-variant-numeric: tabular-nums; }
 .sec-sets { align-items: start; }
-.sec-sets .set-toggle, .sec-sets button.pen { align-self: center; }
-.sec-sets button.pen { margin: 0; padding: var(--space-2); justify-self: end; }
+.sec-sets .set-toggle { align-self: center; }
 .sets-edit { display: grid; grid-template-columns: 32px 1fr 1fr; gap: var(--space-2); align-items: center; }
 .sets-edit-row { display: contents; }
 .sets-edit input.num { text-align: center; padding: var(--space-2) var(--space-1); }

@@ -260,16 +260,27 @@ function SecondaryBlock({ state, cycle, plan, id, open }) {
         <h2>{exerciseName(state, id)}</h2>
         <span className="badge">Group {plan.group}</span>
       </div>
-      {pres && (
-        <p className="muted small">
-          {pres.sets}×{pres.reps} @ <strong className="planned">{fmt(pres.weight)} kg</strong>
-        </p>
-      )}
-      <p className="muted small">
-        {last ? `Last time (${sessionName(last)}): ${setsSummary(last.sets)}` : 'First time, no history yet'}
-      </p>
-      {/* Toggles in the top row, each set's reps@weight under it; lines of up to 6 sets, pen at the right */}
-      <div className="sec-sets" style={{ gridTemplateColumns: `repeat(${cols}, minmax(0, 1fr)) var(--tap)` }}>
+      {/* Prescription and last time on the left, the pen for editing all sets on the right */}
+      <div className="sec-head">
+        <div>
+          {pres && (
+            <p className="muted small">
+              {pres.sets}×{pres.reps} @ <strong className="planned">{fmt(pres.weight)} kg</strong>
+            </p>
+          )}
+          <p className="muted small">
+            {last ? `Last time (${sessionName(last)}): ${setsSummary(last.sets)}` : 'First time, no history yet'}
+          </p>
+        </div>
+        {open && (
+          <button className="sec-pen" aria-label={`Edit ${exerciseName(state, id)} sets`} onClick={() => setEditing(true)}>
+            ✎
+          </button>
+        )}
+      </div>
+      {/* Toggles with each set's reps@weight under them, in equal columns that line up with the
+          timer segments below; lines of up to 6 sets */}
+      <div className="sec-sets" style={{ gridTemplateColumns: `repeat(${cols}, minmax(0, 1fr))` }}>
         {keys.map((k, i) => {
           const log = cycle.logs[k]
           const done = !!log?.done
@@ -293,11 +304,6 @@ function SecondaryBlock({ state, cycle, plan, id, open }) {
             </span>,
           ]
         })}
-        {open && (
-          <button className="pen" style={{ gridRow: 2, gridColumn: cols + 1 }} aria-label={`Edit ${exerciseName(state, id)} sets`} onClick={() => setEditing(true)}>
-            ✎
-          </button>
-        )}
       </div>
       {editing && (
         <SetsDialog
