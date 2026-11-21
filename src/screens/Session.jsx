@@ -124,7 +124,7 @@ function Draft({ state, cycle, plan, open, onFinish }) {
         <SecondaryBlock key={id} state={state} cycle={cycle} plan={plan} id={id} open={open} />
       ))}
       {secondaries.length === 0 && (
-        <p className="muted small center">No secondary exercises in group {plan.group} yet. Add them in Settings.</p>
+        <p className="muted small center">No accessory work in group {plan.group} yet. Add it in Settings.</p>
       )}
 
       {open && (

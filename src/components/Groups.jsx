@@ -7,7 +7,7 @@ import NumInput from './NumInput'
 export default function Groups({ state }) {
   return (
     <section className="card">
-      <h2>Secondary groups</h2>
+      <h2>Accessory work</h2>
       <p className="muted small">
         Each session adds one group. Pick exercises from your catalog (Exercises tab) and tap one to set its sets,
         reps, weight and rest.

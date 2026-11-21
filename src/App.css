@@ -263,7 +263,7 @@ dialog.sheet form { display: flex; flex-direction: column; gap: var(--space-3); 
 .chevron { color: var(--muted); font-size: var(--text-lg); line-height: 1; }
 .icon-spacer { width: var(--tap); flex-shrink: 0; }
 
-/* Settings: secondary groups */
+/* Settings: accessory work groups */
 .group { display: flex; flex-direction: column; gap: var(--space-1); padding-top: var(--space-2); border-top: 1px solid var(--border); }
 .group:first-of-type { border-top: none; }
 .group-list { list-style: none; margin: 0; padding: 0; }
