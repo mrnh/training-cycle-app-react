@@ -357,5 +357,7 @@ button.sec-pen {
 /* Two-option switch (Settings → Units) */
 .segmented { display: inline-flex; border: 1px solid var(--border); border-radius: var(--radius-md); overflow: hidden; align-self: flex-start; }
 .segmented button { border: none; border-radius: 0; min-width: 72px; background: var(--card); }
+.unit-row { align-items: center; gap: var(--space-3); }
+.unit-row h3 { margin: 0; }
 .segmented button + button { border-left: 1px solid var(--border); }
 .segmented button.active { background: var(--accent); color: var(--on-accent); font-weight: var(--weight-bold); }

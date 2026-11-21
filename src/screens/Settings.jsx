@@ -1,7 +1,7 @@
 import { useRef, useState } from 'react'
 import NumInput from '../components/NumInput'
 import Groups from '../components/Groups'
-import { UNITS, exerciseName, fmt, todayIso, unit } from '../program'
+import { DATE_FORMATS, UNITS, dateFormat, exerciseName, fmt, todayIso, unit } from '../program'
 import { currentCycle, migrate, replaceState, update, updateCycle } from '../store'
 
 export default function Settings({ state }) {
@@ -129,19 +129,24 @@ export default function Settings({ state }) {
 
       <section className="card">
         <h2>Units</h2>
+        <div className="row unit-row">
+          <h3>Weight</h3>
+          <Segmented
+            label="Weight unit"
+            options={UNITS.map((u) => ({ id: u, label: u }))}
+            value={unit()}
+            onChange={(u) => update((d) => void (d.unit = u))}
+          />
+        </div>
         <p className="muted small">Changes the label only. Numbers are not converted.</p>
-        <div className="segmented" role="radiogroup" aria-label="Weight unit">
-          {UNITS.map((u) => (
-            <button
-              key={u}
-              role="radio"
-              aria-checked={unit() === u}
-              className={unit() === u ? 'active' : undefined}
-              onClick={() => update((d) => void (d.unit = u))}
-            >
-              {u}
-            </button>
-          ))}
+        <div className="row unit-row">
+          <h3>Date</h3>
+          <Segmented
+            label="Date format"
+            options={DATE_FORMATS}
+            value={dateFormat()}
+            onChange={(f) => update((d) => void (d.dateFormat = f))}
+          />
         </div>
       </section>
 
@@ -151,6 +156,25 @@ export default function Settings({ state }) {
       </section>
 
       <p className="muted small center">Version {__APP_VERSION__}</p>
+    </div>
+  )
+}
+
+/** Two or more mutually exclusive options as one row of buttons. */
+function Segmented({ label, options, value, onChange }) {
+  return (
+    <div className="segmented" role="radiogroup" aria-label={label}>
+      {options.map((o) => (
+        <button
+          key={o.id}
+          role="radio"
+          aria-checked={value === o.id}
+          className={value === o.id ? 'active' : undefined}
+          onClick={() => onChange(o.id)}
+        >
+          {o.label}
+        </button>
+      ))}
     </div>
   )
 }

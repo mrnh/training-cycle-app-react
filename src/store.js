@@ -1,5 +1,5 @@
 import {
-  ALL_SESSIONS, DEFAULT_CATALOG, DEFAULT_PRESCRIPTION, DEFAULT_PRIMARIES, GROUPS, finishSession, newId, secondaryKey, sessionProgress, setUnit,
+  ALL_SESSIONS, DEFAULT_CATALOG, DEFAULT_PRESCRIPTION, DEFAULT_PRIMARIES, GROUPS, finishSession, newId, secondaryKey, sessionProgress, setDateFormat, setUnit,
 } from './program'
 import { useSyncExternalStore } from 'react'
 import { get, set, del } from 'idb-keyval'
@@ -14,6 +14,7 @@ let state // undefined = still loading, null = no data yet (first launch)
 const listeners = new Set()
 const emit = () => {
   setUnit(state?.unit)
+  setDateFormat(state?.dateFormat)
   listeners.forEach((l) => l())
 }
 

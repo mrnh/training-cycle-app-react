@@ -53,6 +53,14 @@ export const UNITS = ['kg', 'lbs']
 let currentUnit = 'kg'
 export const unit = () => currentUnit
 export const setUnit = (u) => void (currentUnit = UNITS.includes(u) ? u : 'kg')
+// Date format: 'dmy' (9.11.2026, default) or 'mdy' (11/9/2026, common in the US)
+export const DATE_FORMATS = [
+  { id: 'dmy', label: 'dd.mm.yyyy' },
+  { id: 'mdy', label: 'mm/dd/yyyy' },
+]
+let currentDateFormat = 'dmy'
+export const dateFormat = () => currentDateFormat
+export const setDateFormat = (f) => void (currentDateFormat = f === 'mdy' ? 'mdy' : 'dmy')
 
 export const sessionKey = (week, session) => `w${week}s${session}`
 /** How sessions are named everywhere: "Session 1.2" = week 1, session 2. */
@@ -243,7 +251,8 @@ export function addDays(isoDate, days) {
 }
 export const shortDate = (d) => d.toLocaleDateString(undefined, { day: 'numeric', month: 'short' })
 export const weekStart = (cycle, week) => addDays(cycle.startDate, (week - 1) * 7)
-const dayMonth = (d) => `${d.getDate()}.${d.getMonth() + 1}.`
+// "9.11." or, in US format, "11/9"
+const dayMonth = (d) => (dateFormat() === 'mdy' ? `${d.getMonth() + 1}/${d.getDate()}` : `${d.getDate()}.${d.getMonth() + 1}.`)
 /** "23.11. – 29.11." */
 export const weekRange = (cycle, week) =>
   `${dayMonth(weekStart(cycle, week))} – ${dayMonth(addDays(cycle.startDate, (week - 1) * 7 + 6))}`
@@ -315,7 +324,8 @@ export function setsSummary(sets) {
 }
 
 /** "2026-11-19" -> "19.11.2026" */
+/** "2026-11-09" -> "9.11.2026", or in US format "11/9/2026" */
 export const fmtDate = (iso) => {
   const [y, m, d] = iso.split('-')
-  return `${+d}.${+m}.${y}`
+  return dateFormat() === 'mdy' ? `${+m}/${+d}/${y}` : `${+d}.${+m}.${y}`
 }
