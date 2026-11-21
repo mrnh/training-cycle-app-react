@@ -9,6 +9,38 @@ The current version is shown at the bottom of **Settings**.
 
 ---
 
+## 0.7.0 — 2026-11-21 · Exercise history and personal bests
+
+Each exercise gets its own history with personal bests, dates can be shown US-style, and the
+app can be filled with sample data to try it out.
+
+| Exercise history | Comment | Session | Plan |
+|---|---|---|---|
+| ![Exercise history](docs/screenshots/v0.7.0/exercise-history.jpg) | ![Comment dialog](docs/screenshots/v0.7.0/comment-dialog.jpg) | ![Session](docs/screenshots/v0.7.0/session.jpg) | ![Plan](docs/screenshots/v0.7.0/plan.jpg) |
+
+| Settings |
+|---|
+| ![Settings](docs/screenshots/v0.7.0/settings.jpg) |
+
+### Added
+- **Exercise history** (Exercises → tap an exercise): every finished session the exercise was
+  done in, newest first, as date and done sets ("6×4 @ 112 kg", same format as "Last time").
+  A bubble icon opens the comment written on that card.
+- **Personal bests**: the heaviest ticked set for exactly 1, 2, 3, 4 and 5 reps, each with the
+  date it was first lifted. Empty means never done for that many reps; 0 means bodyweight.
+- **Date format** in Settings → Preferences: 31.12. or 12/31, for week ranges, finished
+  sessions and the history.
+- **Use sample data** in Settings → Backup: a cycle in its second week with four finished
+  sessions and Session 2.2 in progress today. Replaces the current data after a confirmation and
+  keeps your unit and date format.
+
+### Changed
+- The exercise name is shown as text with a pen that opens a rename dialog; Delete moved to its
+  own card at the bottom.
+- The Units card is now **Preferences**, with a quieter switch (white pill on a gray track).
+
+---
+
 ## 0.6.0 — 2026-11-21 · Units and tidier cards
 
 Main lifts and accessory work now use the same "3×10 @ 30 kg" style, "Last time" is a compact

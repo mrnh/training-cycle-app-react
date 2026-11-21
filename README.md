@@ -7,9 +7,10 @@ Russian Masters Squat Routine adapted for squat, bench press and deadlift.
 - **Session:** start the next session in order, tick sets and log weight and reps; values save
   instantly, and "Finish session" stores the workout permanently. One session is open at a time;
   the others are previews. Each exercise has a rest timer
-- **Exercises:** a catalog of all exercises, including the three main lifts (1RM-based percentages)
+- **Exercises:** a catalog of all exercises, including the three main lifts; each has a history of
+  every finished session and its personal bests for 1 to 5 reps
 - **Settings:** start date, 1RM, accessory work groups A/B/C picked from the catalog with sets, reps,
-  weight and rest for each, kg/lbs label, backup export/import
+  weight and rest for each, kg/lbs and date format, backup export/import and sample data
 
 The week-9 single at 105% is the re-test and becomes the 1RM for the next cycle.
 
@@ -19,9 +20,9 @@ The week-9 single at 105% is the re-test and becomes the 1RM for the next cycle.
 Data is stored locally in the browser (IndexedDB), on each device separately. Use **Export backup** in Settings to keep a copy.
 
 <p>
-  <img src="docs/screenshots/v0.6.0/plan.jpg" width="200" alt="Plan screen">
-  <img src="docs/screenshots/v0.6.0/session.jpg" width="200" alt="Session screen">
-  <img src="docs/screenshots/v0.6.0/accessory.jpg" width="200" alt="Accessory work">
+  <img src="docs/screenshots/v0.7.0/plan.jpg" width="200" alt="Plan screen">
+  <img src="docs/screenshots/v0.7.0/session.jpg" width="200" alt="Session screen">
+  <img src="docs/screenshots/v0.7.0/exercise-history.jpg" width="200" alt="Exercise history">
 </p>
 
 See the [changelog](CHANGELOG.md) for how the app has developed, with screenshots of each version.
