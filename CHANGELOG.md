@@ -9,6 +9,38 @@ The current version is shown at the bottom of **Settings**.
 
 ---
 
+## 0.8.0 — 2026-11-21 · Flexible main lifts
+
+Main lifts are no longer fixed to squat, bench press and deadlift: any exercise from the catalog
+can be one, and a cycle can have one, two or three of them.
+
+| Main lifts (Settings) | Setup | Session | Exercise history | Plan |
+|---|---|---|---|---|
+| ![Main lifts](docs/screenshots/v0.8.0/main-lifts.jpg) | ![Setup](docs/screenshots/v0.8.0/setup.jpg) | ![Session](docs/screenshots/v0.8.0/session.jpg) | ![Exercise history](docs/screenshots/v0.8.0/exercise-history.jpg) | ![Plan](docs/screenshots/v0.8.0/plan.jpg) |
+
+### Added
+- **Main lifts** in Settings (was "1RM", now with a pen instead of the gear): edit mode has an
+  exercise dropdown and a 1RM field per slot. Picking another exercise fills in the heaviest
+  weight from its history; you can overwrite it. An exercise can only be in one slot.
+- **One, two or three main lifts**: each dropdown has an empty entry. An empty slot's sets are
+  left out of the whole cycle; sessions without a main lift show only their accessory work. At
+  least one lift is required.
+- The first-launch setup gets the same dropdowns (Squat / Bench Press / Deadlift by default).
+
+### Changed
+- Changing main lifts or 1RMs recalculates sessions you haven't finished; finished sessions
+  keep what you did.
+- Default exercise names all in title case ("Bench Press").
+- Exercise history: the exercise name shows once, on the first card (the subtitle under the
+  title is gone).
+- Code clean-up: one shared dialog component for all dialogs, one component for the
+  "6×4 @ 80 kg" line, shared limits for rest times and set counts, unused code removed.
+
+### Fixed
+- The rename dialog no longer saves an empty name when Enter is pressed.
+
+---
+
 ## 0.7.0 — 2026-11-21 · Exercise history and personal bests
 
 Each exercise gets its own history with personal bests, dates can be shown US-style, and the
