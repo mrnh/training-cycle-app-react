@@ -7,21 +7,21 @@ import NumInput from './NumInput'
 import Sheet from './Sheet'
 
 /**
- * Settings card: what each group (A/B/C) adds to its sessions, one line per exercise with its
- * prescription and rest. The pen opens the editing screen.
+ * Part of the Current cycle card in Settings: what each group (A/B/C) adds to its sessions, one
+ * line per exercise with its prescription and rest. The pen opens the editing screen.
  */
-export default function GroupsCard({ state, onEdit }) {
+export default function GroupsSummary({ state, onEdit }) {
   return (
-    <section className="card">
-      <div className="sec-head">
-        <h2>Accessory work</h2>
+    <>
+      <div className="row subhead">
+        <h3>Accessory work</h3>
         <button className="sec-pen" aria-label="Edit accessory work" onClick={onEdit}>
           ✎
         </button>
       </div>
       {GROUPS.map((g, i) => (
         <div key={g} className="group-summary">
-          <h3>Group {g} · session {i + 1}</h3>
+          <h4>Group {g} · session {i + 1}</h4>
           {state.groups[g].length === 0 ? (
             <p className="muted small">No exercises yet</p>
           ) : (
@@ -38,7 +38,7 @@ export default function GroupsCard({ state, onEdit }) {
           )}
         </div>
       ))}
-    </section>
+    </>
   )
 }
 

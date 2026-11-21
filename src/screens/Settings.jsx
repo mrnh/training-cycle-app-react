@@ -1,5 +1,5 @@
 import { useRef, useState } from 'react'
-import GroupsCard, { GroupsEditor } from '../components/Groups'
+import GroupsSummary, { GroupsEditor } from '../components/Groups'
 import MainLiftFields from '../components/MainLiftFields'
 import NewCycleDialog from '../components/NewCycleDialog'
 import { DATE_FORMATS, UNITS, dateFormat, exerciseName, fmt, heaviestWeight, mainLiftsError, todayIso, unit } from '../program'
@@ -136,11 +136,16 @@ export default function Settings({ state }) {
             ))}
           </div>
         )}
-        {!draft && <button onClick={() => setNewCycleOpen(true)}>Start a new cycle</button>}
+
+        <GroupsSummary state={state} onEdit={() => showGroups(true)} />
+
+        {!draft && (
+          <button className="new-cycle" onClick={() => setNewCycleOpen(true)}>
+            Start a new cycle
+          </button>
+        )}
         {newCycleOpen && <NewCycleDialog state={state} onClose={() => setNewCycleOpen(false)} />}
       </section>
-
-      <GroupsCard state={state} onEdit={() => showGroups(true)} />
 
       <section className="card">
         <h2>Backup</h2>
