@@ -1,20 +1,19 @@
 import { useState } from 'react'
-import NumInput from '../components/NumInput'
-import { DEFAULT_CATALOG, DEFAULT_PRIMARIES, todayIso, unit } from '../program'
-
-const PRIMARY = DEFAULT_PRIMARIES.map((id) => DEFAULT_CATALOG.find((e) => e.id === id))
+import MainLiftFields from '../components/MainLiftFields'
+import { DEFAULT_CATALOG, DEFAULT_PRIMARIES, todayIso } from '../program'
 import { initialState, replaceState } from '../store'
 
 export default function Setup() {
   const [startDate, setStartDate] = useState(todayIso())
-  const [oneRM, setOneRM] = useState({ squat: null, bench: null, deadlift: null })
+  const [lifts, setLifts] = useState(DEFAULT_PRIMARIES.map((id) => ({ id, rm: null }))) // per main-lift slot
   const [error, setError] = useState('')
 
   function start(e) {
     e.preventDefault()
     if (!startDate) return setError('Pick a start date.')
-    if (PRIMARY.some((p) => !(oneRM[p.id] > 0))) return setError('Enter a 1RM for all three lifts.')
-    replaceState(initialState(startDate, oneRM))
+    if (lifts.some((l) => !(l.rm > 0))) return setError('Enter a 1RM for all three lifts.')
+    const oneRM = Object.fromEntries(lifts.map((l) => [l.id, l.rm]))
+    replaceState(initialState(startDate, oneRM, lifts.map((l) => l.id)))
   }
 
   return (
@@ -27,20 +26,17 @@ export default function Setup() {
         <input type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} />
       </label>
 
-      {PRIMARY.map((p) => (
-        <label className="field" key={p.id}>
-          <span>{p.name} 1RM ({unit()})</span>
-          <NumInput
-            value={oneRM[p.id]}
-            placeholder="100"
-            label={`${p.name} 1RM`}
-            onChange={(v) => {
-              setError('')
-              setOneRM({ ...oneRM, [p.id]: v })
-            }}
-          />
-        </label>
-      ))}
+      <div className="field">
+        <span>Main lifts and 1RM</span>
+        <MainLiftFields
+          rows={lifts}
+          catalog={DEFAULT_CATALOG}
+          onChange={(rows) => {
+            setError('')
+            setLifts(rows)
+          }}
+        />
+      </div>
 
       {error && <p className="error">{error}</p>}
       <button className="primary" type="submit">

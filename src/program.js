@@ -289,6 +289,12 @@ export function exerciseHistory(state, exId, kind) {
   return out
 }
 
+/** Heaviest ticked weight of any rep count in an exercise's history; null if never done. */
+export function heaviestWeight(state, exId) {
+  const ws = exerciseHistory(state, exId).flatMap((h) => h.sets.map((s) => s.w ?? 0))
+  return ws.length ? Math.max(...ws) : null
+}
+
 /**
  * Heaviest ticked set for exactly 1, 2, … `maxReps` reps, from exerciseHistory rows (oldest
  * first). Index 0 is 1 RM: { w, date } with the date it was first lifted (null if unknown), or

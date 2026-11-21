@@ -77,12 +77,12 @@ export function newCycle(startDate, oneRM, primaries = DEFAULT_PRIMARIES) {
   }
 }
 
-export function initialState(startDate, oneRM) {
+export function initialState(startDate, oneRM, primaries = DEFAULT_PRIMARIES) {
   return {
     version: DATA_VERSION,
     catalog: DEFAULT_CATALOG.map((e) => ({ ...e })), // [{ id, name }]
     groups: Object.fromEntries(GROUPS.map((g) => [g, []])), // group -> ordered [{ id, sets, reps, weight, rest }]
-    cycles: [newCycle(startDate, oneRM)],
+    cycles: [newCycle(startDate, oneRM, primaries)],
   }
 }
 

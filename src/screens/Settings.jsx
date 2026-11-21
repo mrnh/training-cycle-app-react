@@ -1,14 +1,14 @@
 import { useRef, useState } from 'react'
-import NumInput from '../components/NumInput'
 import Groups from '../components/Groups'
-import { DATE_FORMATS, UNITS, dateFormat, exerciseName, fmt, todayIso, unit } from '../program'
+import MainLiftFields from '../components/MainLiftFields'
+import { DATE_FORMATS, UNITS, dateFormat, exerciseName, fmt, heaviestWeight, todayIso, unit } from '../program'
 import { currentCycle, migrate, replaceState, update, updateCycle } from '../store'
 import { sampleState } from '../sampleData'
 
 export default function Settings({ state }) {
   const cycle = currentCycle(state)
   const PRIMARY = cycle.primaries.map((id) => ({ id, name: exerciseName(state, id) }))
-  const [draft, setDraft] = useState(null) // 1RM values being edited; null = not editing
+  const [draft, setDraft] = useState(null) // [{ id, rm }] per main-lift slot while editing; null = not editing
   const [rmError, setRmError] = useState('')
 
   function cancelRM() {
@@ -16,8 +16,11 @@ export default function Settings({ state }) {
     setRmError('')
   }
   function saveRM() {
-    if (PRIMARY.some((p) => !(draft[p.id] > 0))) return setRmError('Enter a 1RM for all three lifts.')
-    updateCycle((c) => void (c.oneRM = { ...draft }))
+    if (draft.some((r) => !(r.rm > 0))) return setRmError('Enter a 1RM for all three lifts.')
+    updateCycle((c) => {
+      c.primaries = draft.map((r) => r.id)
+      c.oneRM = Object.fromEntries(draft.map((r) => [r.id, r.rm]))
+    })
     cancelRM()
   }
   const [message, setMessage] = useState('')
@@ -79,10 +82,14 @@ export default function Settings({ state }) {
         </div>
 
         <div className="row subhead">
-          <h3>1RM</h3>
+          <h3>Main lifts</h3>
           {!draft && (
-            <button className="icon-btn" aria-label="Edit 1RM" onClick={() => setDraft({ ...cycle.oneRM })}>
-              ⚙
+            <button
+              className="sec-pen"
+              aria-label="Edit main lifts"
+              onClick={() => setDraft(cycle.primaries.map((id) => ({ id, rm: cycle.oneRM[id] ?? null })))}
+            >
+              ✎
             </button>
           )}
         </div>
@@ -90,19 +97,19 @@ export default function Settings({ state }) {
         {draft ? (
           <>
             <p className="warning small">
-              Your 1RMs are fixed for the whole cycle. Saving a change recalculates every weight in it, including
-              sessions you've already done.
+              Main lifts and 1RMs are fixed for the whole cycle. Saving a change recalculates every weight in sessions
+              you haven't finished yet. Finished sessions keep what you did.
             </p>
-            {PRIMARY.map((p) => (
-              <label className="field" key={p.id}>
-                <span>{p.name} ({unit()})</span>
-                <NumInput
-                  value={draft[p.id]}
-                  label={`${p.name} 1RM`}
-                  onChange={(v) => setDraft({ ...draft, [p.id]: v })}
-                />
-              </label>
-            ))}
+            <MainLiftFields
+              rows={draft}
+              catalog={state.catalog}
+              prefill={(id) => heaviestWeight(state, id)}
+              onChange={(rows) => {
+                setRmError('')
+                setDraft(rows)
+              }}
+            />
+            <p className="muted small">Picking another exercise fills in the heaviest weight from its history.</p>
             {rmError && <p className="error">{rmError}</p>}
             <div className="button-row end">
               <button onClick={cancelRM}>Cancel</button>
