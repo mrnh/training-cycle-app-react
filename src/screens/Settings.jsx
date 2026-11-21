@@ -2,6 +2,7 @@ import { useRef, useState } from 'react'
 import GroupsSummary, { GroupsEditor } from '../components/Groups'
 import MainLiftFields from '../components/MainLiftFields'
 import NewCycleDialog from '../components/NewCycleDialog'
+import Exercises from './Exercises'
 import { DATE_FORMATS, UNITS, dateFormat, exerciseName, fmt, heaviestWeight, mainLiftsError, todayIso, unit } from '../program'
 import { currentCycle, migrate, replaceState, update, updateCycle } from '../store'
 import { sampleState } from '../sampleData'
@@ -12,7 +13,7 @@ export default function Settings({ state }) {
   const [draft, setDraft] = useState(null) // [{ id, rm }] per main-lift slot while editing; null = not editing
   const [rmError, setRmError] = useState('')
   const [newCycleOpen, setNewCycleOpen] = useState(false)
-  const [editingGroups, setEditingGroups] = useState(false) // accessory work sub-screen
+  const [subScreen, setSubScreen] = useState(null) // 'groups' | 'exercises' | null
 
   function cancelRM() {
     setDraft(null)
@@ -67,11 +68,12 @@ export default function Settings({ state }) {
     replaceState(null)
   }
 
-  const showGroups = (on) => {
-    setEditingGroups(on)
+  const show = (screen) => {
+    setSubScreen(screen)
     window.scrollTo(0, 0)
   }
-  if (editingGroups) return <GroupsEditor state={state} onBack={() => showGroups(false)} />
+  if (subScreen === 'groups') return <GroupsEditor state={state} onBack={() => show(null)} />
+  if (subScreen === 'exercises') return <Exercises state={state} title="Exercise catalog" onBack={() => show(null)} />
 
   return (
     <div className="screen">
@@ -137,7 +139,7 @@ export default function Settings({ state }) {
           </div>
         )}
 
-        <GroupsSummary state={state} onEdit={() => showGroups(true)} />
+        <GroupsSummary state={state} onEdit={() => show('groups')} />
 
         {!draft && (
           <button className="new-cycle" onClick={() => setNewCycleOpen(true)}>
@@ -145,6 +147,18 @@ export default function Settings({ state }) {
           </button>
         )}
         {newCycleOpen && <NewCycleDialog state={state} onClose={() => setNewCycleOpen(false)} />}
+      </section>
+
+      <section className="card">
+        <div className="sec-head">
+          <h2>Exercise catalog</h2>
+          <button className="sec-pen" aria-label="Edit exercise catalog" onClick={() => show('exercises')}>
+            ✎
+          </button>
+        </div>
+        <p className="muted small">
+          {state.catalog.length} exercises to pick main lifts and accessory work from, each with its history.
+        </p>
       </section>
 
       <section className="card">

@@ -3,8 +3,11 @@ import { newId } from '../program'
 import { update } from '../store'
 import ExerciseHistory from './ExerciseHistory'
 
-/** The exercise catalog. Groups pick from it in Settings; main lifts are catalog entries too. */
-export default function Exercises({ state }) {
+/**
+ * The exercise catalog. Groups pick from it in Settings; main lifts are catalog entries too.
+ * Shown as the Exercises tab, and as a sub-screen of Settings (with `onBack` and a back arrow).
+ */
+export default function Exercises({ state, title = 'Exercises', onBack }) {
   // Exercise whose history screen is shown; leaving the tab resets it
   const [detail, setDetail] = useState(null)
   const show = (id) => {
@@ -17,7 +20,17 @@ export default function Exercises({ state }) {
 
   return (
     <div className="screen">
-      <h1>Exercises</h1>
+      {onBack ? (
+        <header className="session-head">
+          <button className="icon" aria-label="Back to settings" onClick={onBack}>
+            ‹
+          </button>
+          <h1>{title}</h1>
+          <span className="icon-spacer" />
+        </header>
+      ) : (
+        <h1>{title}</h1>
+      )}
       <AddExercise />
       <div className="card list">
         {state.catalog.map((e) => (
