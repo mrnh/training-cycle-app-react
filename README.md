@@ -21,9 +21,9 @@ The week-9 single at 105% is the re-test and becomes the 1RM for the next cycle.
 Data is stored locally in the browser (IndexedDB), on each device separately. Use **Export backup** in Settings to keep a copy.
 
 <p>
-  <img src="docs/screenshots/v0.8.0/plan.jpg" width="200" alt="Overview screen">
-  <img src="docs/screenshots/v0.8.0/session.jpg" width="200" alt="Session screen">
-  <img src="docs/screenshots/v0.8.0/exercise-history.jpg" width="200" alt="Exercise history">
+  <img src="docs/screenshots/v0.9.0/overview.jpg" width="200" alt="Overview screen">
+  <img src="docs/screenshots/v0.9.0/session.jpg" width="200" alt="Session screen">
+  <img src="docs/screenshots/v0.9.0/settings.jpg" width="200" alt="Settings screen">
 </p>
 
 See the [changelog](CHANGELOG.md) for how the app has developed, with screenshots of each version.

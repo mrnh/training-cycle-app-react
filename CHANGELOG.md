@@ -9,6 +9,37 @@ The current version is shown at the bottom of **Settings**.
 
 ---
 
+## 0.9.0 — 2026-11-21 · Tidier Settings and new tab names
+
+Settings is reorganised: the cycle, its main lifts and its accessory work share one card, editing
+happens on sub-screens, and a new cycle can be started at any time. The tabs are renamed ahead
+of a redesign.
+
+| Overview | Session | Settings | Settings (lower part) |
+|---|---|---|---|
+| ![Overview](docs/screenshots/v0.9.0/overview.jpg) | ![Session](docs/screenshots/v0.9.0/session.jpg) | ![Settings](docs/screenshots/v0.9.0/settings.jpg) | ![Settings, lower part](docs/screenshots/v0.9.0/settings-bottom.jpg) |
+
+| Accessory work editor | Exercise catalog | New cycle |
+|---|---|---|
+| ![Accessory work editor](docs/screenshots/v0.9.0/accessory-editor.jpg) | ![Exercise catalog](docs/screenshots/v0.9.0/exercise-catalog.jpg) | ![New cycle](docs/screenshots/v0.9.0/new-cycle.jpg) |
+
+### Added
+- **Start a new cycle** at any time (Settings → Current cycle): start date and main lifts,
+  pre-filled with the current ones. The current cycle stays in the history; an open session in it
+  is finished as it is. Exercises, groups and preferences are kept.
+- **Exercise catalog** card in Settings; its pen opens the list of exercises (with each
+  exercise's history) as a sub-screen.
+
+### Changed
+- **Current cycle** card holds start date, main lifts and accessory work, with "Start a new
+  cycle" at the bottom.
+- **Accessory work** shows as a compact summary, one line per exercise; its pen opens an editing
+  screen with the groups, prescriptions and the add/remove controls.
+- Tabs: **Plan** is now **Overview**; **Exercises** is now **History**, empty until its redesign.
+  The exercise list moved to Settings → Exercise catalog.
+
+---
+
 ## 0.8.0 — 2026-11-21 · Flexible main lifts
 
 Main lifts are no longer fixed to squat, bench press and deadlift: any exercise from the catalog
