@@ -2,7 +2,7 @@
 // Every exercise lives in the catalog; the main lifts of a cycle are ordinary entries.
 export const DEFAULT_CATALOG = [
   { id: 'squat', name: 'Squat' },
-  { id: 'bench', name: 'Bench press' },
+  { id: 'bench', name: 'Bench Press' },
   { id: 'deadlift', name: 'Deadlift' },
   { id: 'back-extensions', name: 'Back Extensions' },
   { id: 'bulgarian-split-squat', name: 'Bulgarian Split Squat' },
