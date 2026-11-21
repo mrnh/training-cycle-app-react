@@ -1,5 +1,5 @@
 import { useRef, useState } from 'react'
-import Groups from '../components/Groups'
+import GroupsCard, { GroupsEditor } from '../components/Groups'
 import MainLiftFields from '../components/MainLiftFields'
 import NewCycleDialog from '../components/NewCycleDialog'
 import { DATE_FORMATS, UNITS, dateFormat, exerciseName, fmt, heaviestWeight, mainLiftsError, todayIso, unit } from '../program'
@@ -12,6 +12,7 @@ export default function Settings({ state }) {
   const [draft, setDraft] = useState(null) // [{ id, rm }] per main-lift slot while editing; null = not editing
   const [rmError, setRmError] = useState('')
   const [newCycleOpen, setNewCycleOpen] = useState(false)
+  const [editingGroups, setEditingGroups] = useState(false) // accessory work sub-screen
 
   function cancelRM() {
     setDraft(null)
@@ -65,6 +66,12 @@ export default function Settings({ state }) {
     if (!confirm('Delete all data on this device? Export a backup first if you want to keep it.')) return
     replaceState(null)
   }
+
+  const showGroups = (on) => {
+    setEditingGroups(on)
+    window.scrollTo(0, 0)
+  }
+  if (editingGroups) return <GroupsEditor state={state} onBack={() => showGroups(false)} />
 
   return (
     <div className="screen">
@@ -133,7 +140,7 @@ export default function Settings({ state }) {
         {newCycleOpen && <NewCycleDialog state={state} onClose={() => setNewCycleOpen(false)} />}
       </section>
 
-      <Groups state={state} />
+      <GroupsCard state={state} onEdit={() => showGroups(true)} />
 
       <section className="card">
         <h2>Backup</h2>

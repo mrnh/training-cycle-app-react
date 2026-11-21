@@ -290,6 +290,14 @@ button.comment-btn {
 /* Settings: accessory work groups */
 .group { display: flex; flex-direction: column; gap: var(--space-1); padding-top: var(--space-2); border-top: 1px solid var(--border); }
 .group:first-of-type { border-top: none; }
+.group-summary { display: flex; flex-direction: column; gap: var(--space-1); padding-top: var(--space-2); }
+.group-summary ul { list-style: none; margin: 0; padding: 0; }
+.group-summary li {
+  display: flex; justify-content: space-between; gap: var(--space-3); padding: var(--space-1) 0;
+  border-bottom: 1px solid var(--border); font-size: var(--text-sm);
+}
+.group-summary li:last-child { border-bottom: none; }
+.group-summary li span:last-child { text-align: right; flex-shrink: 0; }
 .group-list { list-style: none; margin: 0; padding: 0; }
 .group-list li { min-height: var(--tap); }
 .group-list .icon-btn { margin-right: calc(-1 * var(--space-3)); }

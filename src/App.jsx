@@ -19,7 +19,7 @@ export default function App() {
   const state = useStore()
   const [tab, setTab] = useState('plan')
   const [selected, setSelected] = useState(null)
-  // Bumped on every tab tap, so tapping the open tab returns it to its first screen
+  // Bumped on every tab tap, so tapping the open tab returns it to its first screen (Exercises, Settings)
   const [tabTaps, setTabTaps] = useState(0)
 
   if (state === undefined) return <div className="screen muted center">Loading…</div>
@@ -49,7 +49,7 @@ export default function App() {
         {tab === 'plan' && <Plan state={state} onOpen={openSession} />}
         {tab === 'session' && <Session key={sessionKey} state={state} sessionKey={sessionKey} onNavigate={openSession} />}
         {tab === 'exercises' && <Exercises key={tabTaps} state={state} />}
-        {tab === 'settings' && <Settings state={state} />}
+        {tab === 'settings' && <Settings key={tabTaps} state={state} />}
       </main>
       <nav className="tabbar">
         {TABS.map((t) => (

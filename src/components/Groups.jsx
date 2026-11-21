@@ -6,19 +6,63 @@ import { update } from '../store'
 import NumInput from './NumInput'
 import Sheet from './Sheet'
 
-/** Settings: which catalog exercises each group (A/B/C) adds to its sessions, with their prescription. */
-export default function Groups({ state }) {
+/**
+ * Settings card: what each group (A/B/C) adds to its sessions, one line per exercise with its
+ * prescription and rest. The pen opens the editing screen.
+ */
+export default function GroupsCard({ state, onEdit }) {
   return (
     <section className="card">
-      <h2>Accessory work</h2>
-      <p className="muted small">
-        Each session adds one group. Pick exercises from your catalog (Exercises tab) and tap one to set its sets,
-        reps, weight and rest.
-      </p>
+      <div className="sec-head">
+        <h2>Accessory work</h2>
+        <button className="sec-pen" aria-label="Edit accessory work" onClick={onEdit}>
+          ✎
+        </button>
+      </div>
       {GROUPS.map((g, i) => (
-        <Group key={g} state={state} group={g} session={i + 1} />
+        <div key={g} className="group-summary">
+          <h3>Group {g} · session {i + 1}</h3>
+          {state.groups[g].length === 0 ? (
+            <p className="muted small">No exercises yet</p>
+          ) : (
+            <ul>
+              {state.groups[g].map((x) => (
+                <li key={x.id}>
+                  <span>{exerciseName(state, x.id)}</span>
+                  <span className="muted">
+                    {prescriptionText(x)} · rest {minSec(x.rest)}
+                  </span>
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
       ))}
     </section>
+  )
+}
+
+/** Sub-screen of Settings: add, remove and set up the exercises of each group. */
+export function GroupsEditor({ state, onBack }) {
+  return (
+    <div className="screen">
+      <header className="session-head">
+        <button className="icon" aria-label="Back to settings" onClick={onBack}>
+          ‹
+        </button>
+        <h1>Accessory work</h1>
+        <span className="icon-spacer" />
+      </header>
+      <section className="card">
+        <p className="muted small">
+          Each session adds one group. Pick exercises from your catalog (Exercises tab) and tap one to set its sets,
+          reps, weight and rest.
+        </p>
+        {GROUPS.map((g, i) => (
+          <Group key={g} state={state} group={g} session={i + 1} />
+        ))}
+      </section>
+    </div>
   )
 }
 
