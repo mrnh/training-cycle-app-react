@@ -1,14 +1,16 @@
 import { useEffect, useRef, useState } from 'react'
-import { GROUPS, exerciseHistory, fmtDate, sessionName, setsSummary } from '../program'
+import { GROUPS, bestByReps, exerciseHistory, fmt, fmtDate, sessionName, setsSummary, unit } from '../program'
 import { update } from '../store'
 
-/** One exercise: name, every finished session it was done in (newest first), delete. */
+/** One exercise: name and best weights, every finished session it was done in (newest first), delete. */
 export default function ExerciseHistory({ state, ex, onBack }) {
   const groups = GROUPS.filter((g) => state.groups[g].some((e) => e.id === ex.id))
   const mainLift = state.cycles.some((c) => c.primaries.includes(ex.id))
   // Main-lift and accessory entries together, newest first; only ticked sets count
   const history = exerciseHistory(state, ex.id).reverse()
+  const best = bestByReps(history)
   const [comment, setComment] = useState(null) // history row whose comment is shown
+  const [renaming, setRenaming] = useState(false)
 
   const rename = (name) => update((d) => void (d.catalog.find((e) => e.id === ex.id).name = name))
   function remove() {
@@ -33,14 +35,22 @@ export default function ExerciseHistory({ state, ex, onBack }) {
       </header>
 
       <section className="card">
-        <label className="field">
-          <span>Name</span>
-          <input
-            value={ex.name}
-            onChange={(e) => rename(e.target.value)}
-            onBlur={(e) => !e.target.value.trim() && rename('Unnamed exercise')}
-          />
-        </label>
+        <div className="sec-head">
+          <h2>{ex.name}</h2>
+          <button className="sec-pen" aria-label={`Rename ${ex.name}`} onClick={() => setRenaming(true)}>
+            ✎
+          </button>
+        </div>
+        {/* Heaviest ticked set for exactly that many reps; empty = never done */}
+        <table className="rm-table">
+          <thead>
+            <tr>{best.map((_, i) => <th key={i}>{i + 1} RM</th>)}</tr>
+          </thead>
+          <tbody>
+            <tr>{best.map((w, i) => <td key={i}>{w == null ? '' : fmt(w)}</td>)}</tr>
+          </tbody>
+        </table>
+        <p className="muted small">Heaviest set for exactly that many reps, in {unit()}.</p>
       </section>
 
       <section className="card">
@@ -79,6 +89,8 @@ export default function ExerciseHistory({ state, ex, onBack }) {
           Delete exercise
         </button>
       </section>
+
+      {renaming && <NameDialog name={ex.name} onSave={rename} onClose={() => setRenaming(false)} />}
 
       {comment && (
         <CommentDialog
@@ -121,6 +133,36 @@ function CommentDialog({ title, text, onClose }) {
         <p className="comment-text">{text}</p>
         <div className="button-row end">
           <button type="submit" className="primary">Close</button>
+        </div>
+      </form>
+    </dialog>
+  )
+}
+
+function NameDialog({ name, onSave, onClose }) {
+  const ref = useRef(null)
+  const [draft, setDraft] = useState(name)
+  useEffect(() => {
+    const d = ref.current
+    d.showModal()
+    return () => d.open && d.close()
+  }, [])
+  function save(e) {
+    e.preventDefault()
+    onSave(draft.trim())
+    onClose()
+  }
+  return (
+    <dialog ref={ref} className="sheet" onCancel={onClose} onClick={(e) => e.target === ref.current && onClose()}>
+      <form onSubmit={save}>
+        <h2>Rename exercise</h2>
+        <label className="field">
+          <span>Name</span>
+          <input value={draft} autoFocus onChange={(e) => setDraft(e.target.value)} />
+        </label>
+        <div className="button-row end">
+          <button type="button" onClick={onClose}>Cancel</button>
+          <button type="submit" className="primary" disabled={!draft.trim()}>Save</button>
         </div>
       </form>
     </dialog>

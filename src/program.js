@@ -290,6 +290,22 @@ export function exerciseHistory(state, exId, kind) {
 }
 
 /**
+ * Heaviest ticked set for exactly 1, 2, … `maxReps` reps, from exerciseHistory rows. Index 0 is
+ * 1 RM. null = never done for that many reps; 0 = done at bodyweight.
+ */
+export function bestByReps(history, maxReps = 5) {
+  const best = Array(maxReps).fill(null)
+  for (const h of history) {
+    for (const s of h.sets) {
+      if (!(s.r >= 1 && s.r <= maxReps)) continue
+      const w = s.w ?? 0
+      if (best[s.r - 1] == null || w > best[s.r - 1]) best[s.r - 1] = w
+    }
+  }
+  return best
+}
+
+/**
  * One set as reps@weight, like the main lifts' "6×4 @ 80%": 8 reps at 15 kg -> "8@15kg".
  * Without external weight (0 or empty) it's just the reps: "10 reps".
  */
