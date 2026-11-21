@@ -268,12 +268,12 @@ export function exerciseHistory(state, exId, kind) {
       const rec = cycle.finished[plan.key]
       if (!rec) return
       for (const e of rec.entries) {
-        if (e.exerciseId !== exId || e.kind !== kind) continue
+        if (e.exerciseId !== exId || (kind && e.kind !== kind)) continue
         const sets =
           e.kind === 'main'
             ? e.done.flatMap((d) => (d ? [{ w: e.weight, r: e.reps, done: true }] : []))
             : e.sets.filter((x) => x.done)
-        if (sets.length) out.push({ cycle: ci, order: si, week: plan.week, session: plan.session, sets, note: e.note })
+        if (sets.length) out.push({ cycle: ci, order: si, kind: e.kind, week: plan.week, session: plan.session, date: rec.finishedAt, sets, note: e.note })
       }
     })
   })
