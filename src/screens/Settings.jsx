@@ -1,13 +1,13 @@
 import { useRef, useState } from 'react'
 import Groups from '../components/Groups'
 import MainLiftFields from '../components/MainLiftFields'
-import { DATE_FORMATS, UNITS, dateFormat, exerciseName, fmt, heaviestWeight, todayIso, unit } from '../program'
+import { DATE_FORMATS, UNITS, dateFormat, exerciseName, fmt, heaviestWeight, mainLiftsError, todayIso, unit } from '../program'
 import { currentCycle, migrate, replaceState, update, updateCycle } from '../store'
 import { sampleState } from '../sampleData'
 
 export default function Settings({ state }) {
   const cycle = currentCycle(state)
-  const PRIMARY = cycle.primaries.map((id) => ({ id, name: exerciseName(state, id) }))
+  const PRIMARY = cycle.primaries.filter(Boolean).map((id) => ({ id, name: exerciseName(state, id) }))
   const [draft, setDraft] = useState(null) // [{ id, rm }] per main-lift slot while editing; null = not editing
   const [rmError, setRmError] = useState('')
 
@@ -16,10 +16,11 @@ export default function Settings({ state }) {
     setRmError('')
   }
   function saveRM() {
-    if (draft.some((r) => !(r.rm > 0))) return setRmError('Enter a 1RM for all three lifts.')
+    const error = mainLiftsError(draft)
+    if (error) return setRmError(error)
     updateCycle((c) => {
-      c.primaries = draft.map((r) => r.id)
-      c.oneRM = Object.fromEntries(draft.map((r) => [r.id, r.rm]))
+      c.primaries = draft.map((r) => r.id || null)
+      c.oneRM = Object.fromEntries(draft.filter((r) => r.id).map((r) => [r.id, r.rm]))
     })
     cancelRM()
   }
@@ -87,7 +88,7 @@ export default function Settings({ state }) {
             <button
               className="sec-pen"
               aria-label="Edit main lifts"
-              onClick={() => setDraft(cycle.primaries.map((id) => ({ id, rm: cycle.oneRM[id] ?? null })))}
+              onClick={() => setDraft(cycle.primaries.map((id) => ({ id: id ?? '', rm: id ? (cycle.oneRM[id] ?? null) : null })))}
             >
               ✎
             </button>

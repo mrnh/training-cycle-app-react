@@ -38,7 +38,8 @@ export const V2 = [
 ]
 
 // Each session: one main-lift slot on variant 2, another on variant 1, plus a secondary group.
-// Slots 0, 1, 2 are squat, bench and deadlift by default (see cycle.primaries).
+// Slots 0, 1, 2 are squat, bench and deadlift by default (see cycle.primaries). A slot can be
+// empty (null): its sets are left out of every session.
 export const ROTATION = [
   { v2: 0, v1: 2, group: 'A' },
   { v2: 1, v1: 0, group: 'B' },
@@ -92,8 +93,17 @@ export const ALL_SESSIONS = Array.from({ length: WEEKS * SESSIONS_PER_WEEK }, (_
   sessionPlan(Math.floor(i / SESSIONS_PER_WEEK) + 1, (i % SESSIONS_PER_WEEK) + 1),
 )
 
-/** Catalog id of the exercise in a planned main-lift slot for this cycle. */
-export const liftOf = (cycle, p) => cycle.primaries[p.slot]
+/** Catalog id of the exercise in a planned main-lift slot for this cycle; null = empty slot. */
+export const liftOf = (cycle, p) => cycle.primaries[p.slot] ?? null
+/** Main-lift slots being edited ([{ id, rm }], id '' = empty): at least one lift, and a 1RM for each picked lift. */
+export function mainLiftsError(rows) {
+  const picked = rows.filter((r) => r.id)
+  if (!picked.length) return 'Pick at least one main lift.'
+  if (picked.some((r) => !(r.rm > 0))) return 'Enter a 1RM for each main lift.'
+  return ''
+}
+/** The planned main lifts of a session whose slot has an exercise in this cycle. */
+export const mainLifts = (cycle, plan) => plan.primaries.filter((p) => liftOf(cycle, p))
 export const targetWeight = (cycle, p) => round1((cycle.oneRM[liftOf(cycle, p)] * p.pct) / 100)
 
 /**
@@ -124,7 +134,7 @@ export const isFinished = (cycle, plan) => !!cycle.finished[plan.key]
 export function sessionProgress(cycle, plan) {
   let done = 0
   let total = 0
-  for (const p of plan.primaries) {
+  for (const p of mainLifts(cycle, plan)) {
     for (let i = 0; i < p.sets; i++) {
       total++
       if (cycle.logs[setKey(plan.key, liftOf(cycle, p), i)]?.done) done++
@@ -168,7 +178,7 @@ export function draftSecondaries(state, cycle, plan) {
 
 /** The permanent record of a session, built from its draft. */
 export function buildRecord(state, cycle, plan, finishedAt) {
-  const main = plan.primaries.map((p) => {
+  const main = mainLifts(cycle, plan).map((p) => {
     const id = liftOf(cycle, p)
     const keys = Array.from({ length: p.sets }, (_, i) => setKey(plan.key, id, i))
     const planned = targetWeight(cycle, p)
@@ -220,7 +230,7 @@ export function finishSession(state, cycle, plan, finishedAt) {
 
 /** Main-lift sets not ticked, per lift, for the Finish dialog. */
 export function untickedSets(cycle, plan) {
-  return plan.primaries
+  return mainLifts(cycle, plan)
     .map((p) => {
       const id = liftOf(cycle, p)
       const done = Array.from({ length: p.sets }, (_, i) => cycle.logs[setKey(plan.key, id, i)]?.done).filter(Boolean).length
@@ -233,9 +243,10 @@ export function untickedSets(cycle, plan) {
 export function retestResults(cycle) {
   const out = {}
   cycle.primaries.forEach((id, slot) => {
+    if (!id) return
     const s = ROTATION.findIndex((r) => r.v2 === slot) + 1
     const rec = cycle.finished[sessionKey(WEEKS, s)]
-    const e = rec?.entries.find((x) => x.kind === 'main' && x.retest)
+    const e = rec?.entries.find((x) => x.kind === 'main' && x.retest && x.exerciseId === id)
     out[id] = e?.done[0] ? e.weight : null
   })
   return out

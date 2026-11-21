@@ -7,7 +7,7 @@ import WeightDialog from '../components/WeightDialog'
 import SetsDialog from '../components/SetsDialog'
 import {
   ALL_SESSIONS, activeSession, groupEntry, prescriptionText, sessionName, setText, clockTime, draftSecondaries, exerciseHistory, exerciseName, finishSession, fmt,
-  liftOf, parseKey, secondaryKey, sessionPlan, setKey, setsSummary, startSession, startableSession, targetWeight,
+  liftOf, mainLifts, parseKey, secondaryKey, sessionPlan, setKey, setsSummary, startSession, startableSession, targetWeight,
   todayIso, unit, untickedSets, weekRange,
 } from '../program'
 import { currentCycle, update, updateCycle } from '../store'
@@ -116,7 +116,7 @@ function Draft({ state, cycle, plan, open, onFinish }) {
   const secondaries = draftSecondaries(state, cycle, plan)
   return (
     <fieldset className="draft" disabled={!open}>
-      {plan.primaries.map((p) => (
+      {mainLifts(cycle, plan).map((p) => (
         <PrimaryBlock key={p.slot} state={state} cycle={cycle} plan={plan} p={p} open={open} />
       ))}
 

@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import MainLiftFields from '../components/MainLiftFields'
-import { DEFAULT_CATALOG, DEFAULT_PRIMARIES, todayIso } from '../program'
+import { DEFAULT_CATALOG, DEFAULT_PRIMARIES, mainLiftsError, todayIso } from '../program'
 import { initialState, replaceState } from '../store'
 
 export default function Setup() {
@@ -11,9 +11,10 @@ export default function Setup() {
   function start(e) {
     e.preventDefault()
     if (!startDate) return setError('Pick a start date.')
-    if (lifts.some((l) => !(l.rm > 0))) return setError('Enter a 1RM for all three lifts.')
-    const oneRM = Object.fromEntries(lifts.map((l) => [l.id, l.rm]))
-    replaceState(initialState(startDate, oneRM, lifts.map((l) => l.id)))
+    const liftError = mainLiftsError(lifts)
+    if (liftError) return setError(liftError)
+    const oneRM = Object.fromEntries(lifts.filter((l) => l.id).map((l) => [l.id, l.rm]))
+    replaceState(initialState(startDate, oneRM, lifts.map((l) => l.id || null)))
   }
 
   return (

@@ -65,7 +65,7 @@ export function newCycle(startDate, oneRM, primaries = DEFAULT_PRIMARIES) {
   return {
     id: newId(),
     startDate,
-    primaries: [...primaries], // catalog ids of the three main-lift slots
+    primaries: [...primaries], // catalog ids of the three main-lift slots; null = empty slot
     oneRM, // catalog id -> kg, fixed for the cycle
     logs: {}, // setKey -> { w, r, done }
     notes: {}, // sessionKey, sessionKey:liftId or sessionKey:+exerciseId -> text

@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import {
-  ALL_SESSIONS, WEEKS, activeSession, sessionName, cycleComplete, exerciseName, fmt, isFinished, liftOf, nextSession,
+  ALL_SESSIONS, WEEKS, activeSession, sessionName, cycleComplete, exerciseName, fmt, isFinished, liftOf, mainLifts, nextSession,
   retestResults, targetWeight, todayIso, unit, weekRange,
 } from '../program'
 import { currentCycle, newCycle, update } from '../store'
@@ -18,7 +18,9 @@ export default function Plan({ state, onOpen }) {
           <span className="muted small">{active ? 'In progress' : 'Next up'}</span>
           <strong>{sessionName(next)}</strong>
           <span className="small">
-            {next.primaries.map((p) => `${exerciseName(state, liftOf(cycle, p))} ${p.sets}×${p.reps} @ ${fmt(targetWeight(cycle, p))} ${unit()}`).join(' · ')}
+            {mainLifts(cycle, next)
+              .map((p) => `${exerciseName(state, liftOf(cycle, p))} ${p.sets}×${p.reps} @ ${fmt(targetWeight(cycle, p))} ${unit()}`)
+              .join(' · ') || `Accessory work, group ${next.group}`}
           </span>
         </button>
       )}
@@ -69,7 +71,8 @@ function NextCycle({ state }) {
   const results = retestResults(cycle)
   const [date, setDate] = useState(todayIso())
   // A re-test that wasn't ticked keeps the old 1RM (it can be changed in Settings)
-  const newRM = Object.fromEntries(cycle.primaries.map((id) => [id, results[id] ?? cycle.oneRM[id]]))
+  const lifts = cycle.primaries.filter(Boolean)
+  const newRM = Object.fromEntries(lifts.map((id) => [id, results[id] ?? cycle.oneRM[id]]))
 
   function start() {
     if (!confirm('Start a new 9-week cycle with these 1RMs? This cycle stays in your history.')) return
@@ -80,7 +83,7 @@ function NextCycle({ state }) {
     <div className="card highlight">
       <strong>Cycle complete</strong>
       <p className="muted small">New 1RMs from the week-9 re-test:</p>
-      {cycle.primaries.map((id) => (
+      {lifts.map((id) => (
         <div className="row small" key={id}>
           <span>{exerciseName(state, id)}</span>
           {results[id] != null ? (

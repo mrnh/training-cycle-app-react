@@ -1,7 +1,7 @@
 import { useState } from 'react'
 
 /** Numeric field that accepts "82,5" or "82.5" and saves on every keystroke. */
-export default function NumInput({ value, onChange, placeholder, label, className = '' }) {
+export default function NumInput({ value, onChange, placeholder, label, className = '', disabled = false }) {
   const [text, setText] = useState('')
   const [focused, setFocused] = useState(false)
   const asText = value == null ? '' : String(value)
@@ -13,6 +13,7 @@ export default function NumInput({ value, onChange, placeholder, label, classNam
       value={focused ? text : asText}
       placeholder={placeholder == null ? '' : String(placeholder)}
       aria-label={label}
+      disabled={disabled}
       onFocus={(e) => {
         setText(asText)
         setFocused(true)

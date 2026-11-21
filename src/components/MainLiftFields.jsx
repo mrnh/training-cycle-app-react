@@ -3,8 +3,9 @@ import { unit } from '../program'
 
 /**
  * The three main-lift slots, each an exercise from the catalog and its 1RM. `rows` is
- * [{ id, rm }] in slot order. An exercise can only be in one slot: options taken by another
- * slot are disabled. `prefill(id)` gives the 1RM suggested when a slot switches exercise.
+ * [{ id, rm }] in slot order; id '' = empty slot (its sets are left out of the cycle). An
+ * exercise can only be in one slot: options taken by another slot are disabled. `prefill(id)`
+ * gives the 1RM suggested when a slot switches exercise.
  */
 export default function MainLiftFields({ rows, catalog, onChange, prefill = () => null }) {
   const setRow = (i, patch) => onChange(rows.map((r, j) => (j === i ? { ...r, ...patch } : r)))
@@ -17,8 +18,9 @@ export default function MainLiftFields({ rows, catalog, onChange, prefill = () =
           <select
             aria-label={`Main lift ${i + 1}`}
             value={r.id}
-            onChange={(e) => setRow(i, { id: e.target.value, rm: prefill(e.target.value) })}
+            onChange={(e) => setRow(i, { id: e.target.value, rm: e.target.value ? prefill(e.target.value) : null })}
           >
+            <option value="" />
             {catalog.map((ex) => (
               <option key={ex.id} value={ex.id} disabled={taken(ex.id, i)}>
                 {ex.name}
@@ -26,7 +28,13 @@ export default function MainLiftFields({ rows, catalog, onChange, prefill = () =
             ))}
           </select>
           <span className="weight-input">
-            <NumInput value={r.rm} placeholder="1RM" label={`1RM for main lift ${i + 1}`} onChange={(rm) => setRow(i, { rm })} />
+            <NumInput
+              value={r.rm}
+              placeholder={r.id ? '1RM' : ''}
+              label={`1RM for main lift ${i + 1}`}
+              disabled={!r.id}
+              onChange={(rm) => setRow(i, { rm })}
+            />
             {unit()}
           </span>
         </div>

@@ -187,6 +187,7 @@ dialog.sheet form { display: flex; flex-direction: column; gap: var(--space-3); 
 .main-lift-row { display: flex; align-items: center; gap: var(--space-3); }
 .main-lift-row select { flex: 1; min-width: 0; }
 .main-lift-row input.num { width: 84px; text-align: center; }
+.main-lift-row input.num:disabled { opacity: 0.4; }
 .weight-input { display: flex; align-items: center; gap: var(--space-2); font-size: var(--text-md); }
 .weight-input.big input.num { width: 120px; font-size: var(--text-lg); text-align: center; padding: var(--space-2); }
 
