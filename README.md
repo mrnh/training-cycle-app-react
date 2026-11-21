@@ -9,7 +9,7 @@ Russian Masters Squat Routine adapted for squat, bench press and deadlift.
   the others are previews. Each exercise has a rest timer
 - **Exercises:** a catalog of all exercises, including the three main lifts (1RM-based percentages)
 - **Settings:** start date, 1RM, accessory work groups A/B/C picked from the catalog with sets, reps,
-  weight and rest for each, backup export/import
+  weight and rest for each, kg/lbs label, backup export/import
 
 The week-9 single at 105% is the re-test and becomes the 1RM for the next cycle.
 
@@ -19,9 +19,9 @@ The week-9 single at 105% is the re-test and becomes the 1RM for the next cycle.
 Data is stored locally in the browser (IndexedDB), on each device separately. Use **Export backup** in Settings to keep a copy.
 
 <p>
-  <img src="docs/screenshots/v0.5.0/plan.jpg" width="200" alt="Plan screen">
-  <img src="docs/screenshots/v0.5.0/session.jpg" width="200" alt="Session screen">
-  <img src="docs/screenshots/v0.5.0/secondary.jpg" width="200" alt="Accessory work">
+  <img src="docs/screenshots/v0.6.0/plan.jpg" width="200" alt="Plan screen">
+  <img src="docs/screenshots/v0.6.0/session.jpg" width="200" alt="Session screen">
+  <img src="docs/screenshots/v0.6.0/accessory.jpg" width="200" alt="Accessory work">
 </p>
 
 See the [changelog](CHANGELOG.md) for how the app has developed, with screenshots of each version.

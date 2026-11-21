@@ -9,6 +9,38 @@ The current version is shown at the bottom of **Settings**.
 
 ---
 
+## 0.6.0 — 2026-11-21 · Units and tidier cards
+
+Main lifts and accessory work now use the same "3×10 @ 30 kg" style, "Last time" is a compact
+summary, and weights can be labelled in kg or lbs.
+
+| Session | Accessory work | Plan |
+|---|---|---|
+| ![Session](docs/screenshots/v0.6.0/session.jpg) | ![Accessory work](docs/screenshots/v0.6.0/accessory.jpg) | ![Plan](docs/screenshots/v0.6.0/plan.jpg) |
+
+| Accessory work (Settings) | Units |
+|---|---|
+| ![Accessory work in Settings](docs/screenshots/v0.6.0/settings-accessory.jpg) | ![Units](docs/screenshots/v0.6.0/units.jpg) |
+
+### Added
+- **Units** card in Settings, between Backup and Reset: switch between kg and lbs. It changes the
+  label everywhere (history included); numbers are not converted.
+
+### Changed
+- Main lifts show their prescription as "6×4 @ 80 kg" instead of percentages, on the Session
+  card, in finished sessions and in the Plan's Next up card.
+- "Last time" on accessory cards is a compact summary: sets with the same weight are grouped in
+  order, equal reps as "3×10", different reps as "10-9-7", e.g. "2×10 @ 40 kg, 10-7 @ 45 kg".
+  Bodyweight-only work reads "3×10 reps". Only ticked sets count.
+- Accessory cards: the pen sits beside the two text lines and is larger, and the set columns line
+  up with the timer segments below.
+- "Secondary groups" is now called **Accessory work**.
+
+### Removed
+- The group pill on accessory cards and the "sets × interval" text on the timer.
+
+---
+
 ## 0.5.0 — 2026-11-20 · Rest timer and prescribed accessories
 
 Every exercise card gets an interval timer, secondary exercises get a prescription, and their
