@@ -1,10 +1,7 @@
-import { useEffect, useRef, useState } from 'react'
-import { minSec, restOf } from '../program'
+import { useEffect, useState } from 'react'
+import Sheet from './Sheet'
+import { REST_MAX, REST_MIN, REST_STEP, minSec, restOf } from '../program'
 import { updateCycle } from '../store'
-
-const MIN = 15
-const MAX = 600
-const STEP = 15
 
 /** Re-renders four times a second while `running`, so the bar moves. */
 function useNow(running) {
@@ -125,36 +122,26 @@ export default function RestTimer({ cycle, card, sets, label, note, defaultRest 
 
 /** Rest interval in 15-second steps, 0:15 to 10:00. Nothing is saved until "Save". */
 function RestDialog({ title, value, onSave, onClose }) {
-  const ref = useRef(null)
   const [draft, setDraft] = useState(value)
 
-  useEffect(() => {
-    const d = ref.current
-    d.showModal()
-    return () => d.open && d.close()
-  }, [])
-
-  function save(e) {
-    e.preventDefault()
+  function save() {
     onSave(draft)
     onClose()
   }
 
   return (
-    <dialog ref={ref} className="sheet" onCancel={onClose} onClick={(e) => e.target === ref.current && onClose()}>
-      <form onSubmit={save}>
-        <h2>{title} · rest</h2>
-        <p className="muted small">Time per set, including the set itself.</p>
-        <div className="rest-stepper">
-          <button type="button" aria-label="15 seconds less" disabled={draft <= MIN} onClick={() => setDraft(draft - STEP)}>−</button>
-          <strong aria-live="polite">{minSec(draft)}</strong>
-          <button type="button" aria-label="15 seconds more" disabled={draft >= MAX} onClick={() => setDraft(draft + STEP)}>+</button>
-        </div>
-        <div className="button-row end">
-          <button type="button" onClick={onClose}>Cancel</button>
-          <button type="submit" className="primary">Save</button>
-        </div>
-      </form>
-    </dialog>
+    <Sheet onClose={onClose} onSubmit={save}>
+      <h2>{title} · rest</h2>
+      <p className="muted small">Time per set, including the set itself.</p>
+      <div className="rest-stepper">
+        <button type="button" aria-label="15 seconds less" disabled={draft <= REST_MIN} onClick={() => setDraft(draft - REST_STEP)}>−</button>
+        <strong aria-live="polite">{minSec(draft)}</strong>
+        <button type="button" aria-label="15 seconds more" disabled={draft >= REST_MAX} onClick={() => setDraft(draft + REST_STEP)}>+</button>
+      </div>
+      <div className="button-row end">
+        <button type="button" onClick={onClose}>Cancel</button>
+        <button type="submit" className="primary">Save</button>
+      </div>
+    </Sheet>
   )
 }

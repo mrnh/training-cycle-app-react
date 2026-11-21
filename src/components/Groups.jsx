@@ -1,7 +1,10 @@
-import { useEffect, useRef, useState } from 'react'
-import { DEFAULT_PRESCRIPTION, GROUPS, exerciseName, fmt, minSec, prescriptionText, unit } from '../program'
+import { useState } from 'react'
+import {
+  DEFAULT_PRESCRIPTION, GROUPS, MAX_SETS, REST_MAX, REST_MIN, REST_STEP, exerciseName, fmt, minSec, prescriptionText, unit,
+} from '../program'
 import { update } from '../store'
 import NumInput from './NumInput'
+import Sheet from './Sheet'
 
 /** Settings: which catalog exercises each group (A/B/C) adds to its sessions, with their prescription. */
 export default function Groups({ state }) {
@@ -80,47 +83,37 @@ function Group({ state, group, session }) {
 
 /** Sets, reps, weight (0 = bodyweight) and rest interval of one group entry. Saved on "Save". */
 function PrescriptionDialog({ title, value, onSave, onClose }) {
-  const ref = useRef(null)
   const [sets, setSets] = useState(value.sets)
   const [reps, setReps] = useState(value.reps)
   const [weight, setWeight] = useState(value.weight)
   const [rest, setRest] = useState(value.rest)
 
-  useEffect(() => {
-    const d = ref.current
-    d.showModal()
-    return () => d.open && d.close()
-  }, [])
-
-  function save(e) {
-    e.preventDefault()
+  function save() {
     onSave({ sets, reps, weight: weight ?? 0, rest })
     onClose()
   }
 
   return (
-    <dialog ref={ref} className="sheet" onCancel={onClose} onClick={(e) => e.target === ref.current && onClose()}>
-      <form onSubmit={save}>
-        <h2>{title}</h2>
-        <Stepper label="Sets" value={sets} text={sets} min={1} max={12} step={1} onChange={setSets} />
-        <Stepper label="Reps" value={reps} text={reps} min={1} max={50} step={1} onChange={setReps} />
-        <label className="stepper-row">
-          <span>Weight</span>
-          <span className="weight-input">
-            <NumInput value={weight} label={`Weight in ${unit()}`} onChange={setWeight} />
-            {unit()}
-          </span>
-        </label>
-        <Stepper label="Rest" value={rest} text={minSec(rest)} min={15} max={600} step={15} onChange={setRest} />
-        <p className="muted small">
-          {sets}×{reps} @ {fmt(weight ?? 0)} {unit()}. Weight 0 means bodyweight.
-        </p>
-        <div className="button-row end">
-          <button type="button" onClick={onClose}>Cancel</button>
-          <button type="submit" className="primary">Save</button>
-        </div>
-      </form>
-    </dialog>
+    <Sheet onClose={onClose} onSubmit={save}>
+      <h2>{title}</h2>
+      <Stepper label="Sets" value={sets} text={sets} min={1} max={MAX_SETS} step={1} onChange={setSets} />
+      <Stepper label="Reps" value={reps} text={reps} min={1} max={50} step={1} onChange={setReps} />
+      <label className="stepper-row">
+        <span>Weight</span>
+        <span className="weight-input">
+          <NumInput value={weight} label={`Weight in ${unit()}`} onChange={setWeight} />
+          {unit()}
+        </span>
+      </label>
+      <Stepper label="Rest" value={rest} text={minSec(rest)} min={REST_MIN} max={REST_MAX} step={REST_STEP} onChange={setRest} />
+      <p className="muted small">
+        {sets}×{reps} @ {fmt(weight ?? 0)} {unit()}. Weight 0 means bodyweight.
+      </p>
+      <div className="button-row end">
+        <button type="button" onClick={onClose}>Cancel</button>
+        <button type="submit" className="primary">Save</button>
+      </div>
+    </Sheet>
   )
 }
 

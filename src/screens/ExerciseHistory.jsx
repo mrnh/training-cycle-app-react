@@ -1,4 +1,5 @@
-import { useEffect, useRef, useState } from 'react'
+import { useState } from 'react'
+import Sheet from '../components/Sheet'
 import { GROUPS, bestByReps, exerciseHistory, fmt, fmtDate, fmtDateShort, sessionName, setsSummary } from '../program'
 import { update } from '../store'
 
@@ -6,10 +7,10 @@ import { update } from '../store'
 export default function ExerciseHistory({ state, ex, onBack }) {
   const groups = GROUPS.filter((g) => state.groups[g].some((e) => e.id === ex.id))
   const mainLift = state.cycles.some((c) => c.primaries.includes(ex.id))
-  // Main-lift and accessory entries together, newest first; only ticked sets count
+  // Main-lift and accessory entries together; only ticked sets count
   const rows = exerciseHistory(state, ex.id) // oldest first
   const best = bestByReps(rows)
-  const history = [...rows].reverse()
+  const history = [...rows].reverse() // newest first
   const [comment, setComment] = useState(null) // history row whose comment is shown
   const [renaming, setRenaming] = useState(false)
 
@@ -124,59 +125,38 @@ function BubbleIcon() {
 }
 
 function CommentDialog({ title, text, onClose }) {
-  const ref = useRef(null)
-  useEffect(() => {
-    const d = ref.current
-    d.showModal()
-    return () => d.open && d.close()
-  }, [])
   return (
-    <dialog ref={ref} className="sheet" onCancel={onClose} onClick={(e) => e.target === ref.current && onClose()}>
-      <form
-        onSubmit={(e) => {
-          e.preventDefault()
-          onClose()
-        }}
-      >
-        <div>
-          <h2>Comment</h2>
-          <p className="muted small">{title}</p>
-        </div>
-        <p className="comment-text">{text}</p>
-        <div className="button-row end">
-          <button type="submit" className="primary">Close</button>
-        </div>
-      </form>
-    </dialog>
+    <Sheet onClose={onClose} onSubmit={onClose}>
+      <div>
+        <h2>Comment</h2>
+        <p className="muted small">{title}</p>
+      </div>
+      <p className="comment-text">{text}</p>
+      <div className="button-row end">
+        <button type="submit" className="primary">Close</button>
+      </div>
+    </Sheet>
   )
 }
 
 function NameDialog({ name, onSave, onClose }) {
-  const ref = useRef(null)
   const [draft, setDraft] = useState(name)
-  useEffect(() => {
-    const d = ref.current
-    d.showModal()
-    return () => d.open && d.close()
-  }, [])
-  function save(e) {
-    e.preventDefault()
+  function save() {
+    if (!draft.trim()) return
     onSave(draft.trim())
     onClose()
   }
   return (
-    <dialog ref={ref} className="sheet" onCancel={onClose} onClick={(e) => e.target === ref.current && onClose()}>
-      <form onSubmit={save}>
-        <h2>Rename exercise</h2>
-        <label className="field">
-          <span>Name</span>
-          <input value={draft} autoFocus onChange={(e) => setDraft(e.target.value)} />
-        </label>
-        <div className="button-row end">
-          <button type="button" onClick={onClose}>Cancel</button>
-          <button type="submit" className="primary" disabled={!draft.trim()}>Save</button>
-        </div>
-      </form>
-    </dialog>
+    <Sheet onClose={onClose} onSubmit={save} focusInput>
+      <h2>Rename exercise</h2>
+      <label className="field">
+        <span>Name</span>
+        <input value={draft} onChange={(e) => setDraft(e.target.value)} />
+      </label>
+      <div className="button-row end">
+        <button type="button" onClick={onClose}>Cancel</button>
+        <button type="submit" className="primary" disabled={!draft.trim()}>Save</button>
+      </div>
+    </Sheet>
   )
 }

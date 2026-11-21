@@ -44,7 +44,7 @@ function AddExercise() {
   }
   return (
     <form className="add-row" onSubmit={add}>
-      <input value={name} onChange={(e) => setName(e.target.value)} placeholder="New exercise, e.g. Pull-up" aria-label="Exercise name" />
+      <input value={name} onChange={(e) => setName(e.target.value)} placeholder="New exercise" aria-label="Exercise name" />
       <button className="primary" type="submit">Add</button>
     </form>
   )

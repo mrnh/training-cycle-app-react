@@ -1,10 +1,11 @@
-import Note from '../components/Note'
 import { useState } from 'react'
 import FinishDialog from '../components/FinishDialog'
 import FinishedSession from '../components/FinishedSession'
+import Note from '../components/Note'
+import Planned from '../components/Planned'
 import RestTimer from '../components/RestTimer'
-import WeightDialog from '../components/WeightDialog'
 import SetsDialog from '../components/SetsDialog'
+import WeightDialog from '../components/WeightDialog'
 import {
   ALL_SESSIONS, activeSession, groupEntry, prescriptionText, sessionName, setText, clockTime, draftSecondaries, exerciseHistory, exerciseName, finishSession, fmt,
   liftOf, mainLifts, parseKey, secondaryKey, sessionPlan, setKey, setsSummary, startSession, startableSession, targetWeight,
@@ -165,9 +166,7 @@ function PrimaryBlock({ state, cycle, plan, p, open }) {
       <div className="lift-head">
         <div>
           <h2>{name}</h2>
-          <p className="muted small">
-            {p.sets}×{p.reps} @ <strong className="planned">{fmt(target)} {unit()}</strong>
-          </p>
+          <Planned sets={p.sets} reps={p.reps} weight={target} />
         </div>
         <div className="weight-used">
           <span>Weight used</span>
@@ -260,11 +259,7 @@ function SecondaryBlock({ state, cycle, plan, id, open }) {
       {/* Prescription and last time on the left, the pen for editing all sets on the right */}
       <div className="sec-head">
         <div>
-          {pres && (
-            <p className="muted small">
-              {pres.sets}×{pres.reps} @ <strong className="planned">{fmt(pres.weight)} {unit()}</strong>
-            </p>
-          )}
+          {pres && <Planned sets={pres.sets} reps={pres.reps} weight={pres.weight} />}
           <p className="muted small">
             {last ? `Last time (${sessionName(last)}): ${setsSummary(last.sets)}` : 'First time, no history yet'}
           </p>
@@ -313,16 +308,14 @@ function SecondaryBlock({ state, cycle, plan, id, open }) {
         />
       )}
       {open && (
-        <>
-          <RestTimer
-            cycle={cycle}
-            card={countKey}
-            sets={count}
-            defaultRest={pres?.rest}
-            label={exerciseName(state, id)}
-            note={<Note value={cycle.notes[countKey]} onChange={(t) => setNote(countKey, t)} />}
-          />
-        </>
+        <RestTimer
+          cycle={cycle}
+          card={countKey}
+          sets={count}
+          defaultRest={pres?.rest}
+          label={exerciseName(state, id)}
+          note={<Note value={cycle.notes[countKey]} onChange={(t) => setNote(countKey, t)} />}
+        />
       )}
     </section>
   )

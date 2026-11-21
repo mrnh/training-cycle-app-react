@@ -1,3 +1,4 @@
+import Planned from './Planned'
 import { fmt, fmtDate, setText, unit } from '../program'
 
 /** A finished session, read-only, shown from its permanent record. */
@@ -28,9 +29,7 @@ function MainEntry({ e }) {
       <div className="lift-head">
         <div>
           <h2>{e.name}</h2>
-          <p className="muted small">
-            {e.sets}×{e.reps} @ <strong className="planned">{fmt(e.planned)} {unit()}</strong>
-          </p>
+          <Planned sets={e.sets} reps={e.reps} weight={e.planned} />
         </div>
         <div className="weight-used">
           <span>Weight used</span>
@@ -55,11 +54,7 @@ function SecondaryEntry({ e }) {
   return (
     <section className="card">
       <h2>{e.name}</h2>
-      {e.prescription && (
-        <p className="muted small">
-          {e.prescription.sets}×{e.prescription.reps} @ <strong className="planned">{fmt(e.prescription.weight)} {unit()}</strong>
-        </p>
-      )}
+      {e.prescription && <Planned sets={e.prescription.sets} reps={e.prescription.reps} weight={e.prescription.weight} />}
       {e.sets.length === 0 ? (
         <p className="muted small">No sets logged</p>
       ) : (

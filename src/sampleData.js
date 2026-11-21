@@ -1,13 +1,11 @@
 import { DATA_VERSION } from './store'
-import { DEFAULT_CATALOG, newId } from './program'
+import { DEFAULT_CATALOG, isoDay, newId } from './program'
 
 /*
  * Sample data for trying the app out (Settings → Use sample data): a cycle in its second week
  * with four finished sessions and Session 2.2 in progress today. Dates are relative to today.
  */
 
-const isoDay = (d) =>
-  `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
 const plusDays = (d, n) => new Date(d.getFullYear(), d.getMonth(), d.getDate() + n)
 
 const all = (n) => Array(n).fill(true)

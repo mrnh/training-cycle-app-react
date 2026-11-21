@@ -1,5 +1,5 @@
-// Russian Masters Squat Routine, adapted for three lifts.
-// Every exercise lives in the catalog; squat, bench and deadlift are ordinary entries.
+// Russian Masters Squat Routine, adapted for up to three main lifts.
+// Every exercise lives in the catalog; the main lifts of a cycle are ordinary entries.
 export const DEFAULT_CATALOG = [
   { id: 'squat', name: 'Squat' },
   { id: 'bench', name: 'Bench press' },
@@ -37,7 +37,7 @@ export const V2 = [
   { sets: 1, reps: 1, pct: 105 }, // re-test
 ]
 
-// Each session: one main-lift slot on variant 2, another on variant 1, plus a secondary group.
+// Each session: one main-lift slot on variant 2, another on variant 1, plus an accessory group.
 // Slots 0, 1, 2 are squat, bench and deadlift by default (see cycle.primaries). A slot can be
 // empty (null): its sets are left out of every session.
 export const ROTATION = [
@@ -95,6 +95,9 @@ export const ALL_SESSIONS = Array.from({ length: WEEKS * SESSIONS_PER_WEEK }, (_
 
 /** Catalog id of the exercise in a planned main-lift slot for this cycle; null = empty slot. */
 export const liftOf = (cycle, p) => cycle.primaries[p.slot] ?? null
+/** The planned main lifts of a session whose slot has an exercise in this cycle. */
+export const mainLifts = (cycle, plan) => plan.primaries.filter((p) => liftOf(cycle, p))
+export const targetWeight = (cycle, p) => round1((cycle.oneRM[liftOf(cycle, p)] * p.pct) / 100)
 /** Main-lift slots being edited ([{ id, rm }], id '' = empty): at least one lift, and a 1RM for each picked lift. */
 export function mainLiftsError(rows) {
   const picked = rows.filter((r) => r.id)
@@ -102,9 +105,6 @@ export function mainLiftsError(rows) {
   if (picked.some((r) => !(r.rm > 0))) return 'Enter a 1RM for each main lift.'
   return ''
 }
-/** The planned main lifts of a session whose slot has an exercise in this cycle. */
-export const mainLifts = (cycle, plan) => plan.primaries.filter((p) => liftOf(cycle, p))
-export const targetWeight = (cycle, p) => round1((cycle.oneRM[liftOf(cycle, p)] * p.pct) / 100)
 
 /**
  * Two levels of storage:
@@ -117,6 +117,11 @@ export const targetWeight = (cycle, p) => round1((cycle.oneRM[liftOf(cycle, p)] 
 // cycle.rest. One timer runs at a time (cycle.timer = { card, startedAt }); it runs for
 // interval × number of sets.
 export const DEFAULT_REST = 120
+export const REST_MIN = 15
+export const REST_MAX = 600
+export const REST_STEP = 15
+// Most sets an accessory exercise can have (prescription, sets dialog, stored records)
+export const MAX_SETS = 12
 export const restOf = (cycle, card, fallback = DEFAULT_REST) => cycle.rest?.[card] ?? fallback
 
 // Secondary exercises: each group entry carries its prescription (fixed for the cycle) and the
@@ -200,7 +205,7 @@ export function buildRecord(state, cycle, plan, finishedAt) {
   const secondary = draftSecondaries(state, cycle, plan).map((id) => {
     const entry = secondaryKey(id)
     const sets = []
-    for (let i = 0; i < 12; i++) {
+    for (let i = 0; i < MAX_SETS; i++) {
       const log = cycle.logs[setKey(plan.key, entry, i)]
       if (log && (log.done || log.w != null || log.r != null)) sets.push({ w: log.w ?? null, r: log.r ?? null, done: !!log.done })
     }
@@ -260,7 +265,6 @@ export function addDays(isoDate, days) {
   d.setDate(d.getDate() + days)
   return d
 }
-export const shortDate = (d) => d.toLocaleDateString(undefined, { day: 'numeric', month: 'short' })
 export const weekStart = (cycle, week) => addDays(cycle.startDate, (week - 1) * 7)
 // "9.11." or, in US format, "11/9"
 const dayMonth = (d) => (dateFormat() === 'mdy' ? `${d.getMonth() + 1}/${d.getDate()}` : `${d.getDate()}.${d.getMonth() + 1}.`)
@@ -271,15 +275,16 @@ export const weekRange = (cycle, week) =>
 /** crypto.randomUUID only exists on https/localhost; phones on the local network use plain http. */
 export const newId = () =>
   crypto.randomUUID?.() ?? `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 10)}`
-const isoDay = (d) =>
+/** Local date as "2026-11-21" */
+export const isoDay = (d) =>
   `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
 export const todayIso = () => isoDay(new Date())
 /** "18:05" */
 export const clockTime = (iso) => new Date(iso).toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' })
 
 /**
- * Finished sessions of an exercise across every cycle, oldest first. `kind` is 'main' or
- * 'secondary'. Only ticked sets count as done work.
+ * Finished sessions of an exercise across every cycle, oldest first. `kind` ('main' or
+ * 'secondary') limits it to one kind; without it both count. Only ticked sets count as done work.
  */
 export function exerciseHistory(state, exId, kind) {
   const out = []
@@ -325,8 +330,8 @@ export function bestByReps(history, maxReps = 5) {
 }
 
 /**
- * One set as reps@weight, like the main lifts' "6×4 @ 80%": 8 reps at 15 kg -> "8@15kg".
- * Without external weight (0 or empty) it's just the reps: "10 reps".
+ * One set as reps@weight: 8 reps at 15 kg -> "8@15kg". Without external weight (0 or empty)
+ * it's just the reps: "10 reps".
  */
 export const setText = (s) => (s.w ? `${s.r ?? '–'}@${fmt(s.w)}${unit()}` : `${s.r ?? '–'} reps`)
 /**
@@ -358,7 +363,6 @@ export function setsSummary(sets) {
   return groups.map((g) => `${repsText(g.reps)} @ ${fmt(g.w)} ${unit()}`).join(', ')
 }
 
-/** "2026-11-19" -> "19.11.2026" */
 /** "2026-11-09" -> "9.11.2026", or in US format "11/9/2026" */
 export const fmtDate = (iso) => {
   const [y, m, d] = iso.split('-')

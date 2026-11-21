@@ -7,7 +7,7 @@ import { sampleState } from '../sampleData'
 
 export default function Settings({ state }) {
   const cycle = currentCycle(state)
-  const PRIMARY = cycle.primaries.filter(Boolean).map((id) => ({ id, name: exerciseName(state, id) }))
+  const lifts = cycle.primaries.filter(Boolean) // empty slots left out
   const [draft, setDraft] = useState(null) // [{ id, rm }] per main-lift slot while editing; null = not editing
   const [rmError, setRmError] = useState('')
 
@@ -119,10 +119,10 @@ export default function Settings({ state }) {
           </>
         ) : (
           <div className="list">
-            {PRIMARY.map((p) => (
-              <div className="row list-row static" key={p.id}>
-                <span>{p.name}</span>
-                <span>{fmt(cycle.oneRM[p.id])} {unit()}</span>
+            {lifts.map((id) => (
+              <div className="row list-row static" key={id}>
+                <span>{exerciseName(state, id)}</span>
+                <span>{fmt(cycle.oneRM[id])} {unit()}</span>
               </div>
             ))}
           </div>
