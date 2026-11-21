@@ -29,10 +29,7 @@ export default function ExerciseHistory({ state, ex, onBack }) {
         <button className="icon" aria-label="Back to exercises" onClick={onBack}>
           ‹
         </button>
-        <div>
-          <h1>Exercise history</h1>
-          <p className="muted small">{ex.name}</p>
-        </div>
+        <h1>Exercise history</h1>
         <span className="icon-spacer" />
       </header>
 
