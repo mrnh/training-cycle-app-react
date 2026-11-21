@@ -128,6 +128,13 @@ export const restOf = (cycle, card, fallback = DEFAULT_REST) => cycle.rest?.[car
 // rest interval the timer starts with. Weight 0 = bodyweight.
 export const DEFAULT_PRESCRIPTION = { sets: 3, reps: 10, weight: 0, rest: DEFAULT_REST }
 export const groupEntry = (state, group, id) => state.groups[group].find((e) => e.id === id) ?? null
+// Exercises added during a workout, for that session only: cycle.extras[sessionKey] =
+// [{ id, sets, reps, weight, rest }] like a group entry. Removable until the session is finished.
+export const sessionExtras = (cycle, plan) => cycle.extras?.[plan.key] ?? []
+export const isExtra = (cycle, plan, id) => sessionExtras(cycle, plan).some((e) => e.id === id)
+/** The prescription of an accessory exercise in a session: its group entry, else the one added there. */
+export const sessionEntry = (state, cycle, plan, id) =>
+  groupEntry(state, plan.group, id) ?? sessionExtras(cycle, plan).find((e) => e.id === id) ?? null
 /** "3×10 @ 30 kg" */
 export const prescriptionText = (p) => `${p.sets}×${p.reps} @ ${fmt(p.weight)} ${unit()}`
 /** 125 -> "2:05" */
@@ -169,9 +176,10 @@ export function startSession(state, cycle, plan, now = new Date()) {
   cycle.active = { key: plan.key, startedAt: now.toISOString() }
 }
 
-/** Catalog ids of the secondary exercises in a draft: its group, plus any already logged. */
+/** Catalog ids of the secondary exercises in a draft: its group, the ones added, plus any already logged. */
 export function draftSecondaries(state, cycle, plan) {
   const ids = state.groups[plan.group].map((e) => e.id)
+  for (const e of sessionExtras(cycle, plan)) if (!ids.includes(e.id)) ids.push(e.id)
   for (const obj of [cycle.logs, cycle.setCounts, cycle.notes]) {
     for (const k of Object.keys(obj)) {
       const [sk, entry] = k.split(':')
@@ -209,7 +217,7 @@ export function buildRecord(state, cycle, plan, finishedAt) {
       const log = cycle.logs[setKey(plan.key, entry, i)]
       if (log && (log.done || log.w != null || log.r != null)) sets.push({ w: log.w ?? null, r: log.r ?? null, done: !!log.done })
     }
-    const pres = groupEntry(state, plan.group, id)
+    const pres = sessionEntry(state, cycle, plan, id)
     return {
       kind: 'secondary',
       exerciseId: id,
@@ -229,8 +237,19 @@ export function finishSession(state, cycle, plan, finishedAt) {
   for (const obj of [cycle.logs, cycle.notes, cycle.setCounts, cycle.rest ?? {}]) {
     for (const k of Object.keys(obj)) if (own(k)) delete obj[k]
   }
+  if (cycle.extras) delete cycle.extras[plan.key]
   if (cycle.active?.key === plan.key) cycle.active = null
   if (cycle.timer && own(cycle.timer.card)) cycle.timer = null
+}
+
+/** Remove an exercise added during the open session, with everything logged for it (mutates). */
+export function removeExtra(cycle, plan, id) {
+  cycle.extras[plan.key] = sessionExtras(cycle, plan).filter((e) => e.id !== id)
+  const prefix = `${plan.key}:${secondaryKey(id)}`
+  for (const obj of [cycle.logs, cycle.notes, cycle.setCounts, cycle.rest ?? {}]) {
+    for (const k of Object.keys(obj)) if (k === prefix || k.startsWith(`${prefix}:`)) delete obj[k]
+  }
+  if (cycle.timer?.card === prefix) cycle.timer = null
 }
 
 /** Main-lift sets not ticked, per lift, for the Finish dialog. */

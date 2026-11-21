@@ -125,21 +125,43 @@ function Group({ state, group, session }) {
   )
 }
 
-/** Sets, reps, weight (0 = bodyweight) and rest interval of one group entry. Saved on "Save". */
-function PrescriptionDialog({ title, value, onSave, onClose }) {
+/**
+ * Sets, reps, weight (0 = bodyweight) and rest interval of one group entry. Saved on "Save".
+ * With `choices` ([{ id, name }]) it also picks the exercise (adding one during a workout);
+ * `onSave` then gets the id too.
+ */
+export function PrescriptionDialog({ title, value = DEFAULT_PRESCRIPTION, choices, saveLabel = 'Save', onSave, onClose }) {
+  const [exercise, setExercise] = useState('')
+  const [error, setError] = useState('')
   const [sets, setSets] = useState(value.sets)
   const [reps, setReps] = useState(value.reps)
   const [weight, setWeight] = useState(value.weight)
   const [rest, setRest] = useState(value.rest)
 
   function save() {
-    onSave({ sets, reps, weight: weight ?? 0, rest })
+    if (choices && !exercise) return setError('Choose an exercise.')
+    onSave({ ...(choices && { id: exercise }), sets, reps, weight: weight ?? 0, rest })
     onClose()
   }
 
   return (
     <Sheet onClose={onClose} onSubmit={save}>
       <h2>{title}</h2>
+      {choices && (
+        <select
+          value={exercise}
+          aria-label="Exercise"
+          onChange={(e) => {
+            setError('')
+            setExercise(e.target.value)
+          }}
+        >
+          <option value="">Choose an exercise…</option>
+          {choices.map((c) => (
+            <option key={c.id} value={c.id}>{c.name}</option>
+          ))}
+        </select>
+      )}
       <Stepper label="Sets" value={sets} text={sets} min={1} max={MAX_SETS} step={1} onChange={setSets} />
       <Stepper label="Reps" value={reps} text={reps} min={1} max={50} step={1} onChange={setReps} />
       <label className="stepper-row">
@@ -153,9 +175,10 @@ function PrescriptionDialog({ title, value, onSave, onClose }) {
       <p className="muted small">
         {sets}×{reps} @ {fmt(weight ?? 0)} {unit()}. Weight 0 means bodyweight.
       </p>
+      {error && <p className="error">{error}</p>}
       <div className="button-row end">
         <button type="button" onClick={onClose}>Cancel</button>
-        <button type="submit" className="primary">Save</button>
+        <button type="submit" className="primary">{saveLabel}</button>
       </div>
     </Sheet>
   )

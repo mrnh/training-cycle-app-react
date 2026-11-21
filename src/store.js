@@ -74,6 +74,7 @@ export function newCycle(startDate, oneRM, primaries = DEFAULT_PRIMARIES) {
     active: null, // the one open session: { key, startedAt }
     rest: {}, // card key (as in notes) -> rest interval in seconds
     timer: null, // the one running rest timer: { card, startedAt }
+    extras: {}, // sessionKey -> exercises added during that workout (see sessionExtras)
   }
 }
 

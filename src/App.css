@@ -387,3 +387,7 @@ button.sec-pen {
 .segmented button.active { background: var(--card); border-color: var(--border); color: var(--text); font-weight: var(--weight-bold); }
 .unit-row { align-items: center; gap: var(--space-3); }
 .unit-row h3 { margin: 0; }
+
+/* Session: exercises added during the workout */
+button.add-exercise { width: 100%; }
+button.remove-extra { height: var(--tap-sm); margin: calc(-1 * var(--space-2)) calc(-1 * var(--space-3)) calc(-1 * var(--space-2)) 0; }

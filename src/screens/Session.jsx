@@ -1,13 +1,14 @@
 import { useState } from 'react'
 import FinishDialog from '../components/FinishDialog'
 import FinishedSession from '../components/FinishedSession'
+import { PrescriptionDialog } from '../components/Groups'
 import Note from '../components/Note'
 import Planned from '../components/Planned'
 import RestTimer from '../components/RestTimer'
 import SetsDialog from '../components/SetsDialog'
 import WeightDialog from '../components/WeightDialog'
 import {
-  ALL_SESSIONS, activeSession, groupEntry, prescriptionText, sessionName, setText, clockTime, draftSecondaries, exerciseHistory, exerciseName, finishSession, fmt,
+  ALL_SESSIONS, activeSession, isExtra, prescriptionText, removeExtra, sessionEntry, sessionName, setText, clockTime, draftSecondaries, exerciseHistory, exerciseName, finishSession, fmt,
   liftOf, mainLifts, parseKey, secondaryKey, sessionPlan, setKey, setsSummary, startSession, startableSession, targetWeight,
   todayIso, unit, untickedSets, weekRange,
 } from '../program'
@@ -115,6 +116,14 @@ function NotYet({ cycle, active, onNavigate }) {
  */
 function Draft({ state, cycle, plan, open, onFinish }) {
   const secondaries = draftSecondaries(state, cycle, plan)
+  const [adding, setAdding] = useState(false)
+  // Any catalog exercise not already among this session's accessory work
+  const choices = state.catalog.filter((e) => !secondaries.includes(e.id))
+  const addExtra = ({ id, ...pres }) =>
+    updateCycle((c) => {
+      c.extras ??= {}
+      c.extras[plan.key] = [...(c.extras[plan.key] ?? []), { id, ...pres }]
+    })
   return (
     <fieldset className="draft" disabled={!open}>
       {mainLifts(cycle, plan).map((p) => (
@@ -126,6 +135,20 @@ function Draft({ state, cycle, plan, open, onFinish }) {
       ))}
       {secondaries.length === 0 && (
         <p className="muted small center">No accessory work in group {plan.group} yet. Add it in Settings.</p>
+      )}
+      {open && (
+        <button className="add-exercise" onClick={() => setAdding(true)}>
+          + Add exercise
+        </button>
+      )}
+      {adding && (
+        <PrescriptionDialog
+          title="Add exercise"
+          choices={choices}
+          saveLabel="Add"
+          onSave={addExtra}
+          onClose={() => setAdding(false)}
+        />
       )}
 
       {open && (
@@ -230,7 +253,13 @@ function SecondaryBlock({ state, cycle, plan, id, open }) {
     .at(-1)
   const countKey = `${plan.key}:${entry}`
   // The group's prescription sets the rows and pre-fills them; "last time" is for reference
-  const pres = groupEntry(state, plan.group, id)
+  const pres = sessionEntry(state, cycle, plan, id)
+  // Added during this workout (not part of the group): can be removed again while it's open
+  const removable = open && isExtra(cycle, plan, id)
+  const remove = () => {
+    if (!confirm(`Remove ${exerciseName(state, id)} from this session? Sets logged for it are dropped.`)) return
+    updateCycle((c) => removeExtra(c, plan, id))
+  }
   const count = cycle.setCounts[countKey] ?? pres?.sets ?? Math.max(last?.sets.length ?? 3, 1)
   const [editing, setEditing] = useState(false)
   const keys = Array.from({ length: count }, (_, i) => setKey(plan.key, entry, i))
@@ -255,7 +284,14 @@ function SecondaryBlock({ state, cycle, plan, id, open }) {
 
   return (
     <section className="card">
-      <h2>{exerciseName(state, id)}</h2>
+      <div className="row">
+        <h2>{exerciseName(state, id)}</h2>
+        {removable && (
+          <button className="icon-btn remove-extra" aria-label={`Remove ${exerciseName(state, id)} from this session`} onClick={remove}>
+            ×
+          </button>
+        )}
+      </div>
       {/* Prescription and last time on the left, the pen for editing all sets on the right */}
       <div className="sec-head">
         <div>
