@@ -73,7 +73,7 @@ export default function Settings({ state }) {
     window.scrollTo(0, 0)
   }
   if (subScreen === 'groups') return <GroupsEditor state={state} onBack={() => show(null)} />
-  if (subScreen === 'exercises') return <Exercises state={state} title="Exercise catalog" onBack={() => show(null)} />
+  if (subScreen === 'exercises') return <Exercises state={state} onBack={() => show(null)} />
 
   return (
     <div className="screen">

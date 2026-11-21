@@ -4,15 +4,14 @@ A mobile-first React app for a 9-week strength cycle with three sessions a week,
 Russian Masters Squat Routine adapted for up to three main lifts (squat, bench press and deadlift
 by default).
 
-- **Plan:** all 27 sessions at a glance, with progress
+- **Overview:** all 27 sessions at a glance, with progress
 - **Session:** start the next session in order, tick sets and log weight and reps; values save
   instantly, and "Finish session" stores the workout permanently. One session is open at a time;
   the others are previews. Each exercise has a rest timer
-- **Exercises:** a catalog of all exercises; each has a history of every finished session and its
-  personal bests for 1 to 5 reps
+- **History:** empty for now, being redesigned
 - **Settings:** start date, up to three main lifts with their 1RM, accessory work groups A/B/C with
-  sets, reps, weight and rest for each (all picked from the catalog), kg/lbs and date format,
-  backup export/import and sample data
+  sets, reps, weight and rest for each, the exercise catalog (each exercise with its history and
+  personal bests for 1 to 5 reps), kg/lbs and date format, backup export/import and sample data
 
 The week-9 single at 105% is the re-test and becomes the 1RM for the next cycle.
 
@@ -22,7 +21,7 @@ The week-9 single at 105% is the re-test and becomes the 1RM for the next cycle.
 Data is stored locally in the browser (IndexedDB), on each device separately. Use **Export backup** in Settings to keep a copy.
 
 <p>
-  <img src="docs/screenshots/v0.8.0/plan.jpg" width="200" alt="Plan screen">
+  <img src="docs/screenshots/v0.8.0/plan.jpg" width="200" alt="Overview screen">
   <img src="docs/screenshots/v0.8.0/session.jpg" width="200" alt="Session screen">
   <img src="docs/screenshots/v0.8.0/exercise-history.jpg" width="200" alt="Exercise history">
 </p>

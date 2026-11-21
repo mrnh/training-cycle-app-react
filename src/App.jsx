@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import './App.css'
 import { ALL_SESSIONS, activeSession, nextSession } from './program'
-import Exercises from './screens/Exercises'
+import History from './screens/History'
 import Plan from './screens/Plan'
 import Session from './screens/Session'
 import Settings from './screens/Settings'
@@ -9,17 +9,17 @@ import Setup from './screens/Setup'
 import { currentCycle, useStore } from './store'
 
 const TABS = [
-  { id: 'plan', label: 'Plan', icon: '▦' },
+  { id: 'overview', label: 'Overview', icon: '▦' },
   { id: 'session', label: 'Session', icon: '◉' },
-  { id: 'exercises', label: 'Exercises', icon: '☰' },
+  { id: 'history', label: 'History', icon: '☰' },
   { id: 'settings', label: 'Settings', icon: '⚙' },
 ]
 
 export default function App() {
   const state = useStore()
-  const [tab, setTab] = useState('plan')
+  const [tab, setTab] = useState('overview')
   const [selected, setSelected] = useState(null)
-  // Bumped on every tab tap, so tapping the open tab returns it to its first screen (Exercises, Settings)
+  // Bumped on every tab tap, so tapping the open tab returns it to its first screen (Settings sub-screens)
   const [tabTaps, setTabTaps] = useState(0)
 
   if (state === undefined) return <div className="screen muted center">Loading…</div>
@@ -45,10 +45,10 @@ export default function App() {
 
   return (
     <>
-      <main className={tab === 'plan' ? 'fit' : undefined}>
-        {tab === 'plan' && <Plan state={state} onOpen={openSession} />}
+      <main className={tab === 'overview' ? 'fit' : undefined}>
+        {tab === 'overview' && <Plan state={state} onOpen={openSession} />}
         {tab === 'session' && <Session key={sessionKey} state={state} sessionKey={sessionKey} onNavigate={openSession} />}
-        {tab === 'exercises' && <Exercises key={tabTaps} state={state} />}
+        {tab === 'history' && <History />}
         {tab === 'settings' && <Settings key={tabTaps} state={state} />}
       </main>
       <nav className="tabbar">

@@ -55,7 +55,7 @@ export function GroupsEditor({ state, onBack }) {
       </header>
       <section className="card">
         <p className="muted small">
-          Each session adds one group. Pick exercises from your catalog (Exercises tab) and tap one to set its sets,
+          Each session adds one group. Pick exercises from your catalog (Settings → Exercise catalog) and tap one to set its sets,
           reps, weight and rest.
         </p>
         {GROUPS.map((g, i) => (
