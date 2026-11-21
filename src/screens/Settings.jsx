@@ -128,7 +128,7 @@ export default function Settings({ state }) {
       </section>
 
       <section className="card">
-        <h2>Units</h2>
+        <h2>Preferences</h2>
         <div className="row unit-row">
           <h3>Weight</h3>
           <Segmented

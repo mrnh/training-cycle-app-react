@@ -354,7 +354,7 @@ button.sec-pen {
 .sets-edit-row { display: contents; }
 .sets-edit input.num { text-align: center; padding: var(--space-2) var(--space-1); }
 
-/* Two-option switch (Settings → Units) */
+/* Two-option switch (Settings → Preferences) */
 .segmented { display: inline-flex; border: 1px solid var(--border); border-radius: var(--radius-md); overflow: hidden; align-self: flex-start; }
 .segmented button { border: none; border-radius: 0; min-width: 72px; background: var(--card); }
 .unit-row { align-items: center; gap: var(--space-3); }
