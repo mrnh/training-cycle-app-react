@@ -48,6 +48,12 @@ export const ROTATION = [
 export const round1 = (x) => Math.round(x * 10) / 10
 export const fmt = (x) => (x == null || x === '' ? '–' : String(round1(x)))
 
+// Weight unit shown next to every number: "kg" or "lbs". Only a label, numbers are never converted.
+export const UNITS = ['kg', 'lbs']
+let currentUnit = 'kg'
+export const unit = () => currentUnit
+export const setUnit = (u) => void (currentUnit = UNITS.includes(u) ? u : 'kg')
+
 export const sessionKey = (week, session) => `w${week}s${session}`
 /** How sessions are named everywhere: "Session 1.2" = week 1, session 2. */
 export const sessionName = ({ week, session }) => `Session ${week}.${session}`
@@ -100,7 +106,7 @@ export const restOf = (cycle, card, fallback = DEFAULT_REST) => cycle.rest?.[car
 export const DEFAULT_PRESCRIPTION = { sets: 3, reps: 10, weight: 0, rest: DEFAULT_REST }
 export const groupEntry = (state, group, id) => state.groups[group].find((e) => e.id === id) ?? null
 /** "3×10 @ 30 kg" */
-export const prescriptionText = (p) => `${p.sets}×${p.reps} @ ${fmt(p.weight)} kg`
+export const prescriptionText = (p) => `${p.sets}×${p.reps} @ ${fmt(p.weight)} ${unit()}`
 /** 125 -> "2:05" */
 export const minSec = (s) => `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, '0')}`
 
@@ -278,7 +284,7 @@ export function exerciseHistory(state, exId, kind) {
  * One set as reps@weight, like the main lifts' "6×4 @ 80%": 8 reps at 15 kg -> "8@15kg".
  * Without external weight (0 or empty) it's just the reps: "10 reps".
  */
-export const setText = (s) => (s.w ? `${s.r ?? '–'}@${fmt(s.w)}kg` : `${s.r ?? '–'} reps`)
+export const setText = (s) => (s.w ? `${s.r ?? '–'}@${fmt(s.w)}${unit()}` : `${s.r ?? '–'} reps`)
 /**
  * Compact summary of done sets for "Last time". Consecutive sets with the same weight form a
  * group (order is kept, so 40, 45, 40 kg are three groups). A group with equal reps is "3×10",
@@ -305,7 +311,7 @@ export function setsSummary(sets) {
   }
   const bodyweightOnly = groups.length === 1 && groups[0].w === 0
   if (bodyweightOnly) return `${repsText(groups[0].reps)} reps`
-  return groups.map((g) => `${repsText(g.reps)} @ ${fmt(g.w)} kg`).join(', ')
+  return groups.map((g) => `${repsText(g.reps)} @ ${fmt(g.w)} ${unit()}`).join(', ')
 }
 
 /** "2026-11-19" -> "19.11.2026" */

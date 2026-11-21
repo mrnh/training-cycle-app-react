@@ -8,7 +8,7 @@ import SetsDialog from '../components/SetsDialog'
 import {
   ALL_SESSIONS, activeSession, groupEntry, prescriptionText, sessionName, setText, clockTime, draftSecondaries, exerciseHistory, exerciseName, finishSession, fmt,
   liftOf, parseKey, secondaryKey, sessionPlan, setKey, setsSummary, startSession, startableSession, targetWeight,
-  todayIso, untickedSets, weekRange,
+  todayIso, unit, untickedSets, weekRange,
 } from '../program'
 import { currentCycle, update, updateCycle } from '../store'
 
@@ -166,13 +166,13 @@ function PrimaryBlock({ state, cycle, plan, p, open }) {
         <div>
           <h2>{name}</h2>
           <p className="muted small">
-            {p.sets}×{p.reps} @ <strong className="planned">{fmt(target)} kg</strong>
+            {p.sets}×{p.reps} @ <strong className="planned">{fmt(target)} {unit()}</strong>
           </p>
         </div>
         <div className="weight-used">
           <span>Weight used</span>
           <span className="weight-value">
-            <strong className={w !== target ? 'changed' : undefined}>{fmt(w)} kg</strong>
+            <strong className={w !== target ? 'changed' : undefined}>{fmt(w)} {unit()}</strong>
             {open && (
               <button className="pen" aria-label={`Change ${name} weight`} onClick={() => setEditing(true)}>
                 ✎
@@ -262,7 +262,7 @@ function SecondaryBlock({ state, cycle, plan, id, open }) {
         <div>
           {pres && (
             <p className="muted small">
-              {pres.sets}×{pres.reps} @ <strong className="planned">{fmt(pres.weight)} kg</strong>
+              {pres.sets}×{pres.reps} @ <strong className="planned">{fmt(pres.weight)} {unit()}</strong>
             </p>
           )}
           <p className="muted small">

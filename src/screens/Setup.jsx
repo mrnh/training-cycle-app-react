@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import NumInput from '../components/NumInput'
-import { DEFAULT_CATALOG, DEFAULT_PRIMARIES, todayIso } from '../program'
+import { DEFAULT_CATALOG, DEFAULT_PRIMARIES, todayIso, unit } from '../program'
 
 const PRIMARY = DEFAULT_PRIMARIES.map((id) => DEFAULT_CATALOG.find((e) => e.id === id))
 import { initialState, replaceState } from '../store'
@@ -29,7 +29,7 @@ export default function Setup() {
 
       {PRIMARY.map((p) => (
         <label className="field" key={p.id}>
-          <span>{p.name} 1RM (kg)</span>
+          <span>{p.name} 1RM ({unit()})</span>
           <NumInput
             value={oneRM[p.id]}
             placeholder="100"

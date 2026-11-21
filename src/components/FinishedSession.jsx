@@ -1,4 +1,4 @@
-import { fmt, fmtDate, setText } from '../program'
+import { fmt, fmtDate, setText, unit } from '../program'
 
 /** A finished session, read-only, shown from its permanent record. */
 export default function FinishedSession({ record }) {
@@ -29,13 +29,13 @@ function MainEntry({ e }) {
         <div>
           <h2>{e.name}</h2>
           <p className="muted small">
-            {e.sets}×{e.reps} @ <strong className="planned">{fmt(e.planned)} kg</strong>
+            {e.sets}×{e.reps} @ <strong className="planned">{fmt(e.planned)} {unit()}</strong>
           </p>
         </div>
         <div className="weight-used">
           <span>Weight used</span>
           <span className="weight-value">
-            <strong className={e.weight !== e.planned ? 'changed' : undefined}>{fmt(e.weight)} kg</strong>
+            <strong className={e.weight !== e.planned ? 'changed' : undefined}>{fmt(e.weight)} {unit()}</strong>
           </span>
         </div>
       </div>
@@ -57,7 +57,7 @@ function SecondaryEntry({ e }) {
       <h2>{e.name}</h2>
       {e.prescription && (
         <p className="muted small">
-          {e.prescription.sets}×{e.prescription.reps} @ <strong className="planned">{fmt(e.prescription.weight)} kg</strong>
+          {e.prescription.sets}×{e.prescription.reps} @ <strong className="planned">{fmt(e.prescription.weight)} {unit()}</strong>
         </p>
       )}
       {e.sets.length === 0 ? (

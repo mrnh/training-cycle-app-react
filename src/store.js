@@ -1,5 +1,5 @@
 import {
-  ALL_SESSIONS, DEFAULT_CATALOG, DEFAULT_PRESCRIPTION, DEFAULT_PRIMARIES, GROUPS, finishSession, newId, secondaryKey, sessionProgress,
+  ALL_SESSIONS, DEFAULT_CATALOG, DEFAULT_PRESCRIPTION, DEFAULT_PRIMARIES, GROUPS, finishSession, newId, secondaryKey, sessionProgress, setUnit,
 } from './program'
 import { useSyncExternalStore } from 'react'
 import { get, set, del } from 'idb-keyval'
@@ -12,7 +12,10 @@ const BACKUP_KEY = (v) => `training-plan-before-v${v}`
 
 let state // undefined = still loading, null = no data yet (first launch)
 const listeners = new Set()
-const emit = () => listeners.forEach((l) => l())
+const emit = () => {
+  setUnit(state?.unit)
+  listeners.forEach((l) => l())
+}
 
 get(KEY)
   .then(async (v) => {

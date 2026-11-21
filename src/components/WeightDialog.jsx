@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import NumInput from './NumInput'
+import { unit } from '../program'
 
 /** Modal to change the weight used for a lift. Nothing is saved until "Save". */
 export default function WeightDialog({ title, value, planned, onSave, onClose }) {
@@ -27,17 +28,17 @@ export default function WeightDialog({ title, value, planned, onSave, onClose })
     <dialog ref={ref} className="sheet" onCancel={onClose} onClick={(e) => e.target === ref.current && onClose()}>
       <form onSubmit={save}>
         <h2>{title}</h2>
-        <p className="muted small">Planned: {planned} kg</p>
+        <p className="muted small">Planned: {planned} {unit()}</p>
         <label className="weight-input big">
           <NumInput
             value={draft}
-            label="Weight used in kg"
+            label={`Weight used in ${unit()}`}
             onChange={(v) => {
               setError('')
               setDraft(v)
             }}
           />
-          kg
+          {unit()}
         </label>
         {error && <p className="error">{error}</p>}
         {draft !== planned && (

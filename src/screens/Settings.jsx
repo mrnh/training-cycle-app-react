@@ -1,8 +1,8 @@
 import { useRef, useState } from 'react'
 import NumInput from '../components/NumInput'
 import Groups from '../components/Groups'
-import { exerciseName, fmt, todayIso } from '../program'
-import { currentCycle, migrate, replaceState, updateCycle } from '../store'
+import { UNITS, exerciseName, fmt, todayIso, unit } from '../program'
+import { currentCycle, migrate, replaceState, update, updateCycle } from '../store'
 
 export default function Settings({ state }) {
   const cycle = currentCycle(state)
@@ -88,7 +88,7 @@ export default function Settings({ state }) {
             </p>
             {PRIMARY.map((p) => (
               <label className="field" key={p.id}>
-                <span>{p.name} (kg)</span>
+                <span>{p.name} ({unit()})</span>
                 <NumInput
                   value={draft[p.id]}
                   label={`${p.name} 1RM`}
@@ -107,7 +107,7 @@ export default function Settings({ state }) {
             {PRIMARY.map((p) => (
               <div className="row list-row static" key={p.id}>
                 <span>{p.name}</span>
-                <span>{fmt(cycle.oneRM[p.id])} kg</span>
+                <span>{fmt(cycle.oneRM[p.id])} {unit()}</span>
               </div>
             ))}
           </div>
@@ -125,6 +125,24 @@ export default function Settings({ state }) {
           <input ref={fileRef} type="file" accept="application/json,.json" hidden onChange={importData} />
         </div>
         {message && <p className="small">{message}</p>}
+      </section>
+
+      <section className="card">
+        <h2>Units</h2>
+        <p className="muted small">Changes the label only. Numbers are not converted.</p>
+        <div className="segmented" role="radiogroup" aria-label="Weight unit">
+          {UNITS.map((u) => (
+            <button
+              key={u}
+              role="radio"
+              aria-checked={unit() === u}
+              className={unit() === u ? 'active' : undefined}
+              onClick={() => update((d) => void (d.unit = u))}
+            >
+              {u}
+            </button>
+          ))}
+        </div>
       </section>
 
       <section className="card">

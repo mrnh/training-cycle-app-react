@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import {
   ALL_SESSIONS, WEEKS, activeSession, sessionName, cycleComplete, exerciseName, fmt, isFinished, liftOf, nextSession,
-  retestResults, targetWeight, todayIso, weekRange,
+  retestResults, targetWeight, todayIso, unit, weekRange,
 } from '../program'
 import { currentCycle, newCycle, update } from '../store'
 
@@ -18,7 +18,7 @@ export default function Plan({ state, onOpen }) {
           <span className="muted small">{active ? 'In progress' : 'Next up'}</span>
           <strong>{sessionName(next)}</strong>
           <span className="small">
-            {next.primaries.map((p) => `${exerciseName(state, liftOf(cycle, p))} ${p.sets}×${p.reps} @ ${fmt(targetWeight(cycle, p))} kg`).join(' · ')}
+            {next.primaries.map((p) => `${exerciseName(state, liftOf(cycle, p))} ${p.sets}×${p.reps} @ ${fmt(targetWeight(cycle, p))} ${unit()}`).join(' · ')}
           </span>
         </button>
       )}
@@ -85,11 +85,11 @@ function NextCycle({ state }) {
           <span>{exerciseName(state, id)}</span>
           {results[id] != null ? (
             <span>
-              {fmt(cycle.oneRM[id])} → <strong>{fmt(newRM[id])} kg</strong>
+              {fmt(cycle.oneRM[id])} → <strong>{fmt(newRM[id])} {unit()}</strong>
             </span>
           ) : (
             <span>
-              <strong>{fmt(newRM[id])} kg</strong> <span className="muted">kept, re-test not ticked</span>
+              <strong>{fmt(newRM[id])} {unit()}</strong> <span className="muted">kept, re-test not ticked</span>
             </span>
           )}
         </div>

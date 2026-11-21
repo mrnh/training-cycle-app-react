@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { DEFAULT_PRESCRIPTION, GROUPS, exerciseName, fmt, minSec, prescriptionText } from '../program'
+import { DEFAULT_PRESCRIPTION, GROUPS, exerciseName, fmt, minSec, prescriptionText, unit } from '../program'
 import { update } from '../store'
 import NumInput from './NumInput'
 
@@ -107,13 +107,13 @@ function PrescriptionDialog({ title, value, onSave, onClose }) {
         <label className="stepper-row">
           <span>Weight</span>
           <span className="weight-input">
-            <NumInput value={weight} label="Weight in kg" onChange={setWeight} />
-            kg
+            <NumInput value={weight} label={`Weight in ${unit()}`} onChange={setWeight} />
+            {unit()}
           </span>
         </label>
         <Stepper label="Rest" value={rest} text={minSec(rest)} min={15} max={600} step={15} onChange={setRest} />
         <p className="muted small">
-          {sets}×{reps} @ {fmt(weight ?? 0)} kg. Weight 0 means bodyweight.
+          {sets}×{reps} @ {fmt(weight ?? 0)} {unit()}. Weight 0 means bodyweight.
         </p>
         <div className="button-row end">
           <button type="button" onClick={onClose}>Cancel</button>

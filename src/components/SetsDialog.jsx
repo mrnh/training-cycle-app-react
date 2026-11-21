@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import NumInput from './NumInput'
+import { unit } from '../program'
 
 const MAX_SETS = 12
 
@@ -34,7 +35,7 @@ export default function SetsDialog({ title, planned, rows, hints, onSave, onClos
         {planned && <p className="muted small">Planned: {planned}</p>}
         <div className="sets-edit">
           <span className="set-head">Set</span>
-          <span className="set-head">kg</span>
+          <span className="set-head">{unit()}</span>
           <span className="set-head">Reps</span>
           {draft.map((x, i) => (
             <div key={i} className="sets-edit-row">
