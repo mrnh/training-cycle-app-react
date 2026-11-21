@@ -3,6 +3,7 @@ import NumInput from '../components/NumInput'
 import Groups from '../components/Groups'
 import { DATE_FORMATS, UNITS, dateFormat, exerciseName, fmt, todayIso, unit } from '../program'
 import { currentCycle, migrate, replaceState, update, updateCycle } from '../store'
+import { sampleState } from '../sampleData'
 
 export default function Settings({ state }) {
   const cycle = currentCycle(state)
@@ -46,6 +47,12 @@ export default function Settings({ state }) {
     } catch {
       setMessage("That file isn't a training plan backup.")
     }
+  }
+
+  function loadSample() {
+    if (!confirm('Replace all current data with sample data? Export a backup first if you want to keep yours.')) return
+    replaceState(sampleState({ unit: state.unit, dateFormat: state.dateFormat }))
+    setMessage('Sample data loaded')
   }
 
   function resetAll() {
@@ -124,6 +131,7 @@ export default function Settings({ state }) {
           <button onClick={() => fileRef.current.click()}>Import backup</button>
           <input ref={fileRef} type="file" accept="application/json,.json" hidden onChange={importData} />
         </div>
+        <button onClick={loadSample}>Use sample data</button>
         {message && <p className="small">{message}</p>}
       </section>
 
