@@ -290,8 +290,9 @@ export function exerciseHistory(state, exId, kind) {
 }
 
 /**
- * Heaviest ticked set for exactly 1, 2, … `maxReps` reps, from exerciseHistory rows. Index 0 is
- * 1 RM. null = never done for that many reps; 0 = done at bodyweight.
+ * Heaviest ticked set for exactly 1, 2, … `maxReps` reps, from exerciseHistory rows (oldest
+ * first). Index 0 is 1 RM: { w, date } with the date it was first lifted (null if unknown), or
+ * null = never done for that many reps. w = 0 means done at bodyweight.
  */
 export function bestByReps(history, maxReps = 5) {
   const best = Array(maxReps).fill(null)
@@ -299,7 +300,8 @@ export function bestByReps(history, maxReps = 5) {
     for (const s of h.sets) {
       if (!(s.r >= 1 && s.r <= maxReps)) continue
       const w = s.w ?? 0
-      if (best[s.r - 1] == null || w > best[s.r - 1]) best[s.r - 1] = w
+      // Strictly heavier only, so a repeat of the same weight keeps the first date
+      if (best[s.r - 1] == null || w > best[s.r - 1].w) best[s.r - 1] = { w, date: h.date ?? null }
     }
   }
   return best
@@ -345,3 +347,5 @@ export const fmtDate = (iso) => {
   const [y, m, d] = iso.split('-')
   return dateFormat() === 'mdy' ? `${+m}/${+d}/${y}` : `${+d}.${+m}.${y}`
 }
+/** Two-digit year for tight spots: "9.11.26" or "11/9/26" */
+export const fmtDateShort = (iso) => fmtDate(iso).replace(/(\d{2})(\d{2})$/, '$2')

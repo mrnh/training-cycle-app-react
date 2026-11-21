@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { GROUPS, bestByReps, exerciseHistory, fmt, fmtDate, sessionName, setsSummary, unit } from '../program'
+import { GROUPS, bestByReps, exerciseHistory, fmt, fmtDate, fmtDateShort, sessionName, setsSummary } from '../program'
 import { update } from '../store'
 
 /** One exercise: name and best weights, every finished session it was done in (newest first), delete. */
@@ -7,8 +7,9 @@ export default function ExerciseHistory({ state, ex, onBack }) {
   const groups = GROUPS.filter((g) => state.groups[g].some((e) => e.id === ex.id))
   const mainLift = state.cycles.some((c) => c.primaries.includes(ex.id))
   // Main-lift and accessory entries together, newest first; only ticked sets count
-  const history = exerciseHistory(state, ex.id).reverse()
-  const best = bestByReps(history)
+  const rows = exerciseHistory(state, ex.id) // oldest first
+  const best = bestByReps(rows)
+  const history = [...rows].reverse()
   const [comment, setComment] = useState(null) // history row whose comment is shown
   const [renaming, setRenaming] = useState(false)
 
@@ -41,16 +42,27 @@ export default function ExerciseHistory({ state, ex, onBack }) {
             ✎
           </button>
         </div>
-        {/* Heaviest ticked set for exactly that many reps; empty = never done */}
+        <h3>Personal bests</h3>
+        {/* Heaviest ticked set for exactly that many reps, and when; empty = never done */}
         <table className="rm-table">
           <thead>
             <tr>{best.map((_, i) => <th key={i}>{i + 1} RM</th>)}</tr>
           </thead>
           <tbody>
-            <tr>{best.map((w, i) => <td key={i}>{w == null ? '' : fmt(w)}</td>)}</tr>
+            <tr>
+              {best.map((b, i) => (
+                <td key={i}>
+                  {b && (
+                    <>
+                      <strong>{fmt(b.w)}</strong>
+                      {b.date && <span className="rm-date">{fmtDateShort(b.date)}</span>}
+                    </>
+                  )}
+                </td>
+              ))}
+            </tr>
           </tbody>
         </table>
-        <p className="muted small">Heaviest set for exactly that many reps, in {unit()}.</p>
       </section>
 
       <section className="card">
