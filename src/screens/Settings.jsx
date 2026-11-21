@@ -1,6 +1,7 @@
 import { useRef, useState } from 'react'
 import Groups from '../components/Groups'
 import MainLiftFields from '../components/MainLiftFields'
+import NewCycleDialog from '../components/NewCycleDialog'
 import { DATE_FORMATS, UNITS, dateFormat, exerciseName, fmt, heaviestWeight, mainLiftsError, todayIso, unit } from '../program'
 import { currentCycle, migrate, replaceState, update, updateCycle } from '../store'
 import { sampleState } from '../sampleData'
@@ -10,6 +11,7 @@ export default function Settings({ state }) {
   const lifts = cycle.primaries.filter(Boolean) // empty slots left out
   const [draft, setDraft] = useState(null) // [{ id, rm }] per main-lift slot while editing; null = not editing
   const [rmError, setRmError] = useState('')
+  const [newCycleOpen, setNewCycleOpen] = useState(false)
 
   function cancelRM() {
     setDraft(null)
@@ -127,6 +129,8 @@ export default function Settings({ state }) {
             ))}
           </div>
         )}
+        {!draft && <button onClick={() => setNewCycleOpen(true)}>Start a new cycle</button>}
+        {newCycleOpen && <NewCycleDialog state={state} onClose={() => setNewCycleOpen(false)} />}
       </section>
 
       <Groups state={state} />
