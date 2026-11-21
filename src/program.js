@@ -55,8 +55,8 @@ export const unit = () => currentUnit
 export const setUnit = (u) => void (currentUnit = UNITS.includes(u) ? u : 'kg')
 // Date format: 'dmy' (9.11.2026, default) or 'mdy' (11/9/2026, common in the US)
 export const DATE_FORMATS = [
-  { id: 'dmy', label: 'dd.mm.yyyy' },
-  { id: 'mdy', label: 'mm/dd/yyyy' },
+  { id: 'dmy', label: '31.12.' },
+  { id: 'mdy', label: '12/31' },
 ]
 let currentDateFormat = 'dmy'
 export const dateFormat = () => currentDateFormat
