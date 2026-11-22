@@ -11,6 +11,7 @@
   --accent-soft: #eeeafd;
   --success: #2f9e5b;
   --success-soft: #e3f5ea;
+  --off-target: #8aa21c; /* a set done, but not as planned (other reps or weight) */
   --danger: #d93d42;
   --warning: #8a5a00;
   --warning-soft: #fdf3dc;
@@ -63,6 +64,7 @@
     --accent-soft: #2a2443;
     --success: #4cc27c;
     --success-soft: #1b3326;
+    --off-target: #a9c23f;
     --danger: #f2555a;
     --warning: #f0b84a;
     --warning-soft: #33280f;

@@ -172,6 +172,8 @@ dialog.sheet form { display: flex; flex-direction: column; gap: var(--space-3); 
   color: var(--muted);
 }
 .set-toggle.is-done { background: var(--success); border-color: var(--success); color: var(--on-accent); }
+/* Done, but with other reps or weight than planned */
+.set-toggle.is-done.off-target { background: var(--off-target); border-color: var(--off-target); }
 
 /* Lists */
 .list { gap: 0; padding: var(--space-1) var(--space-4); }

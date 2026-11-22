@@ -284,10 +284,10 @@ function ExerciseCard({ cycle, plan, entry, name, pres, last, lastLine, open, hi
           return [
             <button
               key={`t${i}`}
-              className={`set-toggle ${done ? 'is-done' : ''}`}
+              className={`set-toggle ${done ? 'is-done' : ''} ${done && deviates(i) ? 'off-target' : ''}`}
               style={{ gridRow: line * 2 + 1, gridColumn: col }}
               aria-pressed={done}
-              aria-label={`Set ${i + 1}, ${setText(shown(i))}${done ? ', done' : ''}`}
+              aria-label={`Set ${i + 1}, ${setText(shown(i))}${done ? (deviates(i) ? ', done, not as planned' : ', done') : ''}`}
               onClick={() => toggle(i)}
             >
               {i + 1}
