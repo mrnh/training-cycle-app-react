@@ -9,6 +9,21 @@ The current version is shown at the bottom of **Settings**.
 
 ---
 
+## 0.12.1 — 2026-11-22 · Clearer checks, real back navigation
+
+| History | Session |
+|---|---|
+| ![History](docs/screenshots/v0.12.1/history.jpg) | ![Session](docs/screenshots/v0.12.1/session.jpg) |
+
+### Changed
+- **History**: exercises not done as prescribed get an orange-yellow check instead of a grey
+  one, so they stand out from the green ones.
+- **Session**: the back arrow returns to the screen the session was opened from (Overview,
+  History, or another session) at the same scroll position, instead of going to the previous
+  planned session. The forward arrow is gone. Opened from the tab bar, there's no back arrow.
+
+---
+
 ## 0.12.0 — 2026-11-22 · History
 
 | History | Workout detail |
