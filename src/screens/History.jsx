@@ -80,7 +80,6 @@ export default function History({ state }) {
                         <>
                           <td rowSpan={rows.length} className="when">
                             {record.finishedAt ? fmtDateShort(record.finishedAt) : '–'}
-                            {cycle !== current && <span className="muted"> · C{cycle + 1}</span>}
                           </td>
                           <td rowSpan={rows.length} className="when">
                             {plan.week}.{plan.session}
