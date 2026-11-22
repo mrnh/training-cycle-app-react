@@ -239,6 +239,11 @@ function ExerciseCard({ cycle, plan, entry, name, pres, last, lastLine, open, hi
     const log = cycle.logs[keys[i]]
     return { w: log?.w ?? hints[i].w ?? null, r: log?.r ?? hints[i].r ?? null }
   }
+  // A set's reps@weight shows under its toggle only where it differs from the plan
+  const deviates = (i) => {
+    const s = shown(i)
+    return s.w !== (hints[i].w ?? null) || s.r !== (hints[i].r ?? null)
+  }
   const toggle = (i) => setLog(keys[i], { ...shown(i), done: !cycle.logs[keys[i]]?.done })
   // Save from the dialog: new set count, weight and reps per set (ticks stay)
   const saveSets = (rows) =>
@@ -268,15 +273,14 @@ function ExerciseCard({ cycle, plan, entry, name, pres, last, lastLine, open, hi
         )}
       </div>
       {hint && <p className="small">{hint}</p>}
-      {/* Toggles with each set's reps@weight under them, in equal columns that line up with the
-          timer segments below; lines of up to 6 sets */}
+      {/* Toggles in equal columns that line up with the timer segments below, lines of up to 6
+          sets; a set done differently from the plan shows its reps@weight underneath */}
       <div className="sec-sets" style={{ gridTemplateColumns: `repeat(${cols}, minmax(0, 1fr))` }}>
         {keys.map((k, i) => {
           const log = cycle.logs[k]
           const done = !!log?.done
           const line = Math.floor(i / 6)
           const col = (i % 6) + 1
-          const entered = log?.w != null || log?.r != null
           return [
             <button
               key={`t${i}`}
@@ -288,10 +292,12 @@ function ExerciseCard({ cycle, plan, entry, name, pres, last, lastLine, open, hi
             >
               {i + 1}
             </button>,
-            <span key={`v${i}`} className={`sec-value ${entered ? '' : 'muted'}`} style={{ gridRow: line * 2 + 2, gridColumn: col }}>
-              {/* May break before "@" when the column is narrow (5–6 sets) */}
-              {setText(shown(i)).replace('@', '\u200B@')}
-            </span>,
+            deviates(i) && (
+              <span key={`v${i}`} className="sec-value" style={{ gridRow: line * 2 + 2, gridColumn: col }}>
+                {/* May break before "@" when the column is narrow (5–6 sets) */}
+                {setText(shown(i)).replace('@', '\u200B@')}
+              </span>
+            ),
           ]
         })}
       </div>
