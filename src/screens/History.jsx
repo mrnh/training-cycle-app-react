@@ -3,7 +3,7 @@ import { entryAsPrescribed, finishedWorkouts, fmtDateShort } from '../program'
 /**
  * History tab: every finished workout, newest first, as one table. Date and session span the
  * workout's rows; then one row per main lift, one for the accessory group and one per exercise
- * added during the workout, each with a check: green when done as prescribed, grey otherwise.
+ * added during the workout, each with a check: green when done as prescribed, orange-yellow otherwise.
  * Sets and weights are on the finished session, which opens when a workout of the current
  * cycle is tapped.
  */
