@@ -9,6 +9,24 @@ The current version is shown at the bottom of **Settings**.
 
 ---
 
+## 0.12.2 — 2026-11-22 · At least the plan counts, older cycles open
+
+| History (earlier cycle) | Workout detail |
+|---|---|
+| ![History](docs/screenshots/v0.12.2/history.jpg) | ![Workout detail](docs/screenshots/v0.12.2/workout-detail.jpg) |
+
+### Changed
+- **Meeting the plan** now means at least the planned reps and at least the planned weight,
+  e.g. 87.5 kg where 85.6 kg was planned because of the plates at hand. Applies to the History
+  checks and the set toggles on the Session screen (yellow-green only when a set falls short).
+  Extra sets count too.
+
+### Fixed
+- **History**: workouts of earlier cycles can be opened. Tapping any workout shows its finished
+  session inside the History tab, with cycle and group in the header and a back arrow to the list.
+
+---
+
 ## 0.12.1 — 2026-11-22 · Clearer checks, real back navigation
 
 | History | Session |
