@@ -295,7 +295,7 @@ function ExerciseCard({ cycle, plan, entry, name, pres, last, lastLine, open, hi
             deviates(i) && (
               <span key={`v${i}`} className="sec-value" style={{ gridRow: line * 2 + 2, gridColumn: col }}>
                 {/* May break before "@" when the column is narrow (5–6 sets) */}
-                {setText(shown(i)).replace('@', '\u200B@')}
+                {setText(shown(i), false).replace('@', '\u200B@')}
               </span>
             ),
           ]

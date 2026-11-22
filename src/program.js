@@ -351,10 +351,11 @@ export function bestByReps(history, maxReps = 5) {
 }
 
 /**
- * One set as reps@weight: 8 reps at 15 kg -> "8@15kg". Without external weight (0 or empty)
- * it's just the reps: "10 reps".
+ * One set as reps@weight: 8 reps at 15 kg -> "8@15kg" ("8@15" with `withUnit` false, for the
+ * narrow spot under a set toggle). Without external weight (0 or empty) it's just the reps: "10 reps".
  */
-export const setText = (s) => (s.w ? `${s.r ?? '–'}@${fmt(s.w)}${unit()}` : `${s.r ?? '–'} reps`)
+export const setText = (s, withUnit = true) =>
+  s.w ? `${s.r ?? '–'}@${fmt(s.w)}${withUnit ? unit() : ''}` : `${s.r ?? '–'} reps`
 /**
  * Compact summary of done sets for "Last time". Consecutive sets with the same weight form a
  * group (order is kept, so 40, 45, 40 kg are three groups). A group with equal reps is "3×10",
