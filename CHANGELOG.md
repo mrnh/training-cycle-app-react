@@ -9,6 +9,26 @@ The current version is shown at the bottom of **Settings**.
 
 ---
 
+## 0.11.0 — 2026-11-22 · Main lifts work like accessory work
+
+| Session | Sets dialog (main lift) | Finished session |
+|---|---|---|
+| ![Session](docs/screenshots/v0.11.0/session.jpg) | ![Sets dialog](docs/screenshots/v0.11.0/sets-dialog.jpg) | ![Finished session](docs/screenshots/v0.11.0/finished-session.jpg) |
+
+### Changed
+- **Main-lift cards** look and work like accessory cards: no more "Weight used" in the corner;
+  the pen opens the sets dialog to change the number of sets and the weight and reps of each
+  set. Main lifts keep just their prescription line (no "Last time").
+- **Deviations only**: under the set toggles, a set shows its reps@weight only when it differs
+  from the plan, without the unit ("3@144"), so values fit on one line.
+- **Yellow-green** for a set that is ticked but done differently from the plan (other reps or
+  weight), instead of the full green.
+- **Finished sessions** list main lifts set by set, like accessory work.
+- Data: finished main lifts store every set with its own weight and reps (data version 7).
+  Existing data is converted automatically; a copy of the old data is kept.
+
+---
+
 ## 0.10.1 — 2026-11-22 · Confirmations that always work
 
 | Added exercise | Sets dialog | Confirmation |

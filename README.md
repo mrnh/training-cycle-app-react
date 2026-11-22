@@ -23,7 +23,7 @@ Data is stored locally in the browser (IndexedDB), on each device separately. Us
 
 <p>
   <img src="docs/screenshots/v0.10.0/overview.jpg" width="200" alt="Overview screen">
-  <img src="docs/screenshots/v0.10.0/session.jpg" width="200" alt="Session screen">
+  <img src="docs/screenshots/v0.11.0/session.jpg" width="200" alt="Session screen">
   <img src="docs/screenshots/v0.9.0/settings.jpg" width="200" alt="Settings screen">
 </p>
 
