@@ -44,12 +44,12 @@ export default function SetsDialog({ title, planned, rows, hints, onSave, onRemo
           + Add set
         </button>
       </div>
-      {onRemove && (
-        <button type="button" className="danger" onClick={onRemove}>
-          Remove exercise
-        </button>
-      )}
       <div className="button-row end">
+        {onRemove && (
+          <button type="button" className="remove-exercise" onClick={onRemove}>
+            Remove exercise
+          </button>
+        )}
         <button type="button" onClick={onClose}>Cancel</button>
         <button type="submit" className="primary">Save</button>
       </div>

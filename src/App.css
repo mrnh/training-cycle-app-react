@@ -397,3 +397,7 @@ button.sec-pen {
 
 /* Session: exercises added during the workout */
 button.add-exercise { width: 100%; }
+/* Sets dialog: quiet text button at the left of Cancel / Save */
+button.remove-exercise {
+  margin-right: auto; padding: 0 var(--space-1); border: none; background: none; color: var(--danger); font-size: var(--text-sm);
+}
