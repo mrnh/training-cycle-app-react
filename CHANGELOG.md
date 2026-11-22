@@ -9,6 +9,24 @@ The current version is shown at the bottom of **Settings**.
 
 ---
 
+## 0.10.1 — 2026-11-22 · Confirmations that always work
+
+| Added exercise | Sets dialog | Confirmation |
+|---|---|---|
+| ![Added exercise](docs/screenshots/v0.10.1/added-exercise.jpg) | ![Sets dialog with Remove exercise](docs/screenshots/v0.10.1/sets-dialog.jpg) | ![Confirmation](docs/screenshots/v0.10.1/confirm-remove.jpg) |
+
+### Fixed
+- Confirmations use the app's own dialog instead of the browser's popup, which some browsers and
+  embedded views block silently (the action then did nothing). Affects removing an added
+  exercise, deleting an exercise, restoring a backup, sample data, deleting all data and
+  starting the next cycle.
+
+### Changed
+- An exercise added during a session is removed from the dialog behind its pen ("Remove
+  exercise", a small text button left of Cancel) instead of a × on the card.
+
+---
+
 ## 0.10.0 — 2026-11-22 · Add exercises mid-workout, reorder accessory work
 
 | Add exercise | Added exercise | Reordering | Session | Overview |
