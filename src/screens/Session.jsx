@@ -255,7 +255,7 @@ function SecondaryBlock({ state, cycle, plan, id, open }) {
   const countKey = `${plan.key}:${entry}`
   // The group's prescription sets the rows and pre-fills them; "last time" is for reference
   const pres = sessionEntry(state, cycle, plan, id)
-  // Added during this workout (not part of the group): can be removed again while it's open
+  // Added during this workout (not part of the group): the sets dialog can remove it while it's open
   const removable = open && isExtra(cycle, plan, id)
   const [confirmDialog, confirm] = useConfirm()
   const remove = async () => {
@@ -291,14 +291,7 @@ function SecondaryBlock({ state, cycle, plan, id, open }) {
 
   return (
     <section className="card">
-      <div className="row">
-        <h2>{exerciseName(state, id)}</h2>
-        {removable && (
-          <button className="icon-btn remove-extra" aria-label={`Remove ${exerciseName(state, id)} from this session`} onClick={remove}>
-            ×
-          </button>
-        )}
-      </div>
+      <h2>{exerciseName(state, id)}</h2>
       {confirmDialog}
       {/* Prescription and last time on the left, the pen for editing all sets on the right */}
       <div className="sec-head">
@@ -348,6 +341,14 @@ function SecondaryBlock({ state, cycle, plan, id, open }) {
           rows={keys.map((k) => ({ w: cycle.logs[k]?.w ?? null, r: cycle.logs[k]?.r ?? null }))}
           hints={hints}
           onSave={saveSets}
+          onRemove={
+            removable
+              ? () => {
+                  setEditing(false)
+                  remove()
+                }
+              : undefined
+          }
           onClose={() => setEditing(false)}
         />
       )}

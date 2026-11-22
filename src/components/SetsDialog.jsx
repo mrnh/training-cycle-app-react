@@ -6,9 +6,10 @@ import { MAX_SETS, unit } from '../program'
 /**
  * Edit weight and reps of all sets of a secondary exercise at once, and add or remove sets.
  * `rows` are the logged values ({ w, r }, null = not entered); `hints` are what an empty field
- * stands for (the prescription). Nothing is saved until "Save".
+ * stands for (the prescription). Nothing is saved until "Save". With `onRemove` (exercises added
+ * for this session only) it also offers removing the exercise.
  */
-export default function SetsDialog({ title, planned, rows, hints, onSave, onClose }) {
+export default function SetsDialog({ title, planned, rows, hints, onSave, onRemove, onClose }) {
   const [draft, setDraft] = useState(rows)
 
   const setRow = (i, patch) => setDraft(draft.map((x, j) => (j === i ? { ...x, ...patch } : x)))
@@ -43,6 +44,11 @@ export default function SetsDialog({ title, planned, rows, hints, onSave, onClos
           + Add set
         </button>
       </div>
+      {onRemove && (
+        <button type="button" className="danger" onClick={onRemove}>
+          Remove exercise
+        </button>
+      )}
       <div className="button-row end">
         <button type="button" onClick={onClose}>Cancel</button>
         <button type="submit" className="primary">Save</button>

@@ -397,4 +397,3 @@ button.sec-pen {
 
 /* Session: exercises added during the workout */
 button.add-exercise { width: 100%; }
-button.remove-extra { height: var(--tap-sm); margin: calc(-1 * var(--space-2)) calc(-1 * var(--space-3)) calc(-1 * var(--space-2)) 0; }
