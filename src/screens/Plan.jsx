@@ -4,6 +4,7 @@ import {
   retestResults, targetWeight, todayIso, unit, weekRange,
 } from '../program'
 import { currentCycle, newCycle, update } from '../store'
+import useConfirm from '../components/useConfirm'
 
 export default function Plan({ state, onOpen }) {
   const cycle = currentCycle(state)
@@ -74,8 +75,14 @@ function NextCycle({ state }) {
   const lifts = cycle.primaries.filter(Boolean)
   const newRM = Object.fromEntries(lifts.map((id) => [id, results[id] ?? cycle.oneRM[id]]))
 
-  function start() {
-    if (!confirm('Start a new 9-week cycle with these 1RMs? This cycle stays in your history.')) return
+  const [confirmDialog, confirm] = useConfirm()
+  async function start() {
+    const ok = await confirm({
+      title: 'Start the next cycle?',
+      message: 'A new 9-week cycle with these 1RMs. This cycle stays in your history.',
+      confirmLabel: 'Start cycle',
+    })
+    if (!ok) return
     update((d) => d.cycles.push(newCycle(date, newRM, cycle.primaries)))
   }
 
@@ -105,6 +112,7 @@ function NextCycle({ state }) {
       <button className="primary" onClick={start} disabled={!date}>
         Start next cycle
       </button>
+      {confirmDialog}
     </div>
   )
 }

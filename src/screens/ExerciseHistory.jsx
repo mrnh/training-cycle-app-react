@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import Sheet from '../components/Sheet'
+import useConfirm from '../components/useConfirm'
 import { GROUPS, bestByReps, exerciseHistory, fmt, fmtDate, fmtDateShort, sessionName, setsSummary } from '../program'
 import { update } from '../store'
 
@@ -15,8 +16,15 @@ export default function ExerciseHistory({ state, ex, onBack }) {
   const [renaming, setRenaming] = useState(false)
 
   const rename = (name) => update((d) => void (d.catalog.find((e) => e.id === ex.id).name = name))
-  function remove() {
-    if (!confirm(`Delete ${ex.name} from your exercises? Sets you logged stay in your backup.`)) return
+  const [confirmDialog, confirm] = useConfirm()
+  async function remove() {
+    const ok = await confirm({
+      title: `Delete ${ex.name}?`,
+      message: 'It disappears from your exercise catalog. Sessions you already finished keep their record of it.',
+      confirmLabel: 'Delete',
+      danger: true,
+    })
+    if (!ok) return
     onBack()
     update((d) => void (d.catalog = d.catalog.filter((e) => e.id !== ex.id)))
   }
@@ -100,6 +108,7 @@ export default function ExerciseHistory({ state, ex, onBack }) {
         </button>
       </section>
 
+      {confirmDialog}
       {renaming && <NameDialog name={ex.name} onSave={rename} onClose={() => setRenaming(false)} />}
 
       {comment && (

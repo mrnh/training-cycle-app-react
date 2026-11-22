@@ -2,6 +2,7 @@ import { useRef, useState } from 'react'
 import GroupsSummary, { GroupsEditor } from '../components/Groups'
 import MainLiftFields from '../components/MainLiftFields'
 import NewCycleDialog from '../components/NewCycleDialog'
+import useConfirm from '../components/useConfirm'
 import Exercises from './Exercises'
 import { DATE_FORMATS, UNITS, dateFormat, exerciseName, fmt, heaviestWeight, mainLiftsError, todayIso, unit } from '../program'
 import { currentCycle, migrate, replaceState, update, updateCycle } from '../store'
@@ -30,6 +31,7 @@ export default function Settings({ state }) {
   }
   const [message, setMessage] = useState('')
   const fileRef = useRef(null)
+  const [confirmDialog, confirm] = useConfirm()
 
   function exportData() {
     const blob = new Blob([JSON.stringify(state, null, 2)], { type: 'application/json' })
@@ -49,7 +51,13 @@ export default function Settings({ state }) {
       // Older backups are converted to the current format
       const data = migrate(JSON.parse(await file.text()))
       if (!data) throw new Error('not a backup')
-      if (!confirm('Replace all current data with this backup?')) return
+      const ok = await confirm({
+        title: 'Restore this backup?',
+        message: 'All current data on this device is replaced by the backup.',
+        confirmLabel: 'Restore',
+        danger: true,
+      })
+      if (!ok) return
       replaceState(data)
       setMessage('Backup restored')
     } catch {
@@ -57,14 +65,26 @@ export default function Settings({ state }) {
     }
   }
 
-  function loadSample() {
-    if (!confirm('Replace all current data with sample data? Export a backup first if you want to keep yours.')) return
+  async function loadSample() {
+    const ok = await confirm({
+      title: 'Use sample data?',
+      message: 'All current data on this device is replaced by sample data. Export a backup first if you want to keep yours.',
+      confirmLabel: 'Use sample data',
+      danger: true,
+    })
+    if (!ok) return
     replaceState(sampleState({ unit: state.unit, dateFormat: state.dateFormat }))
     setMessage('Sample data loaded')
   }
 
-  function resetAll() {
-    if (!confirm('Delete all data on this device? Export a backup first if you want to keep it.')) return
+  async function resetAll() {
+    const ok = await confirm({
+      title: 'Delete all data?',
+      message: 'Everything on this device is deleted: cycles, history, exercises and preferences. Export a backup first if you want to keep it.',
+      confirmLabel: 'Delete all data',
+      danger: true,
+    })
+    if (!ok) return
     replaceState(null)
   }
 
@@ -201,6 +221,7 @@ export default function Settings({ state }) {
         <button className="danger" onClick={resetAll}>Delete all data</button>
       </section>
 
+      {confirmDialog}
       <p className="muted small center">Version {__APP_VERSION__}</p>
     </div>
   )

@@ -6,6 +6,7 @@ import Note from '../components/Note'
 import Planned from '../components/Planned'
 import RestTimer from '../components/RestTimer'
 import SetsDialog from '../components/SetsDialog'
+import useConfirm from '../components/useConfirm'
 import WeightDialog from '../components/WeightDialog'
 import {
   ALL_SESSIONS, activeSession, isExtra, prescriptionText, removeExtra, sessionEntry, sessionName, setText, clockTime, draftSecondaries, exerciseHistory, exerciseName, finishSession, fmt,
@@ -256,9 +257,15 @@ function SecondaryBlock({ state, cycle, plan, id, open }) {
   const pres = sessionEntry(state, cycle, plan, id)
   // Added during this workout (not part of the group): can be removed again while it's open
   const removable = open && isExtra(cycle, plan, id)
-  const remove = () => {
-    if (!confirm(`Remove ${exerciseName(state, id)} from this session? Sets logged for it are dropped.`)) return
-    updateCycle((c) => removeExtra(c, plan, id))
+  const [confirmDialog, confirm] = useConfirm()
+  const remove = async () => {
+    const ok = await confirm({
+      title: `Remove ${exerciseName(state, id)}?`,
+      message: 'It was added for this session only. Sets logged for it are dropped.',
+      confirmLabel: 'Remove',
+      danger: true,
+    })
+    if (ok) updateCycle((c) => removeExtra(c, plan, id))
   }
   const count = cycle.setCounts[countKey] ?? pres?.sets ?? Math.max(last?.sets.length ?? 3, 1)
   const [editing, setEditing] = useState(false)
@@ -292,6 +299,7 @@ function SecondaryBlock({ state, cycle, plan, id, open }) {
           </button>
         )}
       </div>
+      {confirmDialog}
       {/* Prescription and last time on the left, the pen for editing all sets on the right */}
       <div className="sec-head">
         <div>
