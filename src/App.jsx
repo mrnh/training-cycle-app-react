@@ -48,7 +48,7 @@ export default function App() {
       <main className={tab === 'overview' ? 'fit' : undefined}>
         {tab === 'overview' && <Plan state={state} onOpen={openSession} />}
         {tab === 'session' && <Session key={sessionKey} state={state} sessionKey={sessionKey} onNavigate={openSession} />}
-        {tab === 'history' && <History />}
+        {tab === 'history' && <History state={state} onOpen={openSession} />}
         {tab === 'settings' && <Settings key={tabTaps} state={state} />}
       </main>
       <nav className="tabbar">

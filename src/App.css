@@ -366,3 +366,15 @@ button.add-exercise { width: 100%; }
 button.remove-exercise {
   margin-right: auto; padding: 0 var(--space-1); border: none; background: none; color: var(--danger); font-size: var(--text-sm);
 }
+
+/* History tab: one card per finished workout, one row per exercise */
+.card.workout { width: 100%; text-align: left; gap: var(--space-2); font: inherit; color: inherit; }
+button.card.workout { min-height: 0; border-radius: var(--radius-lg); }
+.workout-head { display: flex; justify-content: space-between; align-items: baseline; gap: var(--space-3); }
+.workout-rows { display: flex; flex-direction: column; }
+.workout-row {
+  display: flex; justify-content: space-between; gap: var(--space-3); padding: var(--space-1) 0;
+  border-top: 1px solid var(--border); font-size: var(--text-sm);
+}
+.workout-row span:last-child { text-align: right; }
+.workout-row.incomplete { color: var(--muted); }

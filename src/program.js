@@ -226,6 +226,7 @@ export function buildRecord(state, cycle, plan, finishedAt) {
       kind: 'secondary',
       exerciseId: id,
       name: exerciseName(state, id),
+      ...(isExtra(cycle, plan, id) && { added: true }), // added during the workout, not from the group
       prescription: pres ? { sets: pres.sets, reps: pres.reps, weight: pres.weight } : undefined,
       sets,
       rest: restOf(cycle, `${plan.key}:${entry}`, pres?.rest),
@@ -392,3 +393,21 @@ export const fmtDate = (iso) => {
 }
 /** Two-digit year for tight spots: "9.11.26" or "11/9/26" */
 export const fmtDateShort = (iso) => fmtDate(iso).replace(/(\d{2})(\d{2})$/, '$2')
+
+/**
+ * Every finished workout across all cycles, newest first: { cycle (index), plan, record }.
+ * Ordered by cycle and position in the plan, which also works for records without a date.
+ */
+export function finishedWorkouts(state) {
+  const out = []
+  state.cycles.forEach((cycle, ci) => {
+    for (const plan of ALL_SESSIONS) if (cycle.finished[plan.key]) out.push({ cycle: ci, plan, record: cycle.finished[plan.key] })
+  })
+  return out.reverse()
+}
+
+/** Whether every planned set of a finished exercise entry was ticked. */
+export function entryComplete(e) {
+  const done = e.sets.filter((s) => s.done).length
+  return done === e.sets.length && done >= (e.prescription?.sets ?? 0)
+}
