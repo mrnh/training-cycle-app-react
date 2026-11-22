@@ -375,14 +375,15 @@ button.remove-exercise {
   padding: var(--space-1) var(--space-2) var(--space-2) 0;
 }
 .history-table td { padding: var(--space-1) var(--space-2) var(--space-1) 0; vertical-align: top; }
-.history-table th:last-child, .history-table td.sets { text-align: right; padding-right: 0; }
+.history-table td.check { text-align: right; padding-right: 0; font-weight: var(--weight-bold); font-size: var(--text-md); line-height: 1.2; }
+.history-table td.check .ok { color: var(--success); }
+.history-table td.check .off { color: var(--muted); }
 .history-table td.when { white-space: nowrap; font-variant-numeric: tabular-nums; }
-.history-table .nowrap { white-space: nowrap; }
-/* Room for two-word names like "Bench Press" before the sets column takes the space */
-.history-table td.name { min-width: 6.5em; }
 .history-table tbody { border-top: 1px solid var(--border); }
 .history-table tbody tr:first-child td { padding-top: var(--space-2); }
 .history-table tbody tr:last-child td { padding-bottom: var(--space-2); }
 .history-table tbody.tappable { cursor: pointer; }
 .history-table tbody.tappable:active { background: var(--bg); }
-.history-table tr.incomplete td:not(.when) { color: var(--muted); }
+
+/* Visually hidden, still read by screen readers */
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }

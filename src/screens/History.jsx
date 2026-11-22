@@ -1,11 +1,11 @@
-import { Fragment } from 'react'
-import { entryComplete, finishedWorkouts, fmtDateShort, setsSummary } from '../program'
+import { entryAsPrescribed, finishedWorkouts, fmtDateShort } from '../program'
 
 /**
  * History tab: every finished workout, newest first, as one table. Date and session span the
- * workout's rows; then one row per main lift (what was done), one for the accessory group and
- * one per exercise added during the workout. A row is grey when not every planned set was
- * ticked. Workouts of the current cycle open their finished session when tapped.
+ * workout's rows; then one row per main lift, one for the accessory group and one per exercise
+ * added during the workout, each with a check: green when done as prescribed, grey otherwise.
+ * Sets and weights are on the finished session, which opens when a workout of the current
+ * cycle is tapped.
  */
 export default function History({ state, onOpen }) {
   const workouts = finishedWorkouts(state)
@@ -24,7 +24,9 @@ export default function History({ state, onOpen }) {
                 <th>Date</th>
                 <th>Session</th>
                 <th>Exercise</th>
-                <th>Sets</th>
+                <th>
+                  <span className="sr-only">Done as prescribed</span>
+                </th>
               </tr>
             </thead>
             {workouts.map(({ cycle, plan, record }) => {
@@ -44,7 +46,7 @@ export default function History({ state, onOpen }) {
                   })}
                 >
                   {rows.map((r, i) => (
-                    <tr key={r.key} className={r.complete ? undefined : 'incomplete'}>
+                    <tr key={r.key}>
                       {i === 0 && (
                         <>
                           <td rowSpan={rows.length} className="when">
@@ -56,19 +58,12 @@ export default function History({ state, onOpen }) {
                           </td>
                         </>
                       )}
-                      {/* The accessory row has no sets column, so its name gets the space */}
-                      <td className="name" colSpan={r.value ? 1 : 2}>{r.name}</td>
-                      {r.value && (
-                        <td className="sets">
-                          {/* Breaks only between groups ("4-4-4-3 @ 144 kg," / "4-3 @ 140 kg") */}
-                          {r.value.split(', ').map((part, j, all) => (
-                            <Fragment key={j}>
-                              <span className="nowrap">{j < all.length - 1 ? `${part},` : part}</span>
-                              {j < all.length - 1 && ' '}
-                            </Fragment>
-                          ))}
-                        </td>
-                      )}
+                      <td className="name">{r.name}</td>
+                      <td className="check">
+                        <span className={r.ok ? 'ok' : 'off'} aria-label={r.ok ? 'done as prescribed' : 'not as prescribed'}>
+                          ✓
+                        </span>
+                      </td>
                     </tr>
                   ))}
                 </tbody>
@@ -86,11 +81,10 @@ function workoutRows(record) {
   const main = record.entries.filter((e) => e.kind === 'main')
   const group = record.entries.filter((e) => e.kind === 'secondary' && !e.added)
   const added = record.entries.filter((e) => e.kind === 'secondary' && e.added)
-  const done = (e) => setsSummary(e.sets.filter((s) => s.done)) || 'nothing ticked'
-  const row = (e, kind) => ({ key: `${kind}-${e.exerciseId}`, name: e.name, value: done(e), complete: entryComplete(e) })
+  const row = (e, kind) => ({ key: `${kind}-${e.exerciseId}`, name: e.name, ok: entryAsPrescribed(e) })
   return [
     ...main.map((e) => row(e, 'm')),
-    ...(group.length ? [{ key: 'group', name: `Accessory work ${record.group}`, value: '', complete: group.every(entryComplete) }] : []),
+    ...(group.length ? [{ key: 'group', name: `Accessory work ${record.group}`, ok: group.every(entryAsPrescribed) }] : []),
     ...added.map((e) => row(e, 'a')),
   ]
 }

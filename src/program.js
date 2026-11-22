@@ -406,8 +406,14 @@ export function finishedWorkouts(state) {
   return out.reverse()
 }
 
-/** Whether every planned set of a finished exercise entry was ticked. */
-export function entryComplete(e) {
-  const done = e.sets.filter((s) => s.done).length
-  return done === e.sets.length && done >= (e.prescription?.sets ?? 0)
+/**
+ * Whether a finished exercise entry was done as prescribed: every planned set ticked, and (with
+ * a prescription) every set at the planned reps and weight. More than planned also counts as
+ * a deviation, like the yellow-green toggles on the Session screen.
+ */
+export function entryAsPrescribed(e) {
+  const p = e.prescription
+  if (!e.sets.length || !e.sets.every((s) => s.done)) return false
+  if (!p) return true
+  return e.sets.length === p.sets && e.sets.every((s) => s.r === p.reps && (s.w ?? 0) === (p.weight ?? 0))
 }
