@@ -9,6 +9,24 @@ The current version is shown at the bottom of **Settings**.
 
 ---
 
+## 0.10.0 — 2026-11-22 · Add exercises mid-workout, reorder accessory work
+
+| Add exercise | Added exercise | Reordering | Session | Overview |
+|---|---|---|---|---|
+| ![Add exercise](docs/screenshots/v0.10.0/add-exercise.jpg) | ![Added exercise](docs/screenshots/v0.10.0/added-exercise.jpg) | ![Accessory work editor](docs/screenshots/v0.10.0/accessory-editor.jpg) | ![Session](docs/screenshots/v0.10.0/session.jpg) | ![Overview](docs/screenshots/v0.10.0/overview.jpg) |
+
+### Added
+- **Add exercise** during a workout: a button below the accessory work opens a dialog to pick a
+  catalog exercise and set sets, reps, weight and rest. The exercise is for that session only
+  (the group stays as it is), behaves like the rest of the accessory work and is saved with the
+  finished session, so it shows in history and "Last time". While the session is open it can be
+  removed again (×), dropping its logged sets.
+- **Reorder accessory work**: in the Accessory work editor each exercise has a grip handle; press
+  and drag it to change the order within a group. Tapping a row and scrolling still work; arrow
+  keys on a focused handle move it one step.
+
+---
+
 ## 0.9.0 — 2026-11-21 · Tidier Settings and new tab names
 
 Settings is reorganised: the cycle, its main lifts and its accessory work share one card, editing

@@ -7,7 +7,8 @@ by default).
 - **Overview:** all 27 sessions at a glance, with progress
 - **Session:** start the next session in order, tick sets and log weight and reps; values save
   instantly, and "Finish session" stores the workout permanently. One session is open at a time;
-  the others are previews. Each exercise has a rest timer
+  the others are previews. Each exercise has a rest timer, and exercises can be added for the
+  session
 - **History:** empty for now, being redesigned
 - **Settings:** start date, up to three main lifts with their 1RM, accessory work groups A/B/C with
   sets, reps, weight and rest for each, the exercise catalog (each exercise with its history and
@@ -21,8 +22,8 @@ The week-9 single at 105% is the re-test and becomes the 1RM for the next cycle.
 Data is stored locally in the browser (IndexedDB), on each device separately. Use **Export backup** in Settings to keep a copy.
 
 <p>
-  <img src="docs/screenshots/v0.9.0/overview.jpg" width="200" alt="Overview screen">
-  <img src="docs/screenshots/v0.9.0/session.jpg" width="200" alt="Session screen">
+  <img src="docs/screenshots/v0.10.0/overview.jpg" width="200" alt="Overview screen">
+  <img src="docs/screenshots/v0.10.0/session.jpg" width="200" alt="Session screen">
   <img src="docs/screenshots/v0.9.0/settings.jpg" width="200" alt="Settings screen">
 </p>
 
