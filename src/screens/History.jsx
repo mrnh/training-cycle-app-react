@@ -1,15 +1,43 @@
-import { entryAsPrescribed, finishedWorkouts, fmtDateShort } from '../program'
+import { useState } from 'react'
+import FinishedSession from '../components/FinishedSession'
+import { entryAsPrescribed, finishedWorkouts, fmtDateShort, sessionName } from '../program'
 
 /**
  * History tab: every finished workout, newest first, as one table. Date and session span the
  * workout's rows; then one row per main lift, one for the accessory group and one per exercise
  * added during the workout, each with a check: green when done as prescribed, orange-yellow otherwise.
- * Sets and weights are on the finished session, which opens when a workout of the current
- * cycle is tapped.
+ * Tapping a workout (of any cycle) opens its finished session with all sets and weights; the
+ * back arrow returns to the list at the same scroll position.
  */
-export default function History({ state, onOpen }) {
+export default function History({ state }) {
   const workouts = finishedWorkouts(state)
   const current = state.cycles.length - 1
+  const [detail, setDetail] = useState(null) // { cycle, plan, record, scrollY } while one is open
+
+  if (detail) {
+    const back = () => {
+      const y = detail.scrollY
+      setDetail(null)
+      requestAnimationFrame(() => window.scrollTo(0, y))
+    }
+    return (
+      <div className="screen">
+        <header className="session-head">
+          <button className="icon" aria-label="Back" onClick={back}>
+            ‹
+          </button>
+          <div>
+            <h1>{sessionName(detail.plan)}</h1>
+            <p className="muted small">
+              {detail.cycle !== current && `Cycle ${detail.cycle + 1} · `}Group {detail.record.group}
+            </p>
+          </div>
+          <span className="icon-spacer" />
+        </header>
+        <FinishedSession record={detail.record} />
+      </div>
+    )
+  }
 
   return (
     <div className="screen">
@@ -31,19 +59,20 @@ export default function History({ state, onOpen }) {
             </thead>
             {workouts.map(({ cycle, plan, record }) => {
               const rows = workoutRows(record)
-              const open = cycle === current ? () => onOpen(plan.key) : undefined
+              const open = () => {
+                setDetail({ cycle, plan, record, scrollY: window.scrollY })
+                window.scrollTo(0, 0)
+              }
               // Each workout is its own row group, so it can be tapped as a whole
               return (
                 <tbody
                   key={`${cycle}:${plan.key}`}
-                  className={open ? 'tappable' : undefined}
+                  className="tappable"
                   onClick={open}
-                  {...(open && {
-                    role: 'button',
-                    tabIndex: 0,
-                    'aria-label': `Open session ${plan.week}.${plan.session}`,
-                    onKeyDown: (e) => (e.key === 'Enter' || e.key === ' ') && (e.preventDefault(), open()),
-                  })}
+                  role="button"
+                  tabIndex={0}
+                  aria-label={`Open session ${plan.week}.${plan.session}${cycle !== current ? `, cycle ${cycle + 1}` : ''}`}
+                  onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && (e.preventDefault(), open())}
                 >
                   {rows.map((r, i) => (
                     <tr key={r.key}>

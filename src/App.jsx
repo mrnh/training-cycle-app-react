@@ -67,7 +67,7 @@ export default function App() {
             onNavigate={openSession}
             onBack={backStack.length ? goBack : undefined}
           />}
-        {tab === 'history' && <History state={state} onOpen={openSession} />}
+        {tab === 'history' && <History key={tabTaps} state={state} />}
         {tab === 'settings' && <Settings key={tabTaps} state={state} />}
       </main>
       <nav className="tabbar">
