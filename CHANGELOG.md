@@ -9,6 +9,22 @@ The current version is shown at the bottom of **Settings**.
 
 ---
 
+## 0.12.0 — 2026-11-22 · History
+
+| History | Workout detail |
+|---|---|
+| ![History](docs/screenshots/v0.12.0/history.jpg) | ![Workout detail](docs/screenshots/v0.12.0/workout-detail.jpg) |
+
+### Added
+- **History tab**: every finished workout, newest first, as one table with date, session and
+  one row per exercise: each main lift, the accessory group, and each exercise added during the
+  workout. A green check means done as prescribed (every planned set ticked at the planned reps
+  and weight), a grey one means not. Tapping a workout of the current cycle opens its finished
+  session with all sets and weights; workouts of earlier cycles are labelled C1, C2, …
+- Finished sessions remember which exercises were added during the workout.
+
+---
+
 ## 0.11.0 — 2026-11-22 · Main lifts work like accessory work
 
 | Session | Sets dialog (main lift) | Finished session |

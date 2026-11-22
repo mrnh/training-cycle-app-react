@@ -9,7 +9,8 @@ by default).
   instantly, and "Finish session" stores the workout permanently. One session is open at a time;
   the others are previews. Each exercise has a rest timer, and exercises can be added for the
   session
-- **History:** empty for now, being redesigned
+- **History:** every finished workout, newest first, with a check per exercise for done as
+  prescribed; tap one for its sets and weights
 - **Settings:** start date, up to three main lifts with their 1RM, accessory work groups A/B/C with
   sets, reps, weight and rest for each, the exercise catalog (each exercise with its history and
   personal bests for 1 to 5 reps), kg/lbs and date format, backup export/import and sample data
@@ -24,7 +25,7 @@ Data is stored locally in the browser (IndexedDB), on each device separately. Us
 <p>
   <img src="docs/screenshots/v0.10.0/overview.jpg" width="200" alt="Overview screen">
   <img src="docs/screenshots/v0.11.0/session.jpg" width="200" alt="Session screen">
-  <img src="docs/screenshots/v0.9.0/settings.jpg" width="200" alt="Settings screen">
+  <img src="docs/screenshots/v0.12.0/history.jpg" width="200" alt="History screen">
 </p>
 
 See the [changelog](CHANGELOG.md) for how the app has developed, with screenshots of each version.
