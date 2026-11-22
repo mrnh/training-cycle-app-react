@@ -301,7 +301,14 @@ button.new-cycle { margin-top: var(--space-2); }
 .group-summary li:last-child { border-bottom: none; }
 .group-summary li span:last-child { text-align: right; flex-shrink: 0; }
 .group-list { list-style: none; margin: 0; padding: 0; }
-.group-list li { min-height: var(--tap); }
+.group-list li { min-height: var(--tap); background: var(--card); gap: var(--space-1); }
+/* Reorder handle: only it starts a drag, so the page still scrolls elsewhere */
+button.drag-handle {
+  flex-shrink: 0; width: var(--tap-sm); height: var(--tap); min-height: 0; padding: 0; margin-left: calc(-1 * var(--space-2));
+  border: none; background: none; color: var(--muted); cursor: grab; touch-action: none; user-select: none;
+  -webkit-user-select: none; -webkit-touch-callout: none;
+}
+button.drag-handle:active { cursor: grabbing; color: var(--accent); }
 .group-list .icon-btn { margin-right: calc(-1 * var(--space-3)); }
 button.group-entry {
   flex: 1; display: flex; flex-direction: column; align-items: flex-start; gap: var(--space-1);

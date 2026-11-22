@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import {
   DEFAULT_PRESCRIPTION, GROUPS, MAX_SETS, REST_MAX, REST_MIN, REST_STEP, exerciseName, fmt, minSec, prescriptionText, unit,
 } from '../program'
@@ -84,14 +84,27 @@ function Group({ state, group, session }) {
       Object.assign(d.groups[group].find((x) => x.id === id), values)
     })
   const current = entries.find((x) => x.id === editing)
+  const move = (from, to) =>
+    update((d) => {
+      const list = d.groups[group]
+      list.splice(to, 0, ...list.splice(from, 1))
+    })
+  const { listRef, handleProps, rowStyle } = useReorder(entries.length, move)
 
   return (
     <div className="group">
       <h3>Group {group} · session {session}</h3>
       {entries.length === 0 && <p className="muted small">No exercises yet</p>}
-      <ul className="group-list">
-        {entries.map((x) => (
-          <li key={x.id} className="row">
+      <ul className="group-list" ref={listRef}>
+        {entries.map((x, i) => (
+          <li key={x.id} className="row" style={rowStyle(i)}>
+            <button
+              className="drag-handle"
+              aria-label={`Move ${exerciseName(state, x.id)}: drag, or use the arrow keys`}
+              {...handleProps(i)}
+            >
+              <GripIcon />
+            </button>
             <button className="group-entry" onClick={() => setEditing(x.id)}>
               <span>{exerciseName(state, x.id)}</span>
               <span className="muted small">
@@ -122,6 +135,61 @@ function Group({ state, group, session }) {
         />
       )}
     </div>
+  )
+}
+
+/**
+ * Drag to reorder a list: press the handle of a row and move it; the other rows slide aside and
+ * the new order is saved on release. Arrow keys on a focused handle move the row one step.
+ * Only the handle starts a drag, so tapping a row and scrolling the page keep working.
+ */
+function useReorder(count, onMove) {
+  const listRef = useRef(null)
+  const [drag, setDrag] = useState(null) // { from, to, dy, startY, height, mids }
+
+  const handleProps = (i) => ({
+    onPointerDown: (e) => {
+      const rects = [...listRef.current.children].map((r) => r.getBoundingClientRect())
+      e.currentTarget.setPointerCapture(e.pointerId)
+      setDrag({ from: i, to: i, dy: 0, startY: e.clientY, height: rects[i].height, mids: rects.map((r) => r.top + r.height / 2) })
+    },
+    onPointerMove: (e) => {
+      if (!drag) return
+      const dy = e.clientY - drag.startY
+      const centre = drag.mids[drag.from] + dy
+      // New position = how many of the other rows now sit above the dragged row's centre
+      const to = drag.mids.filter((m, j) => j !== drag.from && m < centre).length
+      setDrag({ ...drag, dy, to })
+    },
+    onPointerUp: () => {
+      if (drag && drag.to !== drag.from) onMove(drag.from, drag.to)
+      setDrag(null)
+    },
+    onPointerCancel: () => setDrag(null),
+    onKeyDown: (e) => {
+      const to = e.key === 'ArrowUp' ? i - 1 : e.key === 'ArrowDown' ? i + 1 : null
+      if (to == null || to < 0 || to >= count) return
+      e.preventDefault()
+      onMove(i, to)
+    },
+  })
+
+  const rowStyle = (j) => {
+    if (!drag) return undefined
+    const { from, to, dy, height } = drag
+    if (j === from) return { transform: `translateY(${dy}px)`, position: 'relative', zIndex: 1 }
+    const shift = from < to && j > from && j <= to ? -height : to < from && j >= to && j < from ? height : 0
+    return { transform: `translateY(${shift}px)`, transition: 'transform 0.15s' }
+  }
+
+  return { listRef, handleProps, rowStyle, dragging: drag?.from ?? null }
+}
+
+function GripIcon() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true" fill="currentColor">
+      {[3, 8, 13].flatMap((y) => [<circle key={`a${y}`} cx="5.5" cy={y} r="1.5" />, <circle key={`b${y}`} cx="10.5" cy={y} r="1.5" />])}
+    </svg>
   )
 }
 
