@@ -367,14 +367,22 @@ button.remove-exercise {
   margin-right: auto; padding: 0 var(--space-1); border: none; background: none; color: var(--danger); font-size: var(--text-sm);
 }
 
-/* History tab: one card per finished workout, one row per exercise */
-.card.workout { width: 100%; text-align: left; gap: var(--space-2); font: inherit; color: inherit; }
-button.card.workout { min-height: 0; border-radius: var(--radius-lg); }
-.workout-head { display: flex; justify-content: space-between; align-items: baseline; gap: var(--space-3); }
-.workout-rows { display: flex; flex-direction: column; }
-.workout-row {
-  display: flex; justify-content: space-between; gap: var(--space-3); padding: var(--space-1) 0;
-  border-top: 1px solid var(--border); font-size: var(--text-sm);
+/* History tab: one table, a row group per workout (date and session span its rows) */
+.card.history-card { padding: var(--space-2) var(--space-3); }
+.history-table { width: 100%; border-collapse: collapse; font-size: var(--text-sm); }
+.history-table th {
+  text-align: left; font-size: var(--text-xs); font-weight: var(--weight-normal); color: var(--muted);
+  padding: var(--space-1) var(--space-2) var(--space-2) 0;
 }
-.workout-row span:last-child { text-align: right; }
-.workout-row.incomplete { color: var(--muted); }
+.history-table td { padding: var(--space-1) var(--space-2) var(--space-1) 0; vertical-align: top; }
+.history-table th:last-child, .history-table td.sets { text-align: right; padding-right: 0; }
+.history-table td.when { white-space: nowrap; font-variant-numeric: tabular-nums; }
+.history-table .nowrap { white-space: nowrap; }
+/* Room for two-word names like "Bench Press" before the sets column takes the space */
+.history-table td.name { min-width: 6.5em; }
+.history-table tbody { border-top: 1px solid var(--border); }
+.history-table tbody tr:first-child td { padding-top: var(--space-2); }
+.history-table tbody tr:last-child td { padding-bottom: var(--space-2); }
+.history-table tbody.tappable { cursor: pointer; }
+.history-table tbody.tappable:active { background: var(--bg); }
+.history-table tr.incomplete td:not(.when) { color: var(--muted); }
