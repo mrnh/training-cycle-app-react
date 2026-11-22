@@ -25,7 +25,7 @@ Data is stored locally in the browser (IndexedDB), on each device separately. Us
 <p>
   <img src="docs/screenshots/v0.10.0/overview.jpg" width="200" alt="Overview screen">
   <img src="docs/screenshots/v0.12.1/session.jpg" width="200" alt="Session screen">
-  <img src="docs/screenshots/v0.12.2/history.jpg" width="200" alt="History screen">
+  <img src="docs/screenshots/v0.12.3/history.jpg" width="200" alt="History screen">
 </p>
 
 See the [changelog](CHANGELOG.md) for how the app has developed, with screenshots of each version.

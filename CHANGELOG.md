@@ -9,6 +9,18 @@ The current version is shown at the bottom of **Settings**.
 
 ---
 
+## 0.12.3 — 2026-11-22 · Simpler History dates
+
+| History |
+|---|
+| ![History](docs/screenshots/v0.12.3/history.jpg) |
+
+### Changed
+- **History**: the date column shows just the date; the cycle label ("· C1") is gone. Opening
+  a workout from an earlier cycle still shows its cycle in the header.
+
+---
+
 ## 0.12.2 — 2026-11-22 · At least the plan counts, older cycles open
 
 | History (earlier cycle) | Workout detail |
