@@ -142,12 +142,15 @@ export const minSec = (s) => `${Math.floor(s / 60)}:${String(Math.floor(s % 60))
 
 export const isFinished = (cycle, plan) => !!cycle.finished[plan.key]
 
+/** Number of sets of a main lift in a session: the program's, unless changed in the sets dialog. */
+export const mainSetCount = (cycle, plan, p) => cycle.setCounts[`${plan.key}:${liftOf(cycle, p)}`] ?? p.sets
+
 /** Main-lift sets ticked / total in a draft. */
 export function sessionProgress(cycle, plan) {
   let done = 0
   let total = 0
   for (const p of mainLifts(cycle, plan)) {
-    for (let i = 0; i < p.sets; i++) {
+    for (let i = 0; i < mainSetCount(cycle, plan, p); i++) {
       total++
       if (cycle.logs[setKey(plan.key, liftOf(cycle, p), i)]?.done) done++
     }
@@ -191,21 +194,22 @@ export function draftSecondaries(state, cycle, plan) {
 
 /** The permanent record of a session, built from its draft. */
 export function buildRecord(state, cycle, plan, finishedAt) {
+  // Main lifts: every set is kept (ticked or not); an untouched set stands for the prescription
   const main = mainLifts(cycle, plan).map((p) => {
     const id = liftOf(cycle, p)
-    const keys = Array.from({ length: p.sets }, (_, i) => setKey(plan.key, id, i))
     const planned = targetWeight(cycle, p)
+    const sets = Array.from({ length: mainSetCount(cycle, plan, p) }, (_, i) => {
+      const log = cycle.logs[setKey(plan.key, id, i)]
+      return { w: log?.w ?? planned, r: log?.r ?? p.reps, done: !!log?.done }
+    })
     return {
       kind: 'main',
       exerciseId: id,
       name: exerciseName(state, id),
-      sets: p.sets,
-      reps: p.reps,
       pct: p.pct,
       retest: p.retest,
-      planned,
-      weight: cycle.logs[keys[0]]?.w ?? planned,
-      done: keys.map((k) => !!cycle.logs[k]?.done),
+      prescription: { sets: p.sets, reps: p.reps, weight: planned },
+      sets,
       rest: restOf(cycle, `${plan.key}:${id}`),
       note: cycle.notes[`${plan.key}:${id}`] || undefined,
     }
@@ -257,8 +261,9 @@ export function untickedSets(cycle, plan) {
   return mainLifts(cycle, plan)
     .map((p) => {
       const id = liftOf(cycle, p)
-      const done = Array.from({ length: p.sets }, (_, i) => cycle.logs[setKey(plan.key, id, i)]?.done).filter(Boolean).length
-      return { id, missing: p.sets - done, total: p.sets }
+      const total = mainSetCount(cycle, plan, p)
+      const done = Array.from({ length: total }, (_, i) => cycle.logs[setKey(plan.key, id, i)]?.done).filter(Boolean).length
+      return { id, missing: total - done, total }
     })
     .filter((x) => x.missing > 0)
 }
@@ -271,7 +276,7 @@ export function retestResults(cycle) {
     const s = ROTATION.findIndex((r) => r.v2 === slot) + 1
     const rec = cycle.finished[sessionKey(WEEKS, s)]
     const e = rec?.entries.find((x) => x.kind === 'main' && x.retest && x.exerciseId === id)
-    out[id] = e?.done[0] ? e.weight : null
+    out[id] = e?.sets[0]?.done ? e.sets[0].w : null
   })
   return out
 }
@@ -313,10 +318,7 @@ export function exerciseHistory(state, exId, kind) {
       if (!rec) return
       for (const e of rec.entries) {
         if (e.exerciseId !== exId || (kind && e.kind !== kind)) continue
-        const sets =
-          e.kind === 'main'
-            ? e.done.flatMap((d) => (d ? [{ w: e.weight, r: e.reps, done: true }] : []))
-            : e.sets.filter((x) => x.done)
+        const sets = e.sets.filter((x) => x.done)
         if (sets.length) out.push({ cycle: ci, order: si, kind: e.kind, week: plan.week, session: plan.session, date: rec.finishedAt, sets, note: e.note })
       }
     })

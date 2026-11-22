@@ -140,37 +140,6 @@ main.fit { padding-bottom: calc(var(--tabbar-h) + env(safe-area-inset-bottom)); 
 .stepper { display: flex; gap: var(--space-2); flex-shrink: 0; }
 .stepper.end { align-self: flex-end; }
 
-/* Main lifts: name + prescription left, "Weight used" right, set toggles across the card */
-.lift-head { display: flex; justify-content: space-between; align-items: flex-start; gap: var(--space-3); }
-.lift-head p { margin-top: var(--space-1); }
-/* Planned weight: same colour and weight as the lift name (follows dark mode), line keeps its size */
-.lift-head .planned { color: var(--text); font-weight: var(--weight-bold); }
-.weight-used {
-  display: flex; flex-direction: column; align-items: flex-end; gap: var(--space-1);
-  font-size: var(--text-xs); color: var(--muted); flex-shrink: 0;
-}
-/* The weight value inherits the "Weight used" label style (size, colour), not bold */
-.weight-value { display: flex; align-items: center; gap: var(--space-1); }
-.weight-value strong { font-weight: var(--weight-normal); }
-.weight-value strong.changed { color: var(--accent); }
-/* Pen sits flush with the right edge of "Weight used"; the negative margin keeps a ~40px tap area
-   without pushing the icon inwards or adding height to the row */
-button.pen {
-  min-height: 0;
-  width: auto;
-  height: auto;
-  padding: var(--space-2) 0 var(--space-2) var(--space-2);
-  margin: calc(-1 * var(--space-2)) 0 calc(-1 * var(--space-2)) calc(-1 * var(--space-1));
-  border: none;
-  background: none;
-  font-size: var(--text-sm);
-  line-height: 1;
-  color: var(--accent);
-  position: relative;
-}
-/* Invisible extra touch area around the pen (about 44px), no effect on layout */
-button.pen::after { content: ''; position: absolute; inset: calc(-1 * var(--space-2)) calc(-1 * var(--space-3)); }
-
 /* Dialogs */
 dialog.sheet {
   border: none;
@@ -188,10 +157,8 @@ dialog.sheet form { display: flex; flex-direction: column; gap: var(--space-3); 
 .main-lift-row input.num { width: 84px; text-align: center; }
 .main-lift-row input.num:disabled { opacity: 0.4; }
 .weight-input { display: flex; align-items: center; gap: var(--space-2); font-size: var(--text-md); }
-.weight-input.big input.num { width: 120px; font-size: var(--text-lg); text-align: center; padding: var(--space-2); }
 
-/* Set toggles of the main lifts */
-.set-toggles { display: flex; justify-content: space-between; gap: var(--space-2); padding: var(--space-1) 0; }
+/* Set toggles (one per set, on every exercise card) */
 .set-toggle {
   flex: 0 1 48px;
   min-width: 0;
@@ -204,8 +171,6 @@ dialog.sheet form { display: flex; flex-direction: column; gap: var(--space-3); 
   font-weight: var(--weight-bold);
   color: var(--muted);
 }
-/* Fewer sets (e.g. the re-test single) start on the left instead of spreading out */
-.set-toggles:has(> :only-child), .set-toggles:has(> :nth-child(2):last-child) { justify-content: flex-start; gap: var(--space-3); }
 .set-toggle.is-done { background: var(--success); border-color: var(--success); color: var(--on-accent); }
 
 /* Lists */
@@ -329,8 +294,6 @@ button.finish { margin-top: var(--space-1); }
   padding: var(--space-2) var(--space-3);
   font-weight: var(--weight-bold);
 }
-.set-toggle.static { display: flex; align-items: center; justify-content: center; border: 1px solid var(--border); background: var(--card); }
-.set-toggle.static.is-done { background: var(--success); border-color: var(--success); color: var(--on-accent); }
 .note-text { font-style: italic; color: var(--muted); font-size: var(--text-sm); white-space: pre-wrap; }
 .done-sets { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: var(--space-1); }
 .done-sets li { display: grid; grid-template-columns: 32px 1fr 24px; align-items: center; }
@@ -368,7 +331,7 @@ button.rest-time {
 .rest-stepper strong { font-size: var(--text-xl); min-width: 4ch; text-align: center; font-variant-numeric: tabular-nums; }
 .rest-stepper button { width: 56px; height: 56px; border-radius: var(--radius-full); font-size: var(--text-xl); padding: 0; }
 
-/* Secondary exercises: set toggles with each set's reps@weight under it, pen opens the sets dialog */
+/* Exercise cards: set toggles with each set's reps@weight under it, pen opens the sets dialog */
 .sec-head { display: flex; justify-content: space-between; align-items: center; gap: var(--space-3); }
 .sec-head > div { display: flex; flex-direction: column; gap: var(--space-2); }
 button.sec-pen {

@@ -1,5 +1,5 @@
 import Planned from './Planned'
-import { fmt, fmtDate, setText, unit } from '../program'
+import { fmtDate, setText } from '../program'
 
 /** A finished session, read-only, shown from its permanent record. */
 export default function FinishedSession({ record }) {
@@ -9,9 +9,9 @@ export default function FinishedSession({ record }) {
         ✓ Finished{record.finishedAt ? ` on ${fmtDate(record.finishedAt)}` : ''}
       </p>
 
-      {record.entries.map((e) =>
-        e.kind === 'main' ? <MainEntry key={`m-${e.exerciseId}`} e={e} /> : <SecondaryEntry key={`s-${e.exerciseId}`} e={e} />,
-      )}
+      {record.entries.map((e) => (
+        <Entry key={`${e.kind}-${e.exerciseId}`} e={e} />
+      ))}
 
       {record.note && (
         <section className="card">
@@ -23,36 +23,10 @@ export default function FinishedSession({ record }) {
   )
 }
 
-function MainEntry({ e }) {
+/** One exercise of a finished session (main lift or accessory work): prescription, then each set. */
+function Entry({ e }) {
   return (
-    <section className="card">
-      <div className="lift-head">
-        <div>
-          <h2>{e.name}</h2>
-          <Planned sets={e.sets} reps={e.reps} weight={e.planned} />
-        </div>
-        <div className="weight-used">
-          <span>Weight used</span>
-          <span className="weight-value">
-            <strong className={e.weight !== e.planned ? 'changed' : undefined}>{fmt(e.weight)} {unit()}</strong>
-          </span>
-        </div>
-      </div>
-      <div className="set-toggles" role="list">
-        {e.done.map((d, i) => (
-          <span key={i} role="listitem" className={`set-toggle static ${d ? 'is-done' : ''}`} aria-label={`Set ${i + 1}${d ? ', done' : ', not done'}`}>
-            {i + 1}
-          </span>
-        ))}
-      </div>
-      {e.note && <p className="note-text">{e.note}</p>}
-    </section>
-  )
-}
-
-function SecondaryEntry({ e }) {
-  return (
-    <section className="card">
+    <section className={`card ${e.retest ? 'highlight' : ''}`}>
       <h2>{e.name}</h2>
       {e.prescription && <Planned sets={e.prescription.sets} reps={e.prescription.reps} weight={e.prescription.weight} />}
       {e.sets.length === 0 ? (

@@ -6,7 +6,7 @@ import { get, set, del } from 'idb-keyval'
 
 // All app data lives in one object in IndexedDB. Every change is saved immediately.
 const KEY = 'training-plan'
-export const DATA_VERSION = 6
+export const DATA_VERSION = 7
 // Untouched copy of the data from before an upgrade, kept in case a conversion goes wrong
 const BACKUP_KEY = (v) => `training-plan-before-v${v}`
 
@@ -69,7 +69,7 @@ export function newCycle(startDate, oneRM, primaries = DEFAULT_PRIMARIES) {
     oneRM, // catalog id -> kg, fixed for the cycle
     logs: {}, // setKey -> { w, r, done }
     notes: {}, // sessionKey, sessionKey:liftId or sessionKey:+exerciseId -> text
-    setCounts: {}, // sessionKey:+exerciseId -> number of rows (secondary only)
+    setCounts: {}, // sessionKey:exerciseId (main) or sessionKey:+exerciseId -> number of sets, when changed
     finished: {}, // sessionKey -> permanent record (see buildRecord in program.js)
     active: null, // the one open session: { key, startedAt }
     rest: {}, // card key (as in notes) -> rest interval in seconds
@@ -155,6 +155,27 @@ export function migrate(data) {
       ...data,
       version: 6,
       groups: Object.fromEntries(GROUPS.map((g) => [g, (data.groups[g] ?? []).map((id) => ({ id, ...DEFAULT_PRESCRIPTION }))])),
+    }
+  }
+  if (data.version === 6) {
+    // v7: finished main lifts store every set ({ w, r, done }) and their prescription, like
+    // accessory work, instead of one weight and a list of ticks
+    const mainEntry = (e) =>
+      e.kind !== 'main' || !Array.isArray(e.done)
+        ? e
+        : {
+            kind: 'main', exerciseId: e.exerciseId, name: e.name, pct: e.pct, retest: e.retest,
+            prescription: { sets: e.sets, reps: e.reps, weight: e.planned },
+            sets: e.done.map((done) => ({ w: e.weight, r: e.reps, done })),
+            rest: e.rest, note: e.note,
+          }
+    data = {
+      ...data,
+      version: 7,
+      cycles: data.cycles.map((c) => ({
+        ...c,
+        finished: Object.fromEntries(Object.entries(c.finished).map(([k, rec]) => [k, { ...rec, entries: rec.entries.map(mainEntry) }])),
+      })),
     }
   }
   return data.version === DATA_VERSION ? data : null

@@ -8,9 +8,9 @@ import { DEFAULT_CATALOG, isoDay, newId } from './program'
 
 const plusDays = (d, n) => new Date(d.getFullYear(), d.getMonth(), d.getDate() + n)
 
-const all = (n) => Array(n).fill(true)
 const main = (exerciseId, name, sets, reps, weight, note) => ({
-  kind: 'main', exerciseId, name, sets, reps, pct: 80, retest: false, planned: weight, weight, done: all(sets), rest: 120,
+  kind: 'main', exerciseId, name, pct: 80, retest: false, prescription: { sets, reps, weight },
+  sets: Array.from({ length: sets }, () => ({ w: weight, r: reps, done: true })), rest: 120,
   ...(note && { note }),
 })
 const accessory = (exerciseId, name, sets, reps, weight, rest) => ({

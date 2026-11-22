@@ -7,11 +7,10 @@ import Planned from '../components/Planned'
 import RestTimer from '../components/RestTimer'
 import SetsDialog from '../components/SetsDialog'
 import useConfirm from '../components/useConfirm'
-import WeightDialog from '../components/WeightDialog'
 import {
-  ALL_SESSIONS, activeSession, isExtra, prescriptionText, removeExtra, sessionEntry, sessionName, setText, clockTime, draftSecondaries, exerciseHistory, exerciseName, finishSession, fmt,
+  ALL_SESSIONS, activeSession, isExtra, prescriptionText, removeExtra, sessionEntry, sessionName, setText, clockTime, draftSecondaries, exerciseHistory, exerciseName, finishSession,
   liftOf, mainLifts, parseKey, secondaryKey, sessionPlan, setKey, setsSummary, startSession, startableSession, targetWeight,
-  todayIso, unit, untickedSets, weekRange,
+  todayIso, untickedSets, weekRange,
 } from '../program'
 import { currentCycle, update, updateCycle } from '../store'
 
@@ -168,105 +167,69 @@ function Draft({ state, cycle, plan, open, onFinish }) {
   )
 }
 
-/**
- * Main lifts use the same reps and weight for every set: the weight sits top right
- * ("Weight used", applies to all sets) and each set is a toggle across the card.
- * Sets are still stored one by one, so history and the week-9 re-test keep working.
- */
+/** A main lift: prescribed by the program (sets × reps at a % of the 1RM). */
 function PrimaryBlock({ state, cycle, plan, p, open }) {
   const lift = liftOf(cycle, p)
-  const name = exerciseName(state, lift)
-  const target = targetWeight(cycle, p)
-  const keys = Array.from({ length: p.sets }, (_, i) => setKey(plan.key, lift, i))
-  const w = cycle.logs[keys[0]]?.w ?? target
-  const [editing, setEditing] = useState(false)
-  const setWeight = (v) =>
-    updateCycle((c) => {
-      for (const k of keys) c.logs[k] = { ...c.logs[k], w: v }
-    })
-
   return (
-    <section className={`card ${p.retest ? 'highlight' : ''}`}>
-      <div className="lift-head">
-        <div>
-          <h2>{name}</h2>
-          <Planned sets={p.sets} reps={p.reps} weight={target} />
-        </div>
-        <div className="weight-used">
-          <span>Weight used</span>
-          <span className="weight-value">
-            <strong className={w !== target ? 'changed' : undefined}>{fmt(w)} {unit()}</strong>
-            {open && (
-              <button className="pen" aria-label={`Change ${name} weight`} onClick={() => setEditing(true)}>
-                ✎
-              </button>
-            )}
-          </span>
-        </div>
-      </div>
-      {editing && (
-        <WeightDialog
-          title={`${name} · weight used`}
-          value={w}
-          planned={target}
-          onSave={setWeight}
-          onClose={() => setEditing(false)}
-        />
-      )}
-      {p.retest && (
-        <p className="small">Tick the single you actually lifted. Its weight becomes your 1RM for the next cycle.</p>
-      )}
-      <div className="set-toggles">
-        {keys.map((k, i) => {
-          const done = !!cycle.logs[k]?.done
-          return (
-            <button
-              key={k}
-              className={`set-toggle ${done ? 'is-done' : ''}`}
-              aria-pressed={done}
-              aria-label={`Set ${i + 1}${done ? ', done' : ''}`}
-              onClick={() => setLog(k, { w, r: p.reps, done: !done })}
-            >
-              {i + 1}
-            </button>
-          )
-        })}
-      </div>
-      {open && (
-        <RestTimer
-          cycle={cycle}
-          card={`${plan.key}:${lift}`}
-          sets={p.sets}
-          label={name}
-          note={<Note value={cycle.notes[`${plan.key}:${lift}`]} onChange={(t) => setNote(`${plan.key}:${lift}`, t)} />}
-        />
-      )}
-    </section>
+    <ExerciseCard
+      cycle={cycle}
+      plan={plan}
+      entry={lift}
+      name={exerciseName(state, lift)}
+      pres={{ sets: p.sets, reps: p.reps, weight: targetWeight(cycle, p) }}
+      open={open}
+      highlight={p.retest}
+      hint={p.retest && 'Tick the single you actually lifted. Its weight becomes your 1RM for the next cycle.'}
+    />
   )
 }
 
+/** Accessory work: prescribed by the group (or when added), with last time for reference. */
 function SecondaryBlock({ state, cycle, plan, id, open }) {
   const cycleIdx = state.cycles.length - 1
   const order = ALL_SESSIONS.findIndex((s) => s.key === plan.key)
-  const entry = secondaryKey(id)
   const last = exerciseHistory(state, id, 'secondary')
     .filter((h) => h.cycle < cycleIdx || (h.cycle === cycleIdx && h.order < order))
     .at(-1)
-  const countKey = `${plan.key}:${entry}`
-  // The group's prescription sets the rows and pre-fills them; "last time" is for reference
   const pres = sessionEntry(state, cycle, plan, id)
+  const name = exerciseName(state, id)
   // Added during this workout (not part of the group): the sets dialog can remove it while it's open
-  const removable = open && isExtra(cycle, plan, id)
   const [confirmDialog, confirm] = useConfirm()
   const remove = async () => {
     const ok = await confirm({
-      title: `Remove ${exerciseName(state, id)}?`,
+      title: `Remove ${name}?`,
       message: 'It was added for this session only. Sets logged for it are dropped.',
       confirmLabel: 'Remove',
       danger: true,
     })
     if (ok) updateCycle((c) => removeExtra(c, plan, id))
   }
+  return (
+    <>
+      <ExerciseCard
+        cycle={cycle}
+        plan={plan}
+        entry={secondaryKey(id)}
+        name={name}
+        pres={pres}
+        last={last}
+        lastLine={last ? `Last time (${sessionName(last)}): ${setsSummary(last.sets)}` : 'First time, no history yet'}
+        open={open}
+        onRemove={open && isExtra(cycle, plan, id) ? remove : undefined}
+      />
+      {confirmDialog}
+    </>
+  )
+}
+
+/**
+ * One exercise card, the same for main lifts and accessory work: prescription (and last time)
+ * with the pen on the right, a toggle per set with its reps@weight underneath, then the rest
+ * timer. The pen opens the sets dialog (count, weight and reps per set). Every change is saved
+ * to the draft straight away. `entry` is the exercise's part of the log keys (liftId or +id).
+ */
+function ExerciseCard({ cycle, plan, entry, name, pres, last, lastLine, open, highlight, hint, onRemove }) {
+  const countKey = `${plan.key}:${entry}`
   const count = cycle.setCounts[countKey] ?? pres?.sets ?? Math.max(last?.sets.length ?? 3, 1)
   const [editing, setEditing] = useState(false)
   const keys = Array.from({ length: count }, (_, i) => setKey(plan.key, entry, i))
@@ -290,23 +253,21 @@ function SecondaryBlock({ state, cycle, plan, id, open }) {
   const cols = Math.min(count, 6)
 
   return (
-    <section className="card">
-      <h2>{exerciseName(state, id)}</h2>
-      {confirmDialog}
-      {/* Prescription and last time on the left, the pen for editing all sets on the right */}
+    <section className={`card ${highlight ? 'highlight' : ''}`}>
+      <h2>{name}</h2>
+      {/* Prescription (and last time) on the left, the pen for editing all sets on the right */}
       <div className="sec-head">
         <div>
           {pres && <Planned sets={pres.sets} reps={pres.reps} weight={pres.weight} />}
-          <p className="muted small">
-            {last ? `Last time (${sessionName(last)}): ${setsSummary(last.sets)}` : 'First time, no history yet'}
-          </p>
+          {lastLine && <p className="muted small">{lastLine}</p>}
         </div>
         {open && (
-          <button className="sec-pen" aria-label={`Edit ${exerciseName(state, id)} sets`} onClick={() => setEditing(true)}>
+          <button className="sec-pen" aria-label={`Edit ${name} sets`} onClick={() => setEditing(true)}>
             ✎
           </button>
         )}
       </div>
+      {hint && <p className="small">{hint}</p>}
       {/* Toggles with each set's reps@weight under them, in equal columns that line up with the
           timer segments below; lines of up to 6 sets */}
       <div className="sec-sets" style={{ gridTemplateColumns: `repeat(${cols}, minmax(0, 1fr))` }}>
@@ -336,18 +297,17 @@ function SecondaryBlock({ state, cycle, plan, id, open }) {
       </div>
       {editing && (
         <SetsDialog
-          title={`${exerciseName(state, id)} · sets`}
+          title={`${name} · sets`}
           planned={pres && prescriptionText(pres)}
           rows={keys.map((k) => ({ w: cycle.logs[k]?.w ?? null, r: cycle.logs[k]?.r ?? null }))}
           hints={hints}
           onSave={saveSets}
           onRemove={
-            removable
-              ? () => {
-                  setEditing(false)
-                  remove()
-                }
-              : undefined
+            onRemove &&
+            (() => {
+              setEditing(false)
+              onRemove()
+            })
           }
           onClose={() => setEditing(false)}
         />
@@ -358,7 +318,7 @@ function SecondaryBlock({ state, cycle, plan, id, open }) {
           card={countKey}
           sets={count}
           defaultRest={pres?.rest}
-          label={exerciseName(state, id)}
+          label={name}
           note={<Note value={cycle.notes[countKey]} onChange={(t) => setNote(countKey, t)} />}
         />
       )}
