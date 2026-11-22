@@ -21,6 +21,9 @@ export default function App() {
   const [selected, setSelected] = useState(null)
   // Bumped on every tab tap, so tapping the open tab returns it to its first screen (Settings sub-screens)
   const [tabTaps, setTabTaps] = useState(0)
+  // Where a session was opened from ({ tab, selected, scrollY }), for its back button. Tapping a
+  // tab starts over.
+  const [backStack, setBackStack] = useState([])
 
   if (state === undefined) return <div className="screen muted center">Loading…</div>
   if (state === null) return <Setup />
@@ -31,11 +34,21 @@ export default function App() {
   // Pinned when the tab opens, so ticking the last set doesn't jump to the next session.
   const sessionKey = selected ?? upcoming()
   const openSession = (key) => {
+    setBackStack((s) => [...s, { tab, selected: tab === 'session' ? sessionKey : selected, scrollY: window.scrollY }])
     setSelected(key)
     setTab('session')
     window.scrollTo(0, 0)
   }
+  // Back to the screen the session was opened from, at the same scroll position
+  const goBack = () => {
+    const last = backStack.at(-1)
+    setBackStack((s) => s.slice(0, -1))
+    setSelected(last.selected)
+    setTab(last.tab)
+    requestAnimationFrame(() => window.scrollTo(0, last.scrollY))
+  }
   const switchTab = (id) => {
+    setBackStack([])
     // Tapping the Session tab opens the session in progress, or the next one to start.
     if (id === 'session') setSelected(upcoming())
     setTab(id)
@@ -47,7 +60,13 @@ export default function App() {
     <>
       <main className={tab === 'overview' ? 'fit' : undefined}>
         {tab === 'overview' && <Plan state={state} onOpen={openSession} />}
-        {tab === 'session' && <Session key={sessionKey} state={state} sessionKey={sessionKey} onNavigate={openSession} />}
+        {tab === 'session' && <Session
+            key={sessionKey}
+            state={state}
+            sessionKey={sessionKey}
+            onNavigate={openSession}
+            onBack={backStack.length ? goBack : undefined}
+          />}
         {tab === 'history' && <History state={state} onOpen={openSession} />}
         {tab === 'settings' && <Settings key={tabTaps} state={state} />}
       </main>

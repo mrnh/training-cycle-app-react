@@ -23,13 +23,10 @@ const setNote = (key, text) =>
     c.notes[key] = text
   })
 
-export default function Session({ state, sessionKey, onNavigate }) {
+export default function Session({ state, sessionKey, onNavigate, onBack }) {
   const cycle = currentCycle(state)
   const { week, session } = parseKey(sessionKey)
   const plan = sessionPlan(week, session)
-  const idx = ALL_SESSIONS.findIndex((p) => p.key === sessionKey)
-  const prev = ALL_SESSIONS[idx - 1]
-  const next = ALL_SESSIONS[idx + 1]
   const record = cycle.finished[plan.key]
   const active = activeSession(cycle)
   const isOpen = active?.key === plan.key
@@ -50,18 +47,21 @@ export default function Session({ state, sessionKey, onNavigate }) {
   return (
     <div className="screen">
       <header className="session-head">
-        <button className="icon" aria-label="Previous session" disabled={!prev} onClick={() => onNavigate(prev.key)}>
-          ‹
-        </button>
+        {/* Back to the screen this session was opened from (none when opened from the tab bar) */}
+        {onBack ? (
+          <button className="icon" aria-label="Back" onClick={onBack}>
+            ‹
+          </button>
+        ) : (
+          <span className="icon-spacer" />
+        )}
         <div>
           <h1>{sessionName(plan)}</h1>
           <p className="muted small">
             {weekRange(cycle, week)} · Group {plan.group}
           </p>
         </div>
-        <button className="icon" aria-label="Next session" disabled={!next} onClick={() => onNavigate(next.key)}>
-          ›
-        </button>
+        <span className="icon-spacer" />
       </header>
 
       {record ? (
