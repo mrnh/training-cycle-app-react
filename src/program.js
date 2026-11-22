@@ -407,13 +407,19 @@ export function finishedWorkouts(state) {
 }
 
 /**
- * Whether a finished exercise entry was done as prescribed: every planned set ticked, and (with
- * a prescription) every set at the planned reps and weight. More than planned also counts as
- * a deviation, like the yellow-green toggles on the Session screen.
+ * Whether a set reached its plan ({ w, r }): at least the planned reps and at least the planned
+ * weight. More is fine (e.g. 87.5 kg where 85.6 was planned, because of the plates at hand).
+ */
+export const meetsPlan = (set, plan) => (set.r ?? 0) >= (plan.r ?? 0) && (set.w ?? 0) >= (plan.w ?? 0)
+
+/**
+ * Whether a finished exercise entry was done as prescribed: every logged set ticked, at least
+ * the planned number of sets, and (with a prescription) every set meeting the planned reps and
+ * weight (more is fine), like the set toggles on the Session screen.
  */
 export function entryAsPrescribed(e) {
   const p = e.prescription
   if (!e.sets.length || !e.sets.every((s) => s.done)) return false
   if (!p) return true
-  return e.sets.length === p.sets && e.sets.every((s) => s.r === p.reps && (s.w ?? 0) === (p.weight ?? 0))
+  return e.sets.length >= p.sets && e.sets.every((s) => meetsPlan(s, { w: p.weight, r: p.reps }))
 }

@@ -8,7 +8,7 @@ import RestTimer from '../components/RestTimer'
 import SetsDialog from '../components/SetsDialog'
 import useConfirm from '../components/useConfirm'
 import {
-  ALL_SESSIONS, activeSession, isExtra, prescriptionText, removeExtra, sessionEntry, sessionName, setText, clockTime, draftSecondaries, exerciseHistory, exerciseName, finishSession,
+  ALL_SESSIONS, activeSession, isExtra, meetsPlan, prescriptionText, removeExtra, sessionEntry, sessionName, setText, clockTime, draftSecondaries, exerciseHistory, exerciseName, finishSession,
   liftOf, mainLifts, parseKey, secondaryKey, sessionPlan, setKey, setsSummary, startSession, startableSession, targetWeight,
   todayIso, untickedSets, weekRange,
 } from '../program'
@@ -284,10 +284,10 @@ function ExerciseCard({ cycle, plan, entry, name, pres, last, lastLine, open, hi
           return [
             <button
               key={`t${i}`}
-              className={`set-toggle ${done ? 'is-done' : ''} ${done && deviates(i) ? 'off-target' : ''}`}
+              className={`set-toggle ${done ? 'is-done' : ''} ${done && !meetsPlan(shown(i), hints[i]) ? 'off-target' : ''}`}
               style={{ gridRow: line * 2 + 1, gridColumn: col }}
               aria-pressed={done}
-              aria-label={`Set ${i + 1}, ${setText(shown(i))}${done ? (deviates(i) ? ', done, not as planned' : ', done') : ''}`}
+              aria-label={`Set ${i + 1}, ${setText(shown(i))}${done ? (meetsPlan(shown(i), hints[i]) ? ', done' : ', done, below plan') : ''}`}
               onClick={() => toggle(i)}
             >
               {i + 1}

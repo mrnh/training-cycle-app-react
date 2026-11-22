@@ -11,7 +11,7 @@
   --accent-soft: #eeeafd;
   --success: #2f9e5b;
   --success-soft: #e3f5ea;
-  --off-target: #8aa21c; /* a set done, but not as planned (other reps or weight) */
+  --off-target: #8aa21c; /* a set done, but below plan (fewer reps or less weight) */
   --caution: #e09a0b; /* History: an exercise not done as prescribed */
   --danger: #d93d42;
   --warning: #8a5a00;
