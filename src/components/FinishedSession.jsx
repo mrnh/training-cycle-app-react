@@ -30,7 +30,16 @@ function Entry({ e }) {
       <h2>{e.name}</h2>
       {e.prescription && <Planned sets={e.prescription.sets} reps={e.prescription.reps} weight={e.prescription.weight} />}
       {e.sets.length === 0 ? (
-        <p className="muted small">No sets logged</p>
+        // Same row layout as the sets, with a red cross like the History tab
+        <ol className="done-sets">
+          <li className="muted">
+            <span className="set-no" />
+            <span>No sets logged</span>
+            <span className="not-done" aria-label="not done">
+              ✗
+            </span>
+          </li>
+        </ol>
       ) : (
         <ol className="done-sets">
           {e.sets.map((x, i) => (

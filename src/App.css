@@ -300,6 +300,7 @@ button.finish { margin-top: var(--space-1); }
 .done-sets { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: var(--space-1); }
 .done-sets li { display: grid; grid-template-columns: 32px 1fr 24px; align-items: center; }
 .done-sets li.is-done span:last-child { color: var(--success); font-weight: var(--weight-bold); }
+.done-sets .not-done { color: var(--danger); font-weight: var(--weight-bold); }
 
 /* One open session at a time; the others are previews */
 fieldset.draft { display: contents; border: none; margin: 0; padding: 0; min-width: 0; }
