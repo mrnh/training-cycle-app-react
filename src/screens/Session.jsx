@@ -52,7 +52,7 @@ export default function Session({ state, sessionKey, onNavigate, onBack }) {
       <header className="session-head">
         {/* Back to the screen this session was opened from (none when opened from the tab bar) */}
         {onBack ? (
-          <button className="icon" aria-label="Back" onClick={onBack}>
+          <button className="icon" data-back aria-label="Back" onClick={onBack}>
             ‹
           </button>
         ) : (

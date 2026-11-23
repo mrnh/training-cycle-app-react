@@ -114,6 +114,9 @@ textarea.note { resize: vertical; min-height: 0; }
 
 /* Plan fills exactly one screen: the week rows share the height between card and progress bar.
    On very small phones the week list scrolls on its own instead of the whole page. */
+/* Swipe back (useEdgeSwipeBack): the page follows the finger with a shadow on its left edge */
+main.swiping { background: var(--bg); box-shadow: -8px 0 24px rgb(0 0 0 / 0.18); }
+
 main.fit { padding-bottom: calc(var(--tabbar-h) + env(safe-area-inset-bottom)); }
 .screen.plan { height: calc(100dvh - var(--tabbar-h) - env(safe-area-inset-bottom)); }
 .plan .weeks { flex: 1; min-height: 0; overflow-y: auto; }

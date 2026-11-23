@@ -21,7 +21,7 @@ export default function Exercises({ state, onBack }) {
   return (
     <div className="screen">
       <header className="session-head">
-        <button className="icon" aria-label="Back to settings" onClick={onBack}>
+        <button className="icon" data-back aria-label="Back to settings" onClick={onBack}>
           ‹
         </button>
         <h1>Exercise catalog</h1>

@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import './App.css'
 import UpdatePrompt from './components/UpdatePrompt'
+import useEdgeSwipeBack from './useEdgeSwipeBack'
 import { ALL_SESSIONS, activeSession, nextSession } from './program'
 import History from './screens/History'
 import Plan from './screens/Plan'
@@ -52,6 +53,7 @@ export default function App() {
     navigator.storage?.persist?.().catch(() => {})
   }, [])
   useWakeLock(!!state && state.keepAwake !== false && !!currentCycle(state).active)
+  useEdgeSwipeBack(!!state)
   const [tab, setTab] = useState('overview')
   const [selected, setSelected] = useState(null)
   // Bumped on every tab tap, so tapping the open tab returns it to its first screen (Settings sub-screens)

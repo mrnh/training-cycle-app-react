@@ -24,7 +24,7 @@ export default function History({ state }) {
     return (
       <div className="screen">
         <header className="session-head">
-          <button className="icon" aria-label="Back" onClick={back}>
+          <button className="icon" data-back aria-label="Back" onClick={back}>
             ‹
           </button>
           <div>

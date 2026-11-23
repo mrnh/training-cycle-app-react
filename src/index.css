@@ -79,6 +79,10 @@
 
 * { box-sizing: border-box; }
 
+/* The page sliding out during a back swipe must not widen the page (on body this doesn't stop
+   mobile browsers from widening the viewport) */
+#root { overflow-x: clip; }
+
 body {
   margin: 0;
   background: var(--bg);

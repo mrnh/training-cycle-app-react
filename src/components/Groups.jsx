@@ -47,7 +47,7 @@ export function GroupsEditor({ state, onBack }) {
   return (
     <div className="screen">
       <header className="session-head">
-        <button className="icon" aria-label="Back to settings" onClick={onBack}>
+        <button className="icon" data-back aria-label="Back to settings" onClick={onBack}>
           ‹
         </button>
         <h1>Accessory work</h1>

@@ -35,7 +35,7 @@ export default function ExerciseHistory({ state, ex, onBack }) {
   return (
     <div className="screen">
       <header className="session-head">
-        <button className="icon" aria-label="Back to exercises" onClick={onBack}>
+        <button className="icon" data-back aria-label="Back to exercises" onClick={onBack}>
           ‹
         </button>
         <h1>Exercise history</h1>
