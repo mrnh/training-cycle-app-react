@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react'
 import Sheet from './Sheet'
 import { REST_MAX, REST_MIN, REST_STEP, minSec, restOf } from '../program'
+
+const EXTRA_REST = 15 // seconds the "add 15s" button gives
 import { updateCycle } from '../store'
 
 /** Re-renders four times a second while `running`, so the bar moves. */
@@ -17,8 +19,9 @@ function useNow(running) {
 /**
  * Interval timer of one exercise card: a bar with one segment per set, then a row with the
  * comment (left), Start/Pause/Resume (centre) and the rest interval (right). It runs for
- * interval × sets from the moment Start is tapped; ticking sets doesn't change it. While paused,
- * a reset icon next to Resume clears the timer.
+ * interval × sets from the moment Start is tapped; ticking sets doesn't change it. While it runs,
+ * "add 15s" (in place of the interval on the right) gives 15 s more rest; while paused, a reset
+ * icon next to Resume clears it.
  */
 export default function RestTimer({ cycle, card, sets, label, note, defaultRest }) {
   const rest = restOf(cycle, card, defaultRest)
@@ -49,6 +52,12 @@ export default function RestTimer({ cycle, card, sets, label, note, defaultRest 
     updateCycle((c) => {
       const pausedFor = Date.now() - Date.parse(c.timer.pausedAt)
       c.timer = { card, startedAt: new Date(Date.parse(c.timer.startedAt) + pausedFor).toISOString() }
+    })
+  // 15 s more rest: the timer moves back by 15 s (never to before its start)
+  const addRest = () =>
+    updateCycle((c) => {
+      const later = Math.min(Date.parse(c.timer.startedAt) + EXTRA_REST * 1000, Date.now())
+      c.timer = { ...c.timer, startedAt: new Date(later).toISOString() }
     })
   const reset = () =>
     updateCycle((c) => {
@@ -107,13 +116,20 @@ export default function RestTimer({ cycle, card, sets, label, note, defaultRest 
             </button>
           )}
         </span>
-        <button className="rest-time" aria-label={`Rest interval ${minSec(rest)}, change`} onClick={() => setEditing(true)}>
-          <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-            <circle cx="12" cy="13" r="8" />
-            <path d="M12 9v4l2.5 2M9.5 2.5h5" />
-          </svg>
-          {minSec(rest)}
-        </button>
+        {/* While the timer runs, the right spot offers extra rest instead of the interval setting */}
+        {mine && !paused && !done ? (
+          <button className="rest-time" onClick={addRest}>
+            add {EXTRA_REST}s
+          </button>
+        ) : (
+          <button className="rest-time" aria-label={`Rest interval ${minSec(rest)}, change`} onClick={() => setEditing(true)}>
+            <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+              <circle cx="12" cy="13" r="8" />
+              <path d="M12 9v4l2.5 2M9.5 2.5h5" />
+            </svg>
+            {minSec(rest)}
+          </button>
+        )}
       </div>
       {editing && <RestDialog title={label} value={rest} onSave={save} onClose={() => setEditing(false)} />}
     </>
