@@ -430,6 +430,13 @@ button.remove-exercise {
 .history-table td.when { white-space: nowrap; font-variant-numeric: tabular-nums; }
 .history-table td.go { vertical-align: middle; width: 1%; padding: 0 0 0 var(--space-2); color: var(--muted); }
 .history-table td.go .chevron { display: block; }
+.history-table th.sort { padding: 0; text-align: right; vertical-align: middle; }
+button.sort-btn {
+  border: none; background: none; min-height: 0; padding: var(--space-1); margin: calc(-1 * var(--space-1)) calc(-1 * var(--space-1)) 0 0;
+  color: var(--accent); line-height: 0; position: relative;
+}
+/* Bigger touch area than the icon, without making the header row taller */
+button.sort-btn::after { content: ''; position: absolute; inset: -8px; }
 .history-table tbody { border-top: 1px solid var(--border); }
 .history-table tbody tr:first-child td { padding-top: var(--space-2); }
 .history-table tbody tr:last-child td { padding-bottom: var(--space-2); }

@@ -4,15 +4,35 @@ import { entryAsPrescribed, entryNotDone, finishedWorkouts, fmtDateShort, sessio
 import Chevron from '../components/Chevron'
 
 /**
- * History tab: every finished workout, newest first, as one table. Date and session span the
+ * History tab: every finished workout, newest first (the sort button in the header turns the
+ * order around; remembered on this device), as one table. Date and session span the
  * workout's rows; then one row per main lift, one for the accessory group and one per exercise
  * added during the workout, each with a check: green when done as prescribed, orange-yellow when
  * done otherwise, a red cross when nothing was done.
  * Tapping a workout (of any cycle) opens its finished session with all sets and weights; the
  * back arrow returns to the list at the same scroll position.
  */
+const SORT_KEY = 'history-oldest-first'
+const readOldestFirst = () => {
+  try {
+    return localStorage.getItem(SORT_KEY) === '1'
+  } catch {
+    return false
+  }
+}
+
 export default function History({ state }) {
-  const workouts = finishedWorkouts(state)
+  const [oldestFirst, setOldestFirst] = useState(readOldestFirst)
+  const toggleOrder = () => {
+    setOldestFirst(!oldestFirst)
+    try {
+      localStorage.setItem(SORT_KEY, oldestFirst ? '0' : '1')
+    } catch {
+      // Storage blocked: the order just isn't remembered
+    }
+  }
+  const newestFirst = finishedWorkouts(state)
+  const workouts = oldestFirst ? [...newestFirst].reverse() : newestFirst
   const current = state.cycles.length - 1
   const [detail, setDetail] = useState(null) // { cycle, plan, record, scrollY } while one is open
 
@@ -57,7 +77,15 @@ export default function History({ state }) {
                   <span className="sr-only">Done as prescribed</span>
                 </th>
                 <th>Exercise</th>
-                <th />
+                <th className="sort">
+                  <button
+                    className="sort-btn"
+                    aria-label={oldestFirst ? 'Oldest first. Show newest first' : 'Newest first. Show oldest first'}
+                    onClick={toggleOrder}
+                  >
+                    <SortIcon oldestFirst={oldestFirst} />
+                  </button>
+                </th>
               </tr>
             </thead>
             {workouts.map(({ cycle, plan, record }) => {
@@ -130,4 +158,24 @@ function workoutRows(record) {
     ...(group.length ? [{ key: 'group', name: `Accessory work ${record.group}`, status: status(group) }] : []),
     ...added.map((e) => row(e, 'a')),
   ]
+}
+
+/** Arrow next to bars that grow in the direction of the order: newest first = arrow down. */
+function SortIcon({ oldestFirst }) {
+  return (
+    <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" fill="none" stroke="currentColor"
+      strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      {oldestFirst ? (
+        <>
+          <path d="M6 19V5M3 8l3-3 3 3" />
+          <path d="M12 6h3M12 12h6M12 18h9" />
+        </>
+      ) : (
+        <>
+          <path d="M6 5v14M3 16l3 3 3-3" />
+          <path d="M12 6h9M12 12h6M12 18h3" />
+        </>
+      )}
+    </svg>
+  )
 }
