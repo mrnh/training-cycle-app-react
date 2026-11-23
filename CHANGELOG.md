@@ -9,6 +9,22 @@ The current version is shown at the bottom of **Settings**.
 
 ---
 
+## 0.14.0 — 2026-11-23 · Extra rest
+
+| Rest timer running |
+|---|
+| ![Rest timer with "add 15s"](docs/screenshots/v0.14.0/rest-timer.jpg) |
+
+### Added
+- **add 15s**: while a rest timer runs, the spot of the rest interval on the right becomes
+  "add 15s". Each tap gives 15 seconds more rest for the current set (the remaining and total
+  time grow by 15 s). Paused, stopped or done, the rest interval shows again.
+
+### Changed
+- Shorter note under Rounding in Preferences.
+
+---
+
 ## 0.13.0 — 2026-11-23 · Rounding of planned weights
 
 | Preferences | Session |
