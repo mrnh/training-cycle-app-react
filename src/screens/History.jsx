@@ -1,11 +1,12 @@
 import { useState } from 'react'
 import FinishedSession from '../components/FinishedSession'
-import { entryAsPrescribed, finishedWorkouts, fmtDateShort, sessionName } from '../program'
+import { entryAsPrescribed, entryNotDone, finishedWorkouts, fmtDateShort, sessionName } from '../program'
 
 /**
  * History tab: every finished workout, newest first, as one table. Date and session span the
  * workout's rows; then one row per main lift, one for the accessory group and one per exercise
- * added during the workout, each with a check: green when done as prescribed, orange-yellow otherwise.
+ * added during the workout, each with a check: green when done as prescribed, orange-yellow when
+ * done otherwise, a red cross when nothing was done.
  * Tapping a workout (of any cycle) opens its finished session with all sets and weights; the
  * back arrow returns to the list at the same scroll position.
  */
@@ -88,8 +89,8 @@ export default function History({ state }) {
                       )}
                       <td className="name">{r.name}</td>
                       <td className="check">
-                        <span className={r.ok ? 'ok' : 'off'} aria-label={r.ok ? 'done as prescribed' : 'not as prescribed'}>
-                          ✓
+                        <span className={r.status} aria-label={STATUS_LABEL[r.status]}>
+                          {r.status === 'none' ? '✗' : '✓'}
                         </span>
                       </td>
                     </tr>
@@ -104,15 +105,21 @@ export default function History({ state }) {
   )
 }
 
+// Check per row: green ✓ done as prescribed, orange-yellow ✓ done but not as prescribed,
+// red ✗ nothing done at all
+const STATUS_LABEL = { ok: 'done as prescribed', off: 'not as prescribed', none: 'not done' }
+
 /** The rows of one workout: main lifts, the accessory group, then exercises added during it. */
 function workoutRows(record) {
   const main = record.entries.filter((e) => e.kind === 'main')
   const group = record.entries.filter((e) => e.kind === 'secondary' && !e.added)
   const added = record.entries.filter((e) => e.kind === 'secondary' && e.added)
-  const row = (e, kind) => ({ key: `${kind}-${e.exerciseId}`, name: e.name, ok: entryAsPrescribed(e) })
+  const status = (entries) =>
+    entries.every(entryAsPrescribed) ? 'ok' : entries.every(entryNotDone) ? 'none' : 'off'
+  const row = (e, kind) => ({ key: `${kind}-${e.exerciseId}`, name: e.name, status: status([e]) })
   return [
     ...main.map((e) => row(e, 'm')),
-    ...(group.length ? [{ key: 'group', name: `Accessory work ${record.group}`, ok: group.every(entryAsPrescribed) }] : []),
+    ...(group.length ? [{ key: 'group', name: `Accessory work ${record.group}`, status: status(group) }] : []),
     ...added.map((e) => row(e, 'a')),
   ]
 }

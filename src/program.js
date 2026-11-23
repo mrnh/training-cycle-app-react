@@ -443,3 +443,6 @@ export function entryAsPrescribed(e) {
   if (e.sets.length < p.sets) return false
   return e.kind !== 'main' || e.sets.every((s) => meetsPlan(s, { w: p.weight, r: p.reps }))
 }
+
+/** No set of a finished exercise entry was ticked at all: no work done. */
+export const entryNotDone = (e) => !e.sets.some((s) => s.done)

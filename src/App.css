@@ -380,6 +380,7 @@ button.remove-exercise {
 .history-table td.check { text-align: right; padding-right: 0; font-weight: var(--weight-bold); font-size: var(--text-md); line-height: 1.2; }
 .history-table td.check .ok { color: var(--success); }
 .history-table td.check .off { color: var(--caution); }
+.history-table td.check .none { color: var(--danger); }
 .history-table td.when { white-space: nowrap; font-variant-numeric: tabular-nums; }
 .history-table tbody { border-top: 1px solid var(--border); }
 .history-table tbody tr:first-child td { padding-top: var(--space-2); }
