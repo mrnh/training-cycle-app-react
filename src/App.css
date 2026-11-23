@@ -436,6 +436,13 @@ button.sort-btn {
   color: var(--accent); line-height: 0; position: relative;
 }
 .history-card .show-all { align-self: flex-start; border-top: 1px solid var(--border); width: 100%; border-radius: 0; padding-top: var(--space-2); }
+/* History: Exercise history card (main lifts, a line, the picked exercises) */
+.exercise-card { padding-bottom: var(--space-2); }
+.exercise-rows { display: flex; flex-direction: column; }
+.exercise-rows + .exercise-rows, .exercise-rows + p { border-top: 1px solid var(--border); }
+.exercise-rows .list-row { align-items: center; padding: var(--space-2) 0; border-bottom: none; }
+.exercise-rows .chevron { flex: none; color: var(--muted); }
+.exercise-card .show-all { border-top: 1px solid var(--border); width: 100%; border-radius: 0; padding-top: var(--space-2); }
 /* Bigger touch area than the icon, without making the header row taller */
 button.sort-btn::after { content: ''; position: absolute; inset: -8px; }
 .history-table tbody { border-top: 1px solid var(--border); }

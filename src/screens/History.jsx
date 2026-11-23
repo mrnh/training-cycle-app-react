@@ -1,7 +1,11 @@
 import { useState } from 'react'
 import FinishedSession from '../components/FinishedSession'
-import { entryAsPrescribed, entryNotDone, finishedWorkouts, fmtDateShort, sessionName } from '../program'
+import Sheet from '../components/Sheet'
+import { GROUPS, entryAsPrescribed, entryNotDone, exerciseName, finishedWorkouts, fmtDateShort, sessionName } from '../program'
+import { currentCycle, update } from '../store'
 import Chevron from '../components/Chevron'
+import ExerciseHistory from './ExerciseHistory'
+import Exercises from './Exercises'
 
 const RECENT = 5 // workouts on the History tab itself; "Show all" opens the full list
 
@@ -14,6 +18,8 @@ const RECENT = 5 // workouts on the History tab itself; "Show all" opens the ful
  * when nothing was done.
  * Tapping a workout (of any cycle) opens its finished session with all sets and weights; the
  * back arrow returns to the list it came from at the same scroll position.
+ * Below, the Exercise history card: the main lifts and up to five picked exercises, each opening
+ * its exercise history; "Show all" lists every exercise.
  */
 const SORT_KEY = 'history-oldest-first'
 const readOldestFirst = () => {
@@ -38,6 +44,8 @@ export default function History({ state }) {
   const current = state.cycles.length - 1
   const [showAll, setShowAll] = useState(null) // { scrollY } of the History tab while All workouts is open
   const [detail, setDetail] = useState(null) // { cycle, plan, record, scrollY } while one is open
+  const [exercise, setExercise] = useState(null) // { id, scrollY } while an exercise history is open
+  const [allExercises, setAllExercises] = useState(null) // { scrollY } while All exercises is open
 
   const open = (w) => {
     setDetail({ ...w, scrollY: window.scrollY })
@@ -48,6 +56,19 @@ export default function History({ state }) {
     close()
     requestAnimationFrame(() => window.scrollTo(0, y))
   }
+
+  const ex = exercise && state.catalog.find((e) => e.id === exercise.id)
+  if (ex) return <ExerciseHistory state={state} ex={ex} onBack={() => backTo(exercise.scrollY, () => setExercise(null))} />
+  if (allExercises)
+    return (
+      <Exercises
+        state={state}
+        title="All exercises"
+        backLabel="Back to history"
+        canAdd={false}
+        onBack={() => backTo(allExercises.scrollY, () => setAllExercises(null))}
+      />
+    )
 
   if (detail) {
     return (
@@ -118,7 +139,101 @@ export default function History({ state }) {
           </button>
         </div>
       )}
+      <ExerciseCard
+        state={state}
+        onOpen={(id) => {
+          setExercise({ id, scrollY: window.scrollY })
+          window.scrollTo(0, 0)
+        }}
+        onShowAll={() => {
+          setAllExercises({ scrollY: window.scrollY })
+          window.scrollTo(0, 0)
+        }}
+      />
     </div>
+  )
+}
+
+const PICKS = 5 // exercises besides the main lifts on the Exercise history card
+
+/**
+ * The exercises on the card besides the main lifts: the ones picked with the pen, or until then
+ * the first five of the accessory work groups. Deleted exercises and main lifts are left out.
+ */
+function pickedExercises(state, mainIds) {
+  const ids = state.historyExercises ?? GROUPS.flatMap((g) => state.groups[g].map((x) => x.id))
+  const usable = (id) => !mainIds.includes(id) && state.catalog.some((e) => e.id === id)
+  return [...new Set(ids)].filter(usable).slice(0, PICKS)
+}
+
+/** History tab card: main lifts, then up to five picked exercises; each opens its history. */
+function ExerciseCard({ state, onOpen, onShowAll }) {
+  const mainIds = currentCycle(state).primaries.filter(Boolean)
+  const picked = pickedExercises(state, mainIds)
+  const [editing, setEditing] = useState(false)
+  const row = (id) => (
+    <button key={id} className="list-row" onClick={() => onOpen(id)}>
+      <span>{exerciseName(state, id)}</span>
+      <Chevron size={18} />
+    </button>
+  )
+  return (
+    <section className="card exercise-card">
+      <div className="sec-head">
+        <h2>Exercise history</h2>
+        <button className="sec-pen" aria-label="Pick exercises" onClick={() => setEditing(true)}>
+          ✎
+        </button>
+      </div>
+      <div className="exercise-rows">{mainIds.map(row)}</div>
+      {picked.length ? (
+        <div className="exercise-rows">{picked.map(row)}</div>
+      ) : (
+        <p className="muted small">Tap ✎ to add up to five exercises.</p>
+      )}
+      <button className="link show-all" onClick={onShowAll}>
+        Show all
+      </button>
+      {editing && <PickDialog state={state} mainIds={mainIds} picked={picked} onClose={() => setEditing(false)} />}
+    </section>
+  )
+}
+
+/** Up to five exercises for the card, one dropdown each; main lifts are on the card anyway. */
+function PickDialog({ state, mainIds, picked, onClose }) {
+  const [rows, setRows] = useState(() => Array.from({ length: PICKS }, (_, i) => picked[i] ?? ''))
+  const options = state.catalog.filter((e) => !mainIds.includes(e.id))
+  const taken = (id, i) => rows.some((r, j) => j !== i && r === id)
+  function save() {
+    update((d) => void (d.historyExercises = rows.filter(Boolean)))
+    onClose()
+  }
+  return (
+    <Sheet onClose={onClose} onSubmit={save}>
+      <div>
+        <h2>Exercise history</h2>
+        <p className="muted small">Shown below the main lifts.</p>
+      </div>
+      {rows.map((r, i) => (
+        <select
+          key={i}
+          aria-label={`Exercise ${i + 1}`}
+          value={r}
+          onChange={(e) => setRows(rows.map((x, j) => (j === i ? e.target.value : x)))}
+        >
+          <option value="">–</option>
+          {options.map((ex) => (
+            <option key={ex.id} value={ex.id} disabled={taken(ex.id, i)}>
+              {ex.name}
+            </option>
+          ))}
+        </select>
+      ))}
+      <div className="button-row end">
+        <button type="button" onClick={onClose}>Cancel</button>
+        <button type="submit" className="primary">Save</button>
+      </div>
+    </Sheet>
   )
 }
 
