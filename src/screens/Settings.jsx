@@ -217,18 +217,18 @@ export default function Settings({ state }) {
         <div className="row unit-row">
           <h3>Rounding</h3>
           <Segmented
-            label="Rounding of planned weights"
-            options={ROUNDINGS.map((r) => ({ id: r, label: `${r === 0.1 ? '.1' : r === 1 ? 'full' : r} ${unit()}` }))}
-            value={rounding()}
-            onChange={(r) => update((d) => void (d.rounding = r))}
-          />
-        </div>
-        <div className="row unit-row end">
-          <Segmented
             label="Rounding direction"
             options={ROUNDING_MODES}
             value={roundingMode()}
             onChange={(m) => update((d) => void (d.roundingMode = m))}
+          />
+        </div>
+        <div className="row unit-row end">
+          <Segmented
+            label="Rounding of planned weights"
+            options={ROUNDINGS.map((r) => ({ id: r, label: `${r === 0.1 ? '.1' : r === 1 ? 'full' : r} ${unit()}` }))}
+            value={rounding()}
+            onChange={(r) => update((d) => void (d.rounding = r))}
           />
         </div>
         <p className="muted small">
