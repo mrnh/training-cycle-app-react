@@ -231,10 +231,7 @@ export default function Settings({ state }) {
             onChange={(r) => update((d) => void (d.rounding = r))}
           />
         </div>
-        <p className="muted small">
-          Planned main-lift weights are rounded to this step, to the nearest or always up. Finished sessions keep
-          theirs.
-        </p>
+        <p className="muted small">Planned main-lift weights are rounded to this step, to the nearest or always up.</p>
       </section>
 
       <section className="card">
