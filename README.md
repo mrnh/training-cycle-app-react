@@ -39,6 +39,7 @@ Move your data once: in Safari, Settings → *Export backup*; in the installed a
   <img src="docs/screenshots/v0.10.0/overview.jpg" width="200" alt="Overview screen">
   <img src="docs/screenshots/v0.15.0/session.jpg" width="200" alt="Session screen">
   <img src="docs/screenshots/v0.15.0/history.jpg" width="200" alt="History screen">
+  <img src="docs/screenshots/v0.16.0/settings.jpg" width="200" alt="Settings screen">
 </p>
 
 See the [changelog](CHANGELOG.md) for how the app has developed, with screenshots of each version.

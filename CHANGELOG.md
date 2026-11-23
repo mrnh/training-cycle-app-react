@@ -9,6 +9,29 @@ The current version is shown at the bottom of **Settings**.
 
 ---
 
+## 0.16.0 — 2026-11-23 · Swipe back, tidier Settings
+
+| Settings | Current cycle | Data & Backup | Swipe back |
+|---|---|---|---|
+| ![Settings](docs/screenshots/v0.16.0/settings.jpg) | ![Current cycle screen](docs/screenshots/v0.16.0/current-cycle.jpg) | ![Data & Backup screen](docs/screenshots/v0.16.0/data-backup.jpg) | ![Swiping back from Current cycle](docs/screenshots/v0.16.0/swipe-back.jpg) |
+
+### Added
+- **Swipe back**: on every screen with a ‹ back arrow, a swipe from the left screen edge moves
+  the page with your finger. Let go past a third of the width (or flick) to go back; otherwise
+  it springs back. The installed iPhone app has no system swipe-back, so this provides it.
+
+### Changed
+- **Settings** is tidier. Cards that lead to another screen are tappable as a whole and show a
+  › on the right:
+  - **Current cycle** shows start date, main lifts and accessory work read-only; a tap opens
+    the **Current cycle** screen with the editing (start date, main lifts, accessory work,
+    Start a new cycle). The accessory work editor goes back to that screen.
+  - **Exercise catalog** is a single row (no pen, no description).
+  - **Data & Backup** (formerly Backup) opens a screen with export, import, sample data and
+    **Delete all data** (formerly its own Reset card in Settings).
+
+---
+
 ## 0.15.0 — 2026-11-23 · Installable app, clearer rest timer
 
 | Session | History | Finished session |
