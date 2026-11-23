@@ -432,13 +432,14 @@ export function finishedWorkouts(state) {
 export const meetsPlan = (set, plan) => (set.r ?? 0) >= (plan.r ?? 0) && (set.w ?? 0) >= (plan.w ?? 0)
 
 /**
- * Whether a finished exercise entry was done as prescribed: every logged set ticked, at least
- * the planned number of sets, and (with a prescription) every set meeting the planned reps and
- * weight (more is fine), like the set toggles on the Session screen.
+ * Whether a finished exercise entry was done as prescribed (the History checks): every logged set
+ * ticked and at least the planned number of sets. Main lifts must also meet the planned reps and
+ * weight in every set (more is fine); for accessory work, ticking all sets is enough.
  */
 export function entryAsPrescribed(e) {
   const p = e.prescription
   if (!e.sets.length || !e.sets.every((s) => s.done)) return false
   if (!p) return true
-  return e.sets.length >= p.sets && e.sets.every((s) => meetsPlan(s, { w: p.weight, r: p.reps }))
+  if (e.sets.length < p.sets) return false
+  return e.kind !== 'main' || e.sets.every((s) => meetsPlan(s, { w: p.weight, r: p.reps }))
 }
