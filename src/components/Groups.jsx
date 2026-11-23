@@ -8,16 +8,18 @@ import Sheet from './Sheet'
 
 /**
  * Part of the Current cycle card in Settings: what each group (A/B/C) adds to its sessions, one
- * line per exercise with its prescription and rest. The pen opens the editing screen.
+ * line per exercise with its prescription and rest. The pen (only with `onEdit`) opens the editing screen.
  */
 export default function GroupsSummary({ state, onEdit }) {
   return (
     <>
       <div className="row subhead">
         <h3>Accessory work</h3>
-        <button className="sec-pen" aria-label="Edit accessory work" onClick={onEdit}>
-          ✎
-        </button>
+        {onEdit && (
+          <button className="sec-pen" aria-label="Edit accessory work" onClick={onEdit}>
+            ✎
+          </button>
+        )}
       </div>
       {GROUPS.map((g, i) => (
         <div key={g} className="group-summary">

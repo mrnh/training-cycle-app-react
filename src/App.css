@@ -88,6 +88,18 @@ button.nav-card:active { background: var(--border); }
 .nav-card-text { display: flex; flex-direction: column; gap: var(--space-2); flex: 1; }
 .nav-card-title { font-size: var(--text-md); font-weight: var(--weight-bold); }
 .nav-card .chevron { flex: none; color: var(--muted); }
+/* A card with content that opens another screen: the button in its heading covers the whole card */
+.nav-section { position: relative; }
+.nav-head button {
+  display: flex; justify-content: space-between; align-items: center; width: 100%;
+  border: none; background: none; padding: 0; min-height: 0; font: inherit; color: inherit; text-align: left;
+}
+.nav-head button::after { content: ''; position: absolute; inset: 0; border-radius: var(--radius-lg); }
+.nav-head .chevron { flex: none; color: var(--muted); }
+.nav-section:has(.nav-head button:active) { background: var(--border); }
+/* Without the pens the sub-headings lose their height; keep the sections apart */
+.nav-section > .inline-field { margin-top: var(--space-3); }
+.nav-section > .subhead { margin-top: var(--space-4); }
 
 .card.highlight { border-color: var(--accent); }
 .next-up { gap: var(--space-1); border-color: var(--accent); }

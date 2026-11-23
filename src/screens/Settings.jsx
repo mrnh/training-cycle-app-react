@@ -4,7 +4,7 @@ import MainLiftFields from '../components/MainLiftFields'
 import NewCycleDialog from '../components/NewCycleDialog'
 import useConfirm from '../components/useConfirm'
 import Exercises from './Exercises'
-import { DATE_FORMATS, ROUNDINGS, ROUNDING_MODES, UNITS, dateFormat, rounding, roundingMode, exerciseName, fmt, heaviestWeight, mainLiftsError, todayIso, unit } from '../program'
+import { DATE_FORMATS, ROUNDINGS, ROUNDING_MODES, UNITS, dateFormat, fmtDate, rounding, roundingMode, exerciseName, fmt, heaviestWeight, mainLiftsError, todayIso, unit } from '../program'
 import { currentCycle, migrate, replaceState, update, updateCycle } from '../store'
 import { sampleState } from '../sampleData'
 
@@ -94,9 +94,10 @@ export default function Settings({ state }) {
   const show = (screen) => {
     setSubScreen(screen)
     setMessage('')
+    cancelRM()
     window.scrollTo(0, 0)
   }
-  if (subScreen === 'groups') return <GroupsEditor state={state} onBack={() => show(null)} />
+  if (subScreen === 'groups') return <GroupsEditor state={state} onBack={() => show('cycle')} />
   if (subScreen === 'exercises') return <Exercises state={state} onBack={() => show(null)} />
   if (subScreen === 'data')
     return (
@@ -134,78 +135,113 @@ export default function Settings({ state }) {
       </div>
     )
 
+  // Main lifts with their 1RM, empty slots left out (on the Settings card and the sub-screen)
+  const liftList = (
+    <div className="list">
+      {lifts.map((id) => (
+        <div className="row list-row static" key={id}>
+          <span>{exerciseName(state, id)}</span>
+          <span>{fmt(cycle.oneRM[id])} {unit()}</span>
+        </div>
+      ))}
+    </div>
+  )
+
+  if (subScreen === 'cycle')
+    return (
+      <div className="screen">
+        <header className="session-head">
+          <button className="icon" data-back aria-label="Back to settings" onClick={() => show(null)}>
+            ‹
+          </button>
+          <h1>Current cycle</h1>
+          <span className="icon-spacer" />
+        </header>
+        <section className="card">
+          <div className="row inline-field">
+            <h3>
+              <label htmlFor="start-date">Start date</label>
+            </h3>
+            <input
+              id="start-date"
+              type="date"
+              value={cycle.startDate}
+              onChange={(e) => e.target.value && updateCycle((c) => void (c.startDate = e.target.value))}
+            />
+          </div>
+
+          <div className="row subhead">
+            <h3>Main lifts</h3>
+            {!draft && (
+              <button
+                className="sec-pen"
+                aria-label="Edit main lifts"
+                onClick={() => setDraft(cycle.primaries.map((id) => ({ id: id ?? '', rm: id ? (cycle.oneRM[id] ?? null) : null })))}
+              >
+                ✎
+              </button>
+            )}
+          </div>
+
+          {draft ? (
+            <>
+              <p className="warning small">
+                Main lifts and 1RMs are fixed for the whole cycle. Saving a change recalculates every weight in sessions
+                you haven't finished yet. Finished sessions keep what you did.
+              </p>
+              <MainLiftFields
+                rows={draft}
+                catalog={state.catalog}
+                prefill={(id) => heaviestWeight(state, id)}
+                onChange={(rows) => {
+                  setRmError('')
+                  setDraft(rows)
+                }}
+              />
+              <p className="muted small">Picking another exercise fills in the heaviest weight from its history.</p>
+              {rmError && <p className="error">{rmError}</p>}
+              <div className="button-row end">
+                <button onClick={cancelRM}>Cancel</button>
+                <button className="primary" onClick={saveRM}>Save</button>
+              </div>
+            </>
+          ) : (
+            liftList
+          )}
+
+          <GroupsSummary state={state} onEdit={() => show('groups')} />
+
+          {!draft && (
+            <button className="new-cycle" onClick={() => setNewCycleOpen(true)}>
+              Start a new cycle
+            </button>
+          )}
+          {newCycleOpen && <NewCycleDialog state={state} onClose={() => setNewCycleOpen(false)} />}
+        </section>
+      </div>
+    )
+
   return (
     <div className="screen">
       <h1>Settings</h1>
 
-      <section className="card">
-        <h2>Current cycle</h2>
+      {/* Read-only overview; tapping anywhere on the card opens the Current cycle screen to edit it */}
+      <section className="card nav-section">
+        <h2 className="nav-head">
+          <button onClick={() => show('cycle')}>
+            Current cycle
+            <Chevron />
+          </button>
+        </h2>
         <div className="row inline-field">
-          <h3>
-            <label htmlFor="start-date">Start date</label>
-          </h3>
-          <input
-            id="start-date"
-            type="date"
-            value={cycle.startDate}
-            onChange={(e) => e.target.value && updateCycle((c) => void (c.startDate = e.target.value))}
-          />
+          <h3>Start date</h3>
+          <span>{fmtDate(cycle.startDate)}</span>
         </div>
-
         <div className="row subhead">
           <h3>Main lifts</h3>
-          {!draft && (
-            <button
-              className="sec-pen"
-              aria-label="Edit main lifts"
-              onClick={() => setDraft(cycle.primaries.map((id) => ({ id: id ?? '', rm: id ? (cycle.oneRM[id] ?? null) : null })))}
-            >
-              ✎
-            </button>
-          )}
         </div>
-
-        {draft ? (
-          <>
-            <p className="warning small">
-              Main lifts and 1RMs are fixed for the whole cycle. Saving a change recalculates every weight in sessions
-              you haven't finished yet. Finished sessions keep what you did.
-            </p>
-            <MainLiftFields
-              rows={draft}
-              catalog={state.catalog}
-              prefill={(id) => heaviestWeight(state, id)}
-              onChange={(rows) => {
-                setRmError('')
-                setDraft(rows)
-              }}
-            />
-            <p className="muted small">Picking another exercise fills in the heaviest weight from its history.</p>
-            {rmError && <p className="error">{rmError}</p>}
-            <div className="button-row end">
-              <button onClick={cancelRM}>Cancel</button>
-              <button className="primary" onClick={saveRM}>Save</button>
-            </div>
-          </>
-        ) : (
-          <div className="list">
-            {lifts.map((id) => (
-              <div className="row list-row static" key={id}>
-                <span>{exerciseName(state, id)}</span>
-                <span>{fmt(cycle.oneRM[id])} {unit()}</span>
-              </div>
-            ))}
-          </div>
-        )}
-
-        <GroupsSummary state={state} onEdit={() => show('groups')} />
-
-        {!draft && (
-          <button className="new-cycle" onClick={() => setNewCycleOpen(true)}>
-            Start a new cycle
-          </button>
-        )}
-        {newCycleOpen && <NewCycleDialog state={state} onClose={() => setNewCycleOpen(false)} />}
+        {liftList}
+        <GroupsSummary state={state} />
       </section>
 
       <NavCard title="Exercise catalog" onClick={() => show('exercises')} />
