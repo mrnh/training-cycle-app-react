@@ -7,10 +7,10 @@ import Chevron from '../components/Chevron'
 import ExerciseHistory from './ExerciseHistory'
 import Exercises from './Exercises'
 
-const RECENT = 5 // workouts on the History tab itself; "Show all" opens the full list
+const RECENT = 4 // workouts on the History tab itself; "Show all" opens the full list
 
 /**
- * History tab: the five most recent finished workouts, and "Show all" for the All workouts
+ * History tab: the four most recent finished workouts, and "Show all" for the All workouts
  * screen with every workout and a sort button (newest or oldest first, remembered on this
  * device). Each workout is a table row group: date and session span its rows; then one row per
  * main lift, one for the accessory group and one per exercise added during the workout, each
@@ -18,7 +18,8 @@ const RECENT = 5 // workouts on the History tab itself; "Show all" opens the ful
  * when nothing was done.
  * Tapping a workout (of any cycle) opens its finished session with all sets and weights; the
  * back arrow returns to the list it came from at the same scroll position.
- * Below, the Exercise history card: the main lifts and up to five picked exercises, each opening
+ * Below, the Exercise history card: the main lifts and up to five picked exercises (three by
+ * default), each opening
  * its exercise history; "Show all" lists every exercise.
  */
 const SORT_KEY = 'history-oldest-first'
@@ -154,16 +155,18 @@ export default function History({ state }) {
   )
 }
 
-const PICKS = 5 // exercises besides the main lifts on the Exercise history card
+const PICKS = 5 // exercises besides the main lifts that can be picked for the Exercise history card
+const DEFAULT_PICKS = 3 // shown until exercises are picked: the first ones of the accessory work
 
 /**
- * The exercises on the card besides the main lifts: the ones picked with the pen, or until then
- * the first five of the accessory work groups. Deleted exercises and main lifts are left out.
+ * The exercises on the card besides the main lifts: up to five picked with the pen, or until then
+ * the first three of the accessory work groups. Deleted exercises and main lifts are left out.
  */
 function pickedExercises(state, mainIds) {
-  const ids = state.historyExercises ?? GROUPS.flatMap((g) => state.groups[g].map((x) => x.id))
+  const picked = state.historyExercises
+  const ids = picked ?? GROUPS.flatMap((g) => state.groups[g].map((x) => x.id))
   const usable = (id) => !mainIds.includes(id) && state.catalog.some((e) => e.id === id)
-  return [...new Set(ids)].filter(usable).slice(0, PICKS)
+  return [...new Set(ids)].filter(usable).slice(0, picked ? PICKS : DEFAULT_PICKS)
 }
 
 /** History tab card: main lifts, then up to five picked exercises; each opens its history. */
