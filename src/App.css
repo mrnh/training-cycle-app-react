@@ -318,7 +318,16 @@ button.group-entry {
 
 /* Finishing a session */
 button.finish { margin-top: var(--space-1); }
-button.correct { width: 100%; }
+/* Correcting a finished workout: Edit next to the banner, then the cards as a form */
+.finished-row { display: flex; align-items: center; gap: var(--space-2); }
+.finished-row .finished-banner { flex: 1; margin: 0; }
+.sets-edit.with-done { grid-template-columns: 32px 1fr 1fr var(--tap); }
+button.done-toggle {
+  min-height: var(--tap-sm); padding: 0; border-radius: var(--radius-md);
+  color: var(--danger); font-weight: var(--weight-bold);
+}
+button.link.danger { color: var(--danger); }
+button.done-toggle.is-done { color: var(--success); background: var(--success-soft); border-color: var(--success); }
 .finished-banner {
   background: var(--success-soft);
   color: var(--success);
