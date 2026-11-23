@@ -176,9 +176,6 @@ export default function Settings({ state }) {
       <button className="card nav-card" onClick={() => show('exercises')}>
         <span className="nav-card-text">
           <span className="nav-card-title">Exercise catalog</span>
-          <span className="muted small">
-            {state.catalog.length} exercises to pick main lifts and accessory work from, each with its history.
-          </span>
         </span>
         <Chevron />
       </button>
