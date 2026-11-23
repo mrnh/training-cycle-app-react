@@ -9,6 +9,20 @@ The current version is shown at the bottom of **Settings**.
 
 ---
 
+## 0.19.0 — 2026-11-23 · Release notes on update
+
+| Update bar | What's new |
+|---|---|
+| ![Update bar with version, title and "What's new"](docs/screenshots/v0.19.0/update-bar.jpg) | ![What's new dialog](docs/screenshots/v0.19.0/whats-new.jpg) |
+
+### Added
+- **What's new**: when a new version is ready, the bar above the tab bar shows its number
+  and title, and **What's new** opens a short list of the changes, taken from the changelog.
+  Reload switches right there.
+- Updates between releases (no new version number) say **Small improvements**.
+
+---
+
 ## 0.18.1 — 2026-11-23 · Consistency pass
 
 | All exercises | Settings |
