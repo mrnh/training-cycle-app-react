@@ -16,6 +16,7 @@ import {
   todayIso, untickedSets, weekRange,
 } from '../program'
 import { currentCycle, update, updateCycle } from '../store'
+import ScreenHeader from '../components/ScreenHeader'
 
 const setLog = (key, patch) =>
   updateCycle((c) => {
@@ -49,23 +50,8 @@ export default function Session({ state, sessionKey, onNavigate, onBack }) {
 
   return (
     <div className="screen">
-      <header className="session-head">
-        {/* Back to the screen this session was opened from (none when opened from the tab bar) */}
-        {onBack ? (
-          <button className="icon" data-back aria-label="Back" onClick={onBack}>
-            ‹
-          </button>
-        ) : (
-          <span className="icon-spacer" />
-        )}
-        <div>
-          <h1>{sessionName(plan)}</h1>
-          <p className="muted small">
-            {weekRange(cycle, week)} · Group {plan.group}
-          </p>
-        </div>
-        <span className="icon-spacer" />
-      </header>
+      {/* Back to the screen this session was opened from (none when opened from the tab bar) */}
+      <ScreenHeader title={sessionName(plan)} subtitle={`${weekRange(cycle, week)} · Group ${plan.group}`} onBack={onBack} />
 
       {record ? (
         <FinishedSession record={record} />

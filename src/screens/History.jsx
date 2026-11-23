@@ -6,6 +6,7 @@ import { currentCycle, update } from '../store'
 import Chevron from '../components/Chevron'
 import ExerciseHistory from './ExerciseHistory'
 import Exercises from './Exercises'
+import ScreenHeader from '../components/ScreenHeader'
 
 const RECENT = 4 // workouts on the History tab itself; "Show all" opens the full list
 
@@ -59,7 +60,10 @@ export default function History({ state }) {
   }
 
   const ex = exercise && state.catalog.find((e) => e.id === exercise.id)
-  if (ex) return <ExerciseHistory state={state} ex={ex} onBack={() => backTo(exercise.scrollY, () => setExercise(null))} />
+  if (ex)
+    return (
+      <ExerciseHistory state={state} ex={ex} backLabel="Back to history" onBack={() => backTo(exercise.scrollY, () => setExercise(null))} />
+    )
   if (allExercises)
     return (
       <Exercises
@@ -74,18 +78,12 @@ export default function History({ state }) {
   if (detail) {
     return (
       <div className="screen">
-        <header className="session-head">
-          <button className="icon" data-back aria-label="Back" onClick={() => backTo(detail.scrollY, () => setDetail(null))}>
-            ‹
-          </button>
-          <div>
-            <h1>{sessionName(detail.plan)}</h1>
-            <p className="muted small">
-              {detail.cycle !== current && `Cycle ${detail.cycle + 1} · `}Group {detail.record.group}
-            </p>
-          </div>
-          <span className="icon-spacer" />
-        </header>
+        <ScreenHeader
+          title={sessionName(detail.plan)}
+          subtitle={`${detail.cycle !== current ? `Cycle ${detail.cycle + 1} · ` : ''}Group ${detail.record.group}`}
+          backLabel={showAll ? 'Back to all workouts' : 'Back to history'}
+          onBack={() => backTo(detail.scrollY, () => setDetail(null))}
+        />
         <FinishedSession record={detail.record} />
       </div>
     )
@@ -94,13 +92,7 @@ export default function History({ state }) {
   if (showAll) {
     return (
       <div className="screen">
-        <header className="session-head">
-          <button className="icon" data-back aria-label="Back to history" onClick={() => backTo(showAll.scrollY, () => setShowAll(null))}>
-            ‹
-          </button>
-          <h1>All workouts</h1>
-          <span className="icon-spacer" />
-        </header>
+        <ScreenHeader title="All workouts" backLabel="Back to history" onBack={() => backTo(showAll.scrollY, () => setShowAll(null))} />
         <div className="card history-card">
           <WorkoutTable
             workouts={oldestFirst ? [...newestFirst].reverse() : newestFirst}

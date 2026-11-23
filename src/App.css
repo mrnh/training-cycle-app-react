@@ -87,7 +87,6 @@ button.nav-card {
 button.nav-card:active { background: var(--border); }
 .nav-card-text { display: flex; flex-direction: column; gap: var(--space-2); flex: 1; }
 .nav-card-title { font-size: var(--text-md); font-weight: var(--weight-bold); }
-.nav-card .chevron { flex: none; color: var(--muted); }
 
 /* Preferences: one block per setting, a line between blocks (like the list rows) */
 .pref { display: flex; flex-direction: column; gap: var(--space-2); }
@@ -99,7 +98,6 @@ button.nav-card:active { background: var(--border); }
   border: none; background: none; padding: 0; min-height: 0; font: inherit; color: inherit; text-align: left;
 }
 .nav-head button::after { content: ''; position: absolute; inset: 0; border-radius: var(--radius-lg); }
-.nav-head .chevron { flex: none; color: var(--muted); }
 .nav-section:has(.nav-head button:active) { background: var(--border); }
 /* Without the pens the sub-headings lose their height; keep the sections apart */
 .nav-section > .inline-field { margin-top: var(--space-3); }
@@ -163,7 +161,6 @@ main.fit { padding-bottom: calc(var(--tabbar-h) + env(safe-area-inset-bottom)); 
 .dot.next { border: 2px solid var(--accent); color: var(--accent); font-weight: var(--weight-bold); }
 
 /* Session */
-.session-head { display: flex; align-items: center; justify-content: space-between; text-align: center; }
 .set-head { font-size: var(--text-xs); color: var(--muted); text-align: center; }
 .set-no { text-align: center; color: var(--muted); font-weight: var(--weight-bold); }
 .stepper { display: flex; gap: var(--space-2); flex-shrink: 0; }
@@ -209,6 +206,7 @@ dialog.sheet form { display: flex; flex-direction: column; gap: var(--space-3); 
 .list-row {
   display: flex;
   justify-content: space-between;
+  align-items: center;
   width: 100%;
   border: none;
   border-bottom: 1px solid var(--border);
@@ -279,9 +277,11 @@ button.comment-btn {
 .tabbar button span { font-size: var(--text-lg); line-height: 1; }
 .tabbar button.active { color: var(--accent); font-weight: var(--weight-bold); }
 
-/* Row that opens another screen */
-.chevron { color: var(--muted); font-size: var(--text-lg); line-height: 1; }
+/* Title bar of a screen below a tab (ScreenHeader) */
+.screen-head { display: flex; align-items: center; justify-content: space-between; text-align: center; }
 .icon-spacer { width: var(--tap); flex-shrink: 0; }
+/* Chevron of anything that opens another screen */
+.chevron { flex: none; color: var(--muted); }
 
 /* Settings: accessory work groups */
 .group { display: flex; flex-direction: column; gap: var(--space-1); padding-top: var(--space-2); border-top: 1px solid var(--border); }
@@ -435,15 +435,14 @@ button.sort-btn {
   border: none; background: none; min-height: 0; padding: var(--space-1); margin: calc(-1 * var(--space-1)) calc(-1 * var(--space-1)) 0 0;
   color: var(--accent); line-height: 0; position: relative;
 }
-.history-card .show-all { align-self: flex-start; border-top: 1px solid var(--border); width: 100%; border-radius: 0; padding-top: var(--space-2); }
 /* History: Exercise history card (main lifts, a line, the picked exercises) */
 .exercise-card { padding-bottom: var(--space-2); }
 .screen-subtitle { margin-top: var(--space-4); }
 .exercise-rows { display: flex; flex-direction: column; }
 .exercise-rows + .exercise-rows, .exercise-rows + p { border-top: 1px solid var(--border); }
 .exercise-rows .list-row { align-items: center; padding: var(--space-2) 0; border-bottom: none; }
-.exercise-rows .chevron { flex: none; color: var(--muted); }
-.exercise-card .show-all { border-top: 1px solid var(--border); width: 100%; border-radius: 0; padding-top: var(--space-2); }
+/* "Show all" at the bottom of a History card */
+.card .show-all { border-top: 1px solid var(--border); width: 100%; border-radius: 0; padding-top: var(--space-2); }
 /* Bigger touch area than the icon, without making the header row taller */
 button.sort-btn::after { content: ''; position: absolute; inset: -8px; }
 .history-table tbody { border-top: 1px solid var(--border); }

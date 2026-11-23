@@ -8,6 +8,7 @@ import Exercises from './Exercises'
 import { DATE_FORMATS, ROUNDINGS, ROUNDING_MODES, UNITS, dateFormat, fmtDate, rounding, roundingMode, exerciseName, fmt, heaviestWeight, mainLiftsError, todayIso, unit } from '../program'
 import { currentCycle, migrate, replaceState, update, updateCycle } from '../store'
 import { sampleState } from '../sampleData'
+import ScreenHeader from '../components/ScreenHeader'
 
 // Running as an installed home-screen app (not in a browser tab)
 const installed = window.matchMedia?.('(display-mode: standalone)').matches || navigator.standalone === true
@@ -103,13 +104,7 @@ export default function Settings({ state }) {
   if (subScreen === 'data')
     return (
       <div className="screen">
-        <header className="session-head">
-          <button className="icon" data-back aria-label="Back to settings" onClick={() => show(null)}>
-            ‹
-          </button>
-          <h1>Data &amp; Backup</h1>
-          <span className="icon-spacer" />
-        </header>
+        <ScreenHeader title="Data & Backup" backLabel="Back to settings" onBack={() => show(null)} />
         <section className="card">
           <p className="muted small">Your data lives only on this device. Export a backup now and then.</p>
           {/* In the browser (not the installed app): on iPhone the home-screen app has its own,
@@ -151,13 +146,7 @@ export default function Settings({ state }) {
   if (subScreen === 'cycle')
     return (
       <div className="screen">
-        <header className="session-head">
-          <button className="icon" data-back aria-label="Back to settings" onClick={() => show(null)}>
-            ‹
-          </button>
-          <h1>Current cycle</h1>
-          <span className="icon-spacer" />
-        </header>
+        <ScreenHeader title="Current cycle" backLabel="Back to settings" onBack={() => show(null)} />
         <section className="card">
           <div className="row inline-field">
             <h3>
@@ -320,7 +309,7 @@ export default function Settings({ state }) {
   )
 }
 
-/** A card that opens another screen: tappable as a whole, with a "›" on the right. */
+/** A card that opens another screen: tappable as a whole, with a chevron on the right. */
 function NavCard({ title, onClick }) {
   return (
     <button className="card nav-card" onClick={onClick}>

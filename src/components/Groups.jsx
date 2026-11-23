@@ -5,6 +5,7 @@ import {
 import { update } from '../store'
 import NumInput from './NumInput'
 import Sheet from './Sheet'
+import ScreenHeader from './ScreenHeader'
 
 /**
  * Part of the Current cycle card in Settings: what each group (A/B/C) adds to its sessions, one
@@ -48,13 +49,7 @@ export default function GroupsSummary({ state, onEdit }) {
 export function GroupsEditor({ state, onBack }) {
   return (
     <div className="screen">
-      <header className="session-head">
-        <button className="icon" data-back aria-label="Back to settings" onClick={onBack}>
-          ‹
-        </button>
-        <h1>Accessory work</h1>
-        <span className="icon-spacer" />
-      </header>
+      <ScreenHeader title="Accessory work" backLabel="Back to current cycle" onBack={onBack} />
       <section className="card">
         <p className="muted small">
           Each session adds one group. Pick exercises from your catalog (Settings → Exercise catalog) and tap one to set its sets,

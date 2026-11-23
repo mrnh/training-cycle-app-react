@@ -2,6 +2,8 @@ import { useState } from 'react'
 import { newId } from '../program'
 import { update } from '../store'
 import ExerciseHistory from './ExerciseHistory'
+import ScreenHeader from '../components/ScreenHeader'
+import Chevron from '../components/Chevron'
 
 /**
  * The exercise catalog, a sub-screen of Settings (with a field to add exercises). Main lifts and
@@ -17,24 +19,18 @@ export default function Exercises({ state, onBack, title = 'Exercise catalog', b
   }
 
   const ex = state.catalog.find((e) => e.id === detail)
-  if (ex) return <ExerciseHistory state={state} ex={ex} onBack={() => show(null)} />
+  if (ex) return <ExerciseHistory state={state} ex={ex} backLabel={`Back to ${title.toLowerCase()}`} onBack={() => show(null)} />
 
   return (
     <div className="screen">
-      <header className="session-head">
-        <button className="icon" data-back aria-label={backLabel} onClick={onBack}>
-          ‹
-        </button>
-        <h1>{title}</h1>
-        <span className="icon-spacer" />
-      </header>
+      <ScreenHeader title={title} backLabel={backLabel} onBack={onBack} />
       {canAdd && <AddExercise />}
       <div className="card list">
         {state.catalog.map((e) => (
           <div key={e.id}>
             <button className="list-row" onClick={() => show(e.id)}>
               <span>{e.name}</span>
-              <span className="chevron" aria-hidden="true">›</span>
+              <Chevron size={18} />
             </button>
           </div>
         ))}

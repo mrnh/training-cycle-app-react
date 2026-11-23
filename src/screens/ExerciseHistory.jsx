@@ -4,9 +4,10 @@ import Sheet from '../components/Sheet'
 import useConfirm from '../components/useConfirm'
 import { GROUPS, bestByReps, exerciseHistory, fmt, fmtDate, fmtDateShort, sessionName, setsSummary } from '../program'
 import { update } from '../store'
+import ScreenHeader from '../components/ScreenHeader'
 
 /** One exercise: name and best weights, every finished session it was done in (newest first), delete. */
-export default function ExerciseHistory({ state, ex, onBack }) {
+export default function ExerciseHistory({ state, ex, onBack, backLabel = 'Back' }) {
   const groups = GROUPS.filter((g) => state.groups[g].some((e) => e.id === ex.id))
   const mainLift = state.cycles.some((c) => c.primaries.includes(ex.id))
   // Main-lift and accessory entries together; only ticked sets count
@@ -34,13 +35,7 @@ export default function ExerciseHistory({ state, ex, onBack }) {
 
   return (
     <div className="screen">
-      <header className="session-head">
-        <button className="icon" data-back aria-label="Back to exercises" onClick={onBack}>
-          ‹
-        </button>
-        <h1>Exercise history</h1>
-        <span className="icon-spacer" />
-      </header>
+      <ScreenHeader title="Exercise history" backLabel={backLabel} onBack={onBack} />
 
       <section className="card">
         <div className="sec-head">
@@ -113,7 +108,7 @@ export default function ExerciseHistory({ state, ex, onBack }) {
       {renaming && <NameDialog name={ex.name} onSave={rename} onClose={() => setRenaming(false)} />}
 
       {comment && (
-        <CommentDialog
+        <CommentView
           title={`${when(comment)} · ${sessionName(comment)}`}
           text={comment.note}
           onClose={() => setComment(null)}
@@ -123,7 +118,8 @@ export default function ExerciseHistory({ state, ex, onBack }) {
   )
 }
 
-function CommentDialog({ title, text, onClose }) {
+/** Read-only view of a comment from a finished session (CommentDialog edits one). */
+function CommentView({ title, text, onClose }) {
   return (
     <Sheet onClose={onClose} onSubmit={onClose}>
       <div>
