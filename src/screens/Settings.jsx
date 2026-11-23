@@ -3,6 +3,7 @@ import GroupsSummary, { GroupsEditor } from '../components/Groups'
 import MainLiftFields from '../components/MainLiftFields'
 import NewCycleDialog from '../components/NewCycleDialog'
 import useConfirm from '../components/useConfirm'
+import Chevron from '../components/Chevron'
 import Exercises from './Exercises'
 import { DATE_FORMATS, ROUNDINGS, ROUNDING_MODES, UNITS, dateFormat, fmtDate, rounding, roundingMode, exerciseName, fmt, heaviestWeight, mainLiftsError, todayIso, unit } from '../program'
 import { currentCycle, migrate, replaceState, update, updateCycle } from '../store'
@@ -328,16 +329,6 @@ function NavCard({ title, onClick }) {
       </span>
       <Chevron />
     </button>
-  )
-}
-
-/** "›" at the right of a card that opens another screen. */
-function Chevron() {
-  return (
-    <svg className="chevron" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" fill="none"
-      stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M9 5l7 7-7 7" />
-    </svg>
   )
 }
 

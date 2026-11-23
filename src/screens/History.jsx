@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import FinishedSession from '../components/FinishedSession'
 import { entryAsPrescribed, entryNotDone, finishedWorkouts, fmtDateShort, sessionName } from '../program'
+import Chevron from '../components/Chevron'
 
 /**
  * History tab: every finished workout, newest first, as one table. Date and session span the
@@ -56,6 +57,7 @@ export default function History({ state }) {
                 <th>
                   <span className="sr-only">Done as prescribed</span>
                 </th>
+                <th />
               </tr>
             </thead>
             {workouts.map(({ cycle, plan, record }) => {
@@ -93,6 +95,12 @@ export default function History({ state }) {
                           {r.status === 'none' ? '✗' : '✓'}
                         </span>
                       </td>
+                      {/* The whole workout opens its session; the chevron marks it */}
+                      {i === 0 && (
+                        <td rowSpan={rows.length} className="go">
+                          <Chevron size={18} />
+                        </td>
+                      )}
                     </tr>
                   ))}
                 </tbody>

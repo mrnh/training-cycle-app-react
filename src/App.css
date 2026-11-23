@@ -428,6 +428,8 @@ button.remove-exercise {
 .history-table td.check .off { color: var(--caution); }
 .history-table td.check .none { color: var(--danger); }
 .history-table td.when { white-space: nowrap; font-variant-numeric: tabular-nums; }
+.history-table td.go { vertical-align: middle; width: 1%; padding: 0 0 0 var(--space-2); color: var(--muted); }
+.history-table td.go .chevron { display: block; }
 .history-table tbody { border-top: 1px solid var(--border); }
 .history-table tbody tr:first-child td { padding-top: var(--space-2); }
 .history-table tbody tr:last-child td { padding-bottom: var(--space-2); }
