@@ -440,7 +440,7 @@ button.sort-btn {
 .screen-subtitle { margin-top: var(--space-4); }
 .exercise-rows { display: flex; flex-direction: column; }
 .exercise-rows + .exercise-rows, .exercise-rows + p { border-top: 1px solid var(--border); }
-.exercise-rows .list-row { align-items: center; padding: var(--space-2) 0; border-bottom: none; }
+.exercise-rows .list-row { border-bottom: none; } /* same height as the catalog rows, lines only between groups */
 /* "Show all" at the bottom of a History card */
 .card .show-all { border-top: 1px solid var(--border); width: 100%; border-radius: 0; padding-top: var(--space-2); }
 /* Bigger touch area than the icon, without making the header row taller */

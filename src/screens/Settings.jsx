@@ -104,7 +104,7 @@ export default function Settings({ state }) {
   if (subScreen === 'data')
     return (
       <div className="screen">
-        <ScreenHeader title="Data & Backup" backLabel="Back to settings" onBack={() => show(null)} />
+        <ScreenHeader title="Data & backup" backLabel="Back to settings" onBack={() => show(null)} />
         <section className="card">
           <p className="muted small">Your data lives only on this device. Export a backup now and then.</p>
           {/* In the browser (not the installed app): on iPhone the home-screen app has its own,
@@ -236,7 +236,7 @@ export default function Settings({ state }) {
 
       <NavCard title="Exercise catalog" onClick={() => show('exercises')} />
 
-      <NavCard title="Data & Backup" onClick={() => show('data')} />
+      <NavCard title="Data & backup" onClick={() => show('data')} />
 
       {/* One block per preference (control and its note), divided by lines */}
       <section className="card">
