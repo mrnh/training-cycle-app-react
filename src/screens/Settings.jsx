@@ -261,15 +261,6 @@ export default function Settings({ state }) {
         </div>
         <p className="muted small">Changes the label only. Numbers are not converted.</p>
         <div className="row unit-row">
-          <h3>Date format</h3>
-          <Segmented
-            label="Date format"
-            options={DATE_FORMATS}
-            value={dateFormat()}
-            onChange={(f) => update((d) => void (d.dateFormat = f))}
-          />
-        </div>
-        <div className="row unit-row">
           <h3>Rounding</h3>
           <Segmented
             label="Rounding direction"
@@ -286,7 +277,16 @@ export default function Settings({ state }) {
             onChange={(r) => update((d) => void (d.rounding = r))}
           />
         </div>
-        <p className="muted small">Planned main-lift weights are rounded to this step, to the nearest or always up.</p>
+        <p className="muted small">Applies only to main lifts.</p>
+        <div className="row unit-row">
+          <h3>Date format</h3>
+          <Segmented
+            label="Date format"
+            options={DATE_FORMATS}
+            value={dateFormat()}
+            onChange={(f) => update((d) => void (d.dateFormat = f))}
+          />
+        </div>
         {'wakeLock' in navigator && (
           <>
             <div className="row unit-row">
@@ -301,7 +301,7 @@ export default function Settings({ state }) {
                 onChange={(on) => update((d) => void (d.keepAwake = on))}
               />
             </div>
-            <p className="muted small">While a session is in progress and the app is open.</p>
+            <p className="muted small">Prevents screen lock during a session.</p>
           </>
         )}
       </section>
