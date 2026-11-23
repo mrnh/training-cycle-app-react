@@ -248,47 +248,54 @@ export default function Settings({ state }) {
 
       <NavCard title="Data & Backup" onClick={() => show('data')} />
 
+      {/* One block per preference (control and its note), divided by lines */}
       <section className="card">
         <h2>Preferences</h2>
-        <div className="row unit-row">
-          <h3>Weight</h3>
-          <Segmented
-            label="Weight unit"
-            options={UNITS.map((u) => ({ id: u, label: u }))}
-            value={unit()}
-            onChange={(u) => update((d) => void (d.unit = u))}
-          />
+        <div className="pref">
+          <div className="row unit-row">
+            <h3>Weight</h3>
+            <Segmented
+              label="Weight unit"
+              options={UNITS.map((u) => ({ id: u, label: u }))}
+              value={unit()}
+              onChange={(u) => update((d) => void (d.unit = u))}
+            />
+          </div>
+          <p className="muted small">Changes the label only. Numbers are not converted.</p>
         </div>
-        <p className="muted small">Changes the label only. Numbers are not converted.</p>
-        <div className="row unit-row">
-          <h3>Rounding</h3>
-          <Segmented
-            label="Rounding direction"
-            options={ROUNDING_MODES}
-            value={roundingMode()}
-            onChange={(m) => update((d) => void (d.roundingMode = m))}
-          />
+        <div className="pref">
+          <div className="row unit-row">
+            <h3>Rounding</h3>
+            <Segmented
+              label="Rounding direction"
+              options={ROUNDING_MODES}
+              value={roundingMode()}
+              onChange={(m) => update((d) => void (d.roundingMode = m))}
+            />
+          </div>
+          <div className="row unit-row end">
+            <Segmented
+              label="Rounding of planned weights"
+              options={ROUNDINGS.map((r) => ({ id: r, label: `${r === 0.1 ? '.1' : r} ${unit()}` }))}
+              value={rounding()}
+              onChange={(r) => update((d) => void (d.rounding = r))}
+            />
+          </div>
+          <p className="muted small">Applies only to main lifts.</p>
         </div>
-        <div className="row unit-row end">
-          <Segmented
-            label="Rounding of planned weights"
-            options={ROUNDINGS.map((r) => ({ id: r, label: `${r === 0.1 ? '.1' : r} ${unit()}` }))}
-            value={rounding()}
-            onChange={(r) => update((d) => void (d.rounding = r))}
-          />
-        </div>
-        <p className="muted small">Applies only to main lifts.</p>
-        <div className="row unit-row">
-          <h3>Date format</h3>
-          <Segmented
-            label="Date format"
-            options={DATE_FORMATS}
-            value={dateFormat()}
-            onChange={(f) => update((d) => void (d.dateFormat = f))}
-          />
+        <div className="pref">
+          <div className="row unit-row">
+            <h3>Date format</h3>
+            <Segmented
+              label="Date format"
+              options={DATE_FORMATS}
+              value={dateFormat()}
+              onChange={(f) => update((d) => void (d.dateFormat = f))}
+            />
+          </div>
         </div>
         {'wakeLock' in navigator && (
-          <>
+          <div className="pref">
             <div className="row unit-row">
               <h3>Keep screen on</h3>
               <Segmented
@@ -302,7 +309,7 @@ export default function Settings({ state }) {
               />
             </div>
             <p className="muted small">Prevents screen lock during a session.</p>
-          </>
+          </div>
         )}
       </section>
 

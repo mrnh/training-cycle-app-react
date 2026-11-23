@@ -88,6 +88,10 @@ button.nav-card:active { background: var(--border); }
 .nav-card-text { display: flex; flex-direction: column; gap: var(--space-2); flex: 1; }
 .nav-card-title { font-size: var(--text-md); font-weight: var(--weight-bold); }
 .nav-card .chevron { flex: none; color: var(--muted); }
+
+/* Preferences: one block per setting, a line between blocks (like the list rows) */
+.pref { display: flex; flex-direction: column; gap: var(--space-2); }
+.pref + .pref { border-top: 1px solid var(--border); padding-top: var(--space-3); margin-top: var(--space-1); }
 /* A card with content that opens another screen: the button in its heading covers the whole card */
 .nav-section { position: relative; }
 .nav-head button {
