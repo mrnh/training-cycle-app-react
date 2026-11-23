@@ -22,6 +22,19 @@ The week-9 single at 105% is the re-test and becomes the 1RM for the next cycle.
 
 Data is stored locally in the browser (IndexedDB), on each device separately. Use **Export backup** in Settings to keep a copy.
 
+### Install on your phone
+
+The app is a PWA: it can be added to the home screen and then works offline, full screen and
+with its own icon.
+
+- **iPhone (Safari):** Share → *Add to Home Screen*.
+- **Android (Chrome):** menu → *Install app* (or *Add to Home screen*).
+
+On iPhone the installed app has **its own storage, separate from Safari**, so it starts empty.
+Move your data once: in Safari, Settings → *Export backup*; in the installed app, Settings →
+*Import backup*. When a new version is published, the app shows *New version available* →
+*Reload*; it never switches in the middle of a workout on its own.
+
 <p>
   <img src="docs/screenshots/v0.10.0/overview.jpg" width="200" alt="Overview screen">
   <img src="docs/screenshots/v0.13.0/session.jpg" width="200" alt="Session screen">
@@ -33,6 +46,9 @@ See the [changelog](CHANGELOG.md) for how the app has developed, with screenshot
 ## Releasing a new version
 
 1. Bump `version` in `package.json` (`npm version minor --no-git-tag-version` or `patch`).
+   To test the real build (offline copy, update prompt): `npm run build && npm run preview`,
+   then open `http://localhost:4173/training-cycle-app-react/`. After changing `public/icon.svg`,
+   run `npm run icons`.
 2. Add screenshots to `docs/screenshots/vX.Y.Z/` and a new entry at the top of `CHANGELOG.md`.
 3. Commit, then tag and push: `git tag -a vX.Y.Z -m "vX.Y.Z" && git push --follow-tags`.
 

@@ -8,6 +8,9 @@ import { DATE_FORMATS, ROUNDINGS, ROUNDING_MODES, UNITS, dateFormat, rounding, r
 import { currentCycle, migrate, replaceState, update, updateCycle } from '../store'
 import { sampleState } from '../sampleData'
 
+// Running as an installed home-screen app (not in a browser tab)
+const installed = window.matchMedia?.('(display-mode: standalone)').matches || navigator.standalone === true
+
 export default function Settings({ state }) {
   const cycle = currentCycle(state)
   const lifts = cycle.primaries.filter(Boolean) // empty slots left out
@@ -184,6 +187,14 @@ export default function Settings({ state }) {
       <section className="card">
         <h2>Backup</h2>
         <p className="muted small">Your data lives only on this device. Export a backup now and then.</p>
+        {/* In the browser (not the installed app): on iPhone the home-screen app has its own,
+            empty storage, so the data has to be carried over once */}
+        {!installed && (
+          <p className="muted small">
+            Adding the app to your home screen? On iPhone it starts empty: export a backup here, then import it in the
+            installed app.
+          </p>
+        )}
         <div className="button-row">
           <button onClick={exportData}>Export backup</button>
           <button onClick={() => fileRef.current.click()}>Import backup</button>
@@ -232,6 +243,23 @@ export default function Settings({ state }) {
           />
         </div>
         <p className="muted small">Planned main-lift weights are rounded to this step, to the nearest or always up.</p>
+        {'wakeLock' in navigator && (
+          <>
+            <div className="row unit-row">
+              <h3>Keep screen on</h3>
+              <Segmented
+                label="Keep screen on during a session"
+                options={[
+                  { id: false, label: 'Off' },
+                  { id: true, label: 'On' },
+                ]}
+                value={state.keepAwake !== false}
+                onChange={(on) => update((d) => void (d.keepAwake = on))}
+              />
+            </div>
+            <p className="muted small">While a session is in progress and the app is open.</p>
+          </>
+        )}
       </section>
 
       <section className="card">

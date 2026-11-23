@@ -1,5 +1,6 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import './App.css'
+import UpdatePrompt from './components/UpdatePrompt'
 import { ALL_SESSIONS, activeSession, nextSession } from './program'
 import History from './screens/History'
 import Plan from './screens/Plan'
@@ -15,8 +16,42 @@ const TABS = [
   { id: 'settings', label: 'Settings', icon: '⚙' },
 ]
 
+/**
+ * Keeps the screen from dimming while `on` (a session is in progress), where the browser
+ * supports it. The browser drops the lock when the app is hidden, so it is taken again when the
+ * app comes back.
+ */
+function useWakeLock(on) {
+  useEffect(() => {
+    if (!on || !('wakeLock' in navigator)) return
+    let lock = null
+    let stopped = false
+    const acquire = async () => {
+      if (document.visibilityState !== 'visible') return
+      try {
+        lock = await navigator.wakeLock.request('screen')
+        if (stopped) lock.release()
+      } catch {
+        // Not allowed right now (e.g. low battery mode); nothing to do
+      }
+    }
+    acquire()
+    document.addEventListener('visibilitychange', acquire)
+    return () => {
+      stopped = true
+      document.removeEventListener('visibilitychange', acquire)
+      lock?.release().catch(() => {})
+    }
+  }, [on])
+}
+
 export default function App() {
   const state = useStore()
+  // Ask the browser to keep this app's data even when storage runs low or it's not used for a while
+  useEffect(() => {
+    navigator.storage?.persist?.().catch(() => {})
+  }, [])
+  useWakeLock(!!state && state.keepAwake !== false && !!currentCycle(state).active)
   const [tab, setTab] = useState('overview')
   const [selected, setSelected] = useState(null)
   // Bumped on every tab tap, so tapping the open tab returns it to its first screen (Settings sub-screens)
@@ -26,7 +61,13 @@ export default function App() {
   const [backStack, setBackStack] = useState([])
 
   if (state === undefined) return <div className="screen muted center">Loading…</div>
-  if (state === null) return <Setup />
+  if (state === null)
+    return (
+      <>
+        <Setup />
+        <UpdatePrompt />
+      </>
+    )
 
   const cycle = currentCycle(state)
   // The open session, else the next one to start
@@ -70,6 +111,7 @@ export default function App() {
         {tab === 'history' && <History key={tabTaps} state={state} />}
         {tab === 'settings' && <Settings key={tabTaps} state={state} />}
       </main>
+      <UpdatePrompt />
       <nav className="tabbar">
         {TABS.map((t) => (
           <button key={t.id} className={tab === t.id ? 'active' : ''} onClick={() => switchTab(t.id)} aria-current={tab === t.id ? 'page' : undefined}>
