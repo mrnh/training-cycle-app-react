@@ -13,7 +13,7 @@ by default).
   prescribed; tap one for its sets and weights
 - **Settings:** start date, up to three main lifts with their 1RM, accessory work groups A/B/C with
   sets, reps, weight and rest for each, the exercise catalog (each exercise with its history and
-  personal bests for 1 to 5 reps), kg/lbs and date format, backup export/import and sample data
+  personal bests for 1 to 5 reps), kg/lbs, date format and rounding of planned weights, backup export/import and sample data
 
 The week-9 single at 105% is the re-test and becomes the 1RM for the next cycle.
 
@@ -24,7 +24,7 @@ Data is stored locally in the browser (IndexedDB), on each device separately. Us
 
 <p>
   <img src="docs/screenshots/v0.10.0/overview.jpg" width="200" alt="Overview screen">
-  <img src="docs/screenshots/v0.12.1/session.jpg" width="200" alt="Session screen">
+  <img src="docs/screenshots/v0.13.0/session.jpg" width="200" alt="Session screen">
   <img src="docs/screenshots/v0.12.3/history.jpg" width="200" alt="History screen">
 </p>
 

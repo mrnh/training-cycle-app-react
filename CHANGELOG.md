@@ -9,6 +9,24 @@ The current version is shown at the bottom of **Settings**.
 
 ---
 
+## 0.13.0 — 2026-11-23 · Rounding of planned weights
+
+| Preferences | Session |
+|---|---|
+| ![Preferences](docs/screenshots/v0.13.0/preferences.jpg) | ![Session](docs/screenshots/v0.13.0/session.jpg) |
+
+### Added
+- **Rounding** in Settings → Preferences: planned main-lift weights (1RM × %) are rounded
+  either to the nearest step (**Regular**) or always up (**Round up**), to **.1**, **1** or
+  **2.5** kg/lbs (the labels follow the unit setting). The default is round up to 1 kg, so e.g.
+  107 × 80% = 85.6 becomes 86 kg. Finished sessions keep their planned weights.
+
+### Changed
+- "Date" in Preferences is now "Date format".
+- Two-option switches can grow wider for longer labels.
+
+---
+
 ## 0.12.3 — 2026-11-22 · Simpler History dates
 
 | History |
