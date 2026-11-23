@@ -353,12 +353,13 @@ button.sec-pen {
 /* Two-option switch (Settings → Preferences) */
 .segmented { display: inline-flex; gap: 2px; padding: 2px; background: var(--bg); border-radius: var(--radius-md); }
 .segmented button {
-  min-height: var(--tap-sm); width: 64px; padding: 0; border: 1px solid transparent; border-radius: calc(var(--radius-md) - 2px);
+  min-height: var(--tap-sm); min-width: 64px; padding: 0 var(--space-2); border: 1px solid transparent; border-radius: calc(var(--radius-md) - 2px);
   background: none; color: var(--muted); font-size: var(--text-sm);
 }
 .segmented button.active { background: var(--card); border-color: var(--border); color: var(--text); font-weight: var(--weight-bold); }
 .unit-row { align-items: center; gap: var(--space-3); }
 .unit-row h3 { margin: 0; }
+.unit-row.end { justify-content: flex-end; margin-top: calc(-1 * var(--space-1)); }
 
 /* Session: exercises added during the workout */
 button.add-exercise { width: 100%; }

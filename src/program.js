@@ -62,13 +62,25 @@ export const DATE_FORMATS = [
 let currentDateFormat = 'dmy'
 export const dateFormat = () => currentDateFormat
 export const setDateFormat = (f) => void (currentDateFormat = f === 'mdy' ? 'mdy' : 'dmy')
-// Rounding of planned main-lift weights (1RM × %): to 0.1 (default), whole units or 2.5
+// Rounding of planned main-lift weights (1RM × %): to 0.1 (default), whole units or 2.5, either
+// to the nearest step ('regular', default) or always up ('up')
 export const ROUNDINGS = [0.1, 1, 2.5]
+export const ROUNDING_MODES = [
+  { id: 'regular', label: 'Regular' },
+  { id: 'up', label: 'Round up' },
+]
 let currentRounding = 0.1
+let currentRoundingMode = 'regular'
 export const rounding = () => currentRounding
+export const roundingMode = () => currentRoundingMode
 export const setRounding = (r) => void (currentRounding = ROUNDINGS.includes(r) ? r : 0.1)
-/** Round to the chosen step, to the nearest: 85.6 -> 86 (whole) or 85 (2.5) */
-export const roundToStep = (x, step = currentRounding) => round1(Math.round(x / step) * step)
+export const setRoundingMode = (m) => void (currentRoundingMode = m === 'up' ? 'up' : 'regular')
+/**
+ * Round to the chosen step: 85.6 -> 86 (whole) or 85 (2.5) regularly, 86 or 87.5 when rounding
+ * up. The tiny tolerance keeps float noise (855.9999… steps) from rounding up a whole step.
+ */
+export const roundToStep = (x, step = currentRounding, mode = currentRoundingMode) =>
+  round1((mode === 'up' ? Math.ceil(x / step - 1e-9) : Math.round(x / step)) * step)
 
 export const sessionKey = (week, session) => `w${week}s${session}`
 /** How sessions are named everywhere: "Session 1.2" = week 1, session 2. */

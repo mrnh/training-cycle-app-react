@@ -1,5 +1,5 @@
 import {
-  ALL_SESSIONS, DEFAULT_CATALOG, DEFAULT_PRESCRIPTION, DEFAULT_PRIMARIES, GROUPS, finishSession, newId, secondaryKey, sessionProgress, setDateFormat, setRounding, setUnit,
+  ALL_SESSIONS, DEFAULT_CATALOG, DEFAULT_PRESCRIPTION, DEFAULT_PRIMARIES, GROUPS, finishSession, newId, secondaryKey, sessionProgress, setDateFormat, setRounding, setRoundingMode, setUnit,
 } from './program'
 import { useSyncExternalStore } from 'react'
 import { get, set, del } from 'idb-keyval'
@@ -16,6 +16,7 @@ const emit = () => {
   setUnit(state?.unit)
   setDateFormat(state?.dateFormat)
   setRounding(state?.rounding)
+  setRoundingMode(state?.roundingMode)
   listeners.forEach((l) => l())
 }
 

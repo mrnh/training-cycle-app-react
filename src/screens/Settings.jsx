@@ -4,7 +4,7 @@ import MainLiftFields from '../components/MainLiftFields'
 import NewCycleDialog from '../components/NewCycleDialog'
 import useConfirm from '../components/useConfirm'
 import Exercises from './Exercises'
-import { DATE_FORMATS, ROUNDINGS, UNITS, dateFormat, rounding, exerciseName, fmt, heaviestWeight, mainLiftsError, todayIso, unit } from '../program'
+import { DATE_FORMATS, ROUNDINGS, ROUNDING_MODES, UNITS, dateFormat, rounding, roundingMode, exerciseName, fmt, heaviestWeight, mainLiftsError, todayIso, unit } from '../program'
 import { currentCycle, migrate, replaceState, update, updateCycle } from '../store'
 import { sampleState } from '../sampleData'
 
@@ -223,7 +223,18 @@ export default function Settings({ state }) {
             onChange={(r) => update((d) => void (d.rounding = r))}
           />
         </div>
-        <p className="muted small">Planned main-lift weights are rounded to this step. Finished sessions keep theirs.</p>
+        <div className="row unit-row end">
+          <Segmented
+            label="Rounding direction"
+            options={ROUNDING_MODES}
+            value={roundingMode()}
+            onChange={(m) => update((d) => void (d.roundingMode = m))}
+          />
+        </div>
+        <p className="muted small">
+          Planned main-lift weights are rounded to this step, to the nearest or always up. Finished sessions keep
+          theirs.
+        </p>
       </section>
 
       <section className="card">
