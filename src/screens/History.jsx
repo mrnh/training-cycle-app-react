@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import FinishedSession from '../components/FinishedSession'
+import FinishedWorkout from '../components/FinishedSession'
 import Sheet from '../components/Sheet'
 import { GROUPS, entryAsPrescribed, entryNotDone, exerciseName, finishedWorkouts, fmtDateShort, sessionName } from '../program'
 import { currentCycle, update } from '../store'
@@ -84,7 +84,7 @@ export default function History({ state }) {
           backLabel={showAll ? 'Back to all workouts' : 'Back to history'}
           onBack={() => backTo(detail.scrollY, () => setDetail(null))}
         />
-        <FinishedSession record={detail.record} />
+        <FinishedWorkout state={state} cycleIndex={detail.cycle} planKey={detail.plan.key} />
       </div>
     )
   }

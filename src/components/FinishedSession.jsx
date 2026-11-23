@@ -1,13 +1,33 @@
+import { useState } from 'react'
+import CorrectSession from './CorrectSession'
 import Planned from './Planned'
 import { fmtDate, setText } from '../program'
 
+/**
+ * A finished workout (of any cycle): read-only from its permanent record, with "Correct workout"
+ * to fix what was logged wrong (see CorrectSession).
+ */
+export default function FinishedWorkout({ state, cycleIndex, planKey }) {
+  const [correcting, setCorrecting] = useState(false)
+  const record = state.cycles[cycleIndex].finished[planKey]
+  const done = () => {
+    setCorrecting(false)
+    window.scrollTo(0, 0)
+  }
+  if (correcting) return <CorrectSession state={state} cycleIndex={cycleIndex} planKey={planKey} onDone={done} />
+  return <FinishedSession record={record} onCorrect={() => setCorrecting(true)} />
+}
+
 /** A finished session, read-only, shown from its permanent record. */
-export default function FinishedSession({ record }) {
+function FinishedSession({ record, onCorrect }) {
   return (
     <>
       <p className="finished-banner small">
         ✓ Finished{record.finishedAt ? ` on ${fmtDate(record.finishedAt)}` : ''}
       </p>
+      <button className="correct" onClick={onCorrect}>
+        Correct workout
+      </button>
 
       {record.entries.map((e) => (
         <Entry key={`${e.kind}-${e.exerciseId}`} e={e} />

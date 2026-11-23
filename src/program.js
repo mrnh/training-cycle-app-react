@@ -227,6 +227,9 @@ export function buildRecord(state, cycle, plan, finishedAt) {
       name: exerciseName(state, id),
       pct: p.pct,
       retest: p.retest,
+      // The re-test's 1RM for the next cycle, fixed when the session is finished: correcting the
+      // workout later doesn't change it
+      ...(p.retest && { result: sets[0]?.done ? sets[0].w : null }),
       prescription: { sets: p.sets, reps: p.reps, weight: planned },
       sets,
       rest: restOf(cycle, `${plan.key}:${id}`),
@@ -288,7 +291,10 @@ export function untickedSets(cycle, plan) {
     .filter((x) => x.missing > 0)
 }
 
-/** The ticked week-9 single for each main lift, from the finished re-test sessions; null if not ticked. */
+/**
+ * The week-9 single for each main lift as it was ticked when its re-test session was finished;
+ * null if not ticked. Records from before 0.20.0 have no stored result: their ticked set counts.
+ */
 export function retestResults(cycle) {
   const out = {}
   cycle.primaries.forEach((id, slot) => {
@@ -296,7 +302,9 @@ export function retestResults(cycle) {
     const s = ROTATION.findIndex((r) => r.v2 === slot) + 1
     const rec = cycle.finished[sessionKey(WEEKS, s)]
     const e = rec?.entries.find((x) => x.kind === 'main' && x.retest && x.exerciseId === id)
-    out[id] = e?.sets[0]?.done ? e.sets[0].w : null
+    if (!e) out[id] = null
+    else if ('result' in e) out[id] = e.result
+    else out[id] = e.sets[0]?.done ? e.sets[0].w : null
   })
   return out
 }

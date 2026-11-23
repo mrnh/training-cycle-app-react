@@ -1,20 +1,14 @@
 import { useState } from 'react'
 import Sheet from './Sheet'
-import { REST_MAX, REST_MIN, REST_STEP, minSec, restOf } from '../program'
-import { updateCycle } from '../store'
+import { REST_MAX, REST_MIN, REST_STEP, minSec } from '../program'
 
 /**
  * The rest interval of an exercise card (clock icon + time, in the card header). Tapping it opens
- * a dialog to change it; it's stored per session card in cycle.rest.
+ * a dialog to change it; `onSave` stores it (per session card in an open session, in the record
+ * of a finished one).
  */
-export default function RestSetting({ cycle, card, defaultRest, label }) {
-  const rest = restOf(cycle, card, defaultRest)
+export default function RestSetting({ rest, onSave, label }) {
   const [editing, setEditing] = useState(false)
-  const save = (v) =>
-    updateCycle((c) => {
-      c.rest ??= {}
-      c.rest[card] = v
-    })
   return (
     <>
       <button className="rest-time" aria-label={`Rest interval ${minSec(rest)}, change`} onClick={() => setEditing(true)}>
@@ -24,7 +18,7 @@ export default function RestSetting({ cycle, card, defaultRest, label }) {
         </svg>
         {minSec(rest)}
       </button>
-      {editing && <RestDialog title={label} value={rest} onSave={save} onClose={() => setEditing(false)} />}
+      {editing && <RestDialog title={label} value={rest} onSave={onSave} onClose={() => setEditing(false)} />}
     </>
   )
 }

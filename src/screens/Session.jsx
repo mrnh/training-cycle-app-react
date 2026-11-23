@@ -1,17 +1,13 @@
 import { useState } from 'react'
 import FinishDialog from '../components/FinishDialog'
-import FinishedSession from '../components/FinishedSession'
-import CommentDialog from '../components/CommentDialog'
-import CommentIcon from '../components/CommentIcon'
+import FinishedWorkout from '../components/FinishedSession'
 import { PrescriptionDialog } from '../components/Groups'
 import Note from '../components/Note'
-import Planned from '../components/Planned'
-import RestSetting from '../components/RestSetting'
 import RestTimer from '../components/RestTimer'
-import SetsDialog from '../components/SetsDialog'
+import SetsCard from '../components/SetsCard'
 import useConfirm from '../components/useConfirm'
 import {
-  ALL_SESSIONS, activeSession, isExtra, meetsPlan, prescriptionText, removeExtra, sessionEntry, sessionName, setText, clockTime, draftSecondaries, exerciseHistory, exerciseName, finishSession,
+  ALL_SESSIONS, activeSession, isExtra, removeExtra, restOf, sessionEntry, sessionName, clockTime, draftSecondaries, exerciseHistory, exerciseName, finishSession,
   liftOf, mainLifts, parseKey, secondaryKey, sessionPlan, setKey, setsSummary, startSession, startableSession, targetWeight,
   todayIso, untickedSets, weekRange,
 } from '../program'
@@ -54,7 +50,7 @@ export default function Session({ state, sessionKey, onNavigate, onBack }) {
       <ScreenHeader title={sessionName(plan)} subtitle={`${weekRange(cycle, week)} · Group ${plan.group}`} onBack={onBack} />
 
       {record ? (
-        <FinishedSession record={record} />
+        <FinishedWorkout state={state} cycleIndex={state.cycles.length - 1} planKey={plan.key} />
       ) : (
         <>
           {isOpen && <p className="in-progress small">● In progress since {clockTime(cycle.active.startedAt)}</p>}
@@ -212,30 +208,16 @@ function SecondaryBlock({ state, cycle, plan, id, open }) {
 }
 
 /**
- * One exercise card, the same for main lifts and accessory work: prescription (and last time)
- * with the pen on the right, a toggle per set with its reps@weight underneath, then the rest
- * timer. The pen opens the sets dialog (count, weight and reps per set). Every change is saved
- * to the draft straight away. `entry` is the exercise's part of the log keys (liftId or +id).
+ * One exercise card of the session (see SetsCard), backed by the draft: every change is saved
+ * to the device straight away. `entry` is the exercise's part of the log keys (liftId or +id).
  */
 function ExerciseCard({ cycle, plan, entry, name, pres, last, lastLine, open, highlight, hint, onRemove }) {
   const countKey = `${plan.key}:${entry}`
   const count = cycle.setCounts[countKey] ?? pres?.sets ?? Math.max(last?.sets.length ?? 3, 1)
-  const comment = cycle.notes[countKey]
-  const [commenting, setCommenting] = useState(false)
-  const [editing, setEditing] = useState(false)
   const keys = Array.from({ length: count }, (_, i) => setKey(plan.key, entry, i))
   // What an empty set stands for: the prescription, else last time's set
   const hints = keys.map((_, i) => (pres ? { w: pres.weight, r: pres.reps } : (last?.sets[i] ?? last?.sets.at(-1) ?? {})))
-  const shown = (i) => {
-    const log = cycle.logs[keys[i]]
-    return { w: log?.w ?? hints[i].w ?? null, r: log?.r ?? hints[i].r ?? null }
-  }
-  // A set's reps@weight shows under its toggle only where it differs from the plan
-  const deviates = (i) => {
-    const s = shown(i)
-    return s.w !== (hints[i].w ?? null) || s.r !== (hints[i].r ?? null)
-  }
-  const toggle = (i) => setLog(keys[i], { ...shown(i), done: !cycle.logs[keys[i]]?.done })
+  const sets = keys.map((k) => ({ w: cycle.logs[k]?.w ?? null, r: cycle.logs[k]?.r ?? null, done: !!cycle.logs[k]?.done }))
   // Save from the dialog: new set count, weight and reps per set (ticks stay)
   const saveSets = (rows) =>
     updateCycle((c) => {
@@ -246,97 +228,32 @@ function ExerciseCard({ cycle, plan, entry, name, pres, last, lastLine, open, hi
       })
       c.setCounts[countKey] = rows.length
     })
-  const cols = Math.min(count, 6)
+  const rest = restOf(cycle, countKey, pres?.rest)
 
   return (
-    <section className={`card ${highlight ? 'highlight' : ''}`}>
-      {/* Name on the left; comment (filled when one is saved) and the pen for all sets on the right */}
-      <div className="card-head">
-        <h2>{name}</h2>
-        {open && (
-          <span className="card-actions">
-            <RestSetting cycle={cycle} card={countKey} defaultRest={pres?.rest} label={name} />
-            <button
-              className="icon-action"
-              aria-label={comment ? `${name} comment: ${comment}` : `Add a comment to ${name}`}
-              onClick={() => setCommenting(true)}
-            >
-              <CommentIcon filled={!!comment} />
-            </button>
-            <button className="sec-pen" aria-label={`Edit ${name} sets`} onClick={() => setEditing(true)}>
-              ✎
-            </button>
-          </span>
-        )}
-      </div>
-      {(pres || lastLine) && (
-        <div className="card-plan">
-          {pres && <Planned sets={pres.sets} reps={pres.reps} weight={pres.weight} />}
-          {lastLine && <p className="muted small">{lastLine}</p>}
-        </div>
-      )}
-      {hint && <p className="small">{hint}</p>}
-      {/* Toggles in equal columns that line up with the timer segments below, lines of up to 6
-          sets; a set done differently from the plan shows its reps@weight underneath */}
-      <div className="sec-sets" style={{ gridTemplateColumns: `repeat(${cols}, minmax(0, 1fr))` }}>
-        {keys.map((k, i) => {
-          const log = cycle.logs[k]
-          const done = !!log?.done
-          const line = Math.floor(i / 6)
-          const col = (i % 6) + 1
-          return [
-            <button
-              key={`t${i}`}
-              className={`set-toggle ${done ? 'is-done' : ''} ${done && !meetsPlan(shown(i), hints[i]) ? 'off-target' : ''}`}
-              style={{ gridRow: line * 2 + 1, gridColumn: col }}
-              aria-pressed={done}
-              aria-label={`Set ${i + 1}, ${setText(shown(i))}${done ? (meetsPlan(shown(i), hints[i]) ? ', done' : ', done, below plan') : ''}`}
-              onClick={() => toggle(i)}
-            >
-              {i + 1}
-            </button>,
-            deviates(i) && (
-              <span key={`v${i}`} className="sec-value" style={{ gridRow: line * 2 + 2, gridColumn: col }}>
-                {/* May break before "@" when the column is narrow (5–6 sets) */}
-                {setText(shown(i), false).replace('@', '\u200B@')}
-              </span>
-            ),
-          ]
-        })}
-      </div>
-      {commenting && (
-        <CommentDialog
-          title={`${name} · comment`}
-          value={comment}
-          onSave={(t) => setNote(countKey, t)}
-          onClose={() => setCommenting(false)}
-        />
-      )}
-      {editing && (
-        <SetsDialog
-          title={`${name} · sets`}
-          planned={pres && prescriptionText(pres)}
-          rows={keys.map((k) => ({ w: cycle.logs[k]?.w ?? null, r: cycle.logs[k]?.r ?? null }))}
-          hints={hints}
-          onSave={saveSets}
-          onRemove={
-            onRemove &&
-            (() => {
-              setEditing(false)
-              onRemove()
-            })
-          }
-          onClose={() => setEditing(false)}
-        />
-      )}
-      {open && (
-        <RestTimer
-          cycle={cycle}
-          card={countKey}
-          sets={count}
-          defaultRest={pres?.rest}
-        />
-      )}
-    </section>
+    <SetsCard
+      name={name}
+      pres={pres}
+      lastLine={lastLine}
+      highlight={highlight}
+      hint={hint}
+      sets={sets}
+      hints={hints}
+      editable={open}
+      comment={cycle.notes[countKey]}
+      onComment={(t) => setNote(countKey, t)}
+      rest={rest}
+      onRest={(v) =>
+        updateCycle((c) => {
+          c.rest ??= {}
+          c.rest[countKey] = v
+        })
+      }
+      onToggle={(i, shown) => setLog(keys[i], { ...shown, done: !sets[i].done })}
+      onSaveSets={saveSets}
+      onRemove={onRemove}
+    >
+      {open && <RestTimer cycle={cycle} card={countKey} sets={count} defaultRest={pres?.rest} />}
+    </SetsCard>
   )
 }

@@ -318,6 +318,7 @@ button.group-entry {
 
 /* Finishing a session */
 button.finish { margin-top: var(--space-1); }
+button.correct { width: 100%; }
 .finished-banner {
   background: var(--success-soft);
   color: var(--success);
