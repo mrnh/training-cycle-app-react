@@ -51,6 +51,9 @@ See the [changelog](CHANGELOG.md) for how the app has developed, with screenshot
    then open `http://localhost:4173/training-cycle-app-react/`. After changing `public/icon.svg`,
    run `npm run icons`.
 2. Add screenshots to `docs/screenshots/vX.Y.Z/` and a new entry at the top of `CHANGELOG.md`.
+   The entry's title (after the "·") and its sections become the app's update message ("New
+   version X.Y.Z · title · What's new"), so keep the heading format
+   `## X.Y.Z — YYYY-MM-DD · Title` and the `### Added` / `### Changed` lists.
 3. Commit, then tag and push: `git tag -a vX.Y.Z -m "vX.Y.Z" && git push --follow-tags`.
 
 ## Development

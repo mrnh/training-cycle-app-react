@@ -2,13 +2,26 @@ import react from '@vitejs/plugin-react'
 import { readFileSync } from 'node:fs'
 import { defineConfig } from 'vite'
 import { VitePWA } from 'vite-plugin-pwa'
+import { latestRelease } from './scripts/release-notes.mjs'
 
 const { version } = JSON.parse(readFileSync(new URL('./package.json', import.meta.url), 'utf8'))
 
 // https://vite.dev/config/
+// release.json next to the app: this build's version and the newest CHANGELOG entry. An open
+// (older) app fetches it when a new version is waiting, to say what's new. Not part of the
+// offline copy, so it always comes from the server.
+const releaseNotes = {
+  name: 'release-notes',
+  generateBundle() {
+    const notes = latestRelease(readFileSync(new URL('./CHANGELOG.md', import.meta.url), 'utf8'))
+    this.emitFile({ type: 'asset', fileName: 'release.json', source: JSON.stringify({ version, notes }) })
+  },
+}
+
 export default defineConfig(({ command, isPreview }) => ({
   plugins: [
     react(),
+    releaseNotes,
     // Installable app with an offline copy: a service worker caches the built files, so the app
     // opens without a network. New versions wait until "Reload" is tapped (see UpdatePrompt).
     // Only active in builds; the dev server runs without a service worker.
