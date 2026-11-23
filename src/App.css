@@ -435,6 +435,7 @@ button.sort-btn {
   border: none; background: none; min-height: 0; padding: var(--space-1); margin: calc(-1 * var(--space-1)) calc(-1 * var(--space-1)) 0 0;
   color: var(--accent); line-height: 0; position: relative;
 }
+.history-card .show-all { align-self: flex-start; border-top: 1px solid var(--border); width: 100%; border-radius: 0; padding-top: var(--space-2); }
 /* Bigger touch area than the icon, without making the header row taller */
 button.sort-btn::after { content: ''; position: absolute; inset: -8px; }
 .history-table tbody { border-top: 1px solid var(--border); }

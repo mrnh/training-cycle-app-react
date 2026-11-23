@@ -3,14 +3,17 @@ import FinishedSession from '../components/FinishedSession'
 import { entryAsPrescribed, entryNotDone, finishedWorkouts, fmtDateShort, sessionName } from '../program'
 import Chevron from '../components/Chevron'
 
+const RECENT = 5 // workouts on the History tab itself; "Show all" opens the full list
+
 /**
- * History tab: every finished workout, newest first (the sort button in the header turns the
- * order around; remembered on this device), as one table. Date and session span the
- * workout's rows; then one row per main lift, one for the accessory group and one per exercise
- * added during the workout, each with a check: green when done as prescribed, orange-yellow when
- * done otherwise, a red cross when nothing was done.
+ * History tab: the five most recent finished workouts, and "Show all" for the All workouts
+ * screen with every workout and a sort button (newest or oldest first, remembered on this
+ * device). Each workout is a table row group: date and session span its rows; then one row per
+ * main lift, one for the accessory group and one per exercise added during the workout, each
+ * with a check: green when done as prescribed, orange-yellow when done otherwise, a red cross
+ * when nothing was done.
  * Tapping a workout (of any cycle) opens its finished session with all sets and weights; the
- * back arrow returns to the list at the same scroll position.
+ * back arrow returns to the list it came from at the same scroll position.
  */
 const SORT_KEY = 'history-oldest-first'
 const readOldestFirst = () => {
@@ -32,20 +35,25 @@ export default function History({ state }) {
     }
   }
   const newestFirst = finishedWorkouts(state)
-  const workouts = oldestFirst ? [...newestFirst].reverse() : newestFirst
   const current = state.cycles.length - 1
+  const [showAll, setShowAll] = useState(null) // { scrollY } of the History tab while All workouts is open
   const [detail, setDetail] = useState(null) // { cycle, plan, record, scrollY } while one is open
 
+  const open = (w) => {
+    setDetail({ ...w, scrollY: window.scrollY })
+    window.scrollTo(0, 0)
+  }
+  // Back to the list, at the scroll position it was left at
+  const backTo = (y, close) => {
+    close()
+    requestAnimationFrame(() => window.scrollTo(0, y))
+  }
+
   if (detail) {
-    const back = () => {
-      const y = detail.scrollY
-      setDetail(null)
-      requestAnimationFrame(() => window.scrollTo(0, y))
-    }
     return (
       <div className="screen">
         <header className="session-head">
-          <button className="icon" data-back aria-label="Back" onClick={back}>
+          <button className="icon" data-back aria-label="Back" onClick={() => backTo(detail.scrollY, () => setDetail(null))}>
             ‹
           </button>
           <div>
@@ -61,83 +69,119 @@ export default function History({ state }) {
     )
   }
 
+  if (showAll) {
+    return (
+      <div className="screen">
+        <header className="session-head">
+          <button className="icon" data-back aria-label="Back to history" onClick={() => backTo(showAll.scrollY, () => setShowAll(null))}>
+            ‹
+          </button>
+          <h1>All workouts</h1>
+          <span className="icon-spacer" />
+        </header>
+        <div className="card history-card">
+          <WorkoutTable
+            workouts={oldestFirst ? [...newestFirst].reverse() : newestFirst}
+            current={current}
+            onOpen={open}
+            sort={
+              <button
+                className="sort-btn"
+                aria-label={oldestFirst ? 'Oldest first. Show newest first' : 'Newest first. Show oldest first'}
+                onClick={toggleOrder}
+              >
+                <SortIcon oldestFirst={oldestFirst} />
+              </button>
+            }
+          />
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div className="screen">
       <h1>History</h1>
-      {workouts.length === 0 ? (
+      {newestFirst.length === 0 ? (
         <p className="muted small center">No finished workouts yet.</p>
       ) : (
         <div className="card history-card">
-          <table className="history-table">
-            <thead>
-              <tr>
-                <th>Date</th>
-                <th>Session</th>
-                <th>
-                  <span className="sr-only">Done as prescribed</span>
-                </th>
-                <th>Exercise</th>
-                <th className="sort">
-                  <button
-                    className="sort-btn"
-                    aria-label={oldestFirst ? 'Oldest first. Show newest first' : 'Newest first. Show oldest first'}
-                    onClick={toggleOrder}
-                  >
-                    <SortIcon oldestFirst={oldestFirst} />
-                  </button>
-                </th>
-              </tr>
-            </thead>
-            {workouts.map(({ cycle, plan, record }) => {
-              const rows = workoutRows(record)
-              const open = () => {
-                setDetail({ cycle, plan, record, scrollY: window.scrollY })
-                window.scrollTo(0, 0)
-              }
-              // Each workout is its own row group, so it can be tapped as a whole
-              return (
-                <tbody
-                  key={`${cycle}:${plan.key}`}
-                  className="tappable"
-                  onClick={open}
-                  role="button"
-                  tabIndex={0}
-                  aria-label={`Open session ${plan.week}.${plan.session}${cycle !== current ? `, cycle ${cycle + 1}` : ''}`}
-                  onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && (e.preventDefault(), open())}
-                >
-                  {rows.map((r, i) => (
-                    <tr key={r.key}>
-                      {i === 0 && (
-                        <>
-                          <td rowSpan={rows.length} className="when">
-                            {record.finishedAt ? fmtDateShort(record.finishedAt) : '–'}
-                          </td>
-                          <td rowSpan={rows.length} className="when">
-                            {plan.week}.{plan.session}
-                          </td>
-                        </>
-                      )}
-                      <td className="check">
-                        <span className={r.status} aria-label={STATUS_LABEL[r.status]}>
-                          {r.status === 'none' ? '✗' : '✓'}
-                        </span>
-                      </td>
-                      <td className="name">{r.name}</td>
-                      {/* The whole workout opens its session; the chevron marks it */}
-                      {i === 0 && (
-                        <td rowSpan={rows.length} className="go">
-                          <Chevron size={18} />
-                        </td>
-                      )}
-                    </tr>
-                  ))}
-                </tbody>
-              )
-            })}
-          </table>
+          <WorkoutTable workouts={newestFirst.slice(0, RECENT)} current={current} onOpen={open} />
+          <button
+            className="link show-all"
+            onClick={() => {
+              setShowAll({ scrollY: window.scrollY })
+              window.scrollTo(0, 0)
+            }}
+          >
+            Show all
+          </button>
         </div>
       )}
     </div>
+  )
+}
+
+/** Workouts as a table, each one tappable as a whole; `sort` goes in the header's last cell. */
+function WorkoutTable({ workouts, current, onOpen, sort }) {
+  return (
+    <table className="history-table">
+      <thead>
+        <tr>
+          <th>Date</th>
+          <th>Session</th>
+          <th>
+            <span className="sr-only">Done as prescribed</span>
+          </th>
+          <th>Exercise</th>
+          <th className="sort">{sort}</th>
+        </tr>
+      </thead>
+      {workouts.map((w) => {
+        const { cycle, plan, record } = w
+        const rows = workoutRows(record)
+        const open = () => onOpen(w)
+        // Each workout is its own row group, so it can be tapped as a whole
+        return (
+          <tbody
+            key={`${cycle}:${plan.key}`}
+            className="tappable"
+            onClick={open}
+            role="button"
+            tabIndex={0}
+            aria-label={`Open session ${plan.week}.${plan.session}${cycle !== current ? `, cycle ${cycle + 1}` : ''}`}
+            onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && (e.preventDefault(), open())}
+          >
+            {rows.map((r, i) => (
+              <tr key={r.key}>
+                {i === 0 && (
+                  <>
+                    <td rowSpan={rows.length} className="when">
+                      {record.finishedAt ? fmtDateShort(record.finishedAt) : '–'}
+                    </td>
+                    <td rowSpan={rows.length} className="when">
+                      {plan.week}.{plan.session}
+                    </td>
+                  </>
+                )}
+                <td className="check">
+                  <span className={r.status} aria-label={STATUS_LABEL[r.status]}>
+                    {r.status === 'none' ? '✗' : '✓'}
+                  </span>
+                </td>
+                <td className="name">{r.name}</td>
+                {/* The whole workout opens its session; the chevron marks it */}
+                {i === 0 && (
+                  <td rowSpan={rows.length} className="go">
+                    <Chevron size={18} />
+                  </td>
+                )}
+              </tr>
+            ))}
+          </tbody>
+        )
+      })}
+    </table>
   )
 }
 
