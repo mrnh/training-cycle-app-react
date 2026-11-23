@@ -261,7 +261,7 @@ export default function Settings({ state }) {
               onChange={(u) => update((d) => void (d.unit = u))}
             />
           </div>
-          <p className="muted small">Changes the label only. Numbers are not converted.</p>
+          <p className="muted small">Affects just the label. Numbers are not converted.</p>
         </div>
         <div className="pref">
           <div className="row unit-row">
@@ -281,7 +281,7 @@ export default function Settings({ state }) {
               onChange={(r) => update((d) => void (d.rounding = r))}
             />
           </div>
-          <p className="muted small">Applies only to main lifts.</p>
+          <p className="muted small">Applies to main lifts only.</p>
         </div>
         <div className="pref">
           <div className="row unit-row">
