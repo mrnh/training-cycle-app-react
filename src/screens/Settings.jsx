@@ -172,17 +172,16 @@ export default function Settings({ state }) {
         {newCycleOpen && <NewCycleDialog state={state} onClose={() => setNewCycleOpen(false)} />}
       </section>
 
-      <section className="card">
-        <div className="sec-head">
-          <h2>Exercise catalog</h2>
-          <button className="sec-pen" aria-label="Edit exercise catalog" onClick={() => show('exercises')}>
-            ✎
-          </button>
-        </div>
-        <p className="muted small">
-          {state.catalog.length} exercises to pick main lifts and accessory work from, each with its history.
-        </p>
-      </section>
+      {/* The whole card opens the catalog; the chevron marks it as leading to another screen */}
+      <button className="card nav-card" onClick={() => show('exercises')}>
+        <span className="nav-card-text">
+          <span className="nav-card-title">Exercise catalog</span>
+          <span className="muted small">
+            {state.catalog.length} exercises to pick main lifts and accessory work from, each with its history.
+          </span>
+        </span>
+        <Chevron />
+      </button>
 
       <section className="card">
         <h2>Backup</h2>
@@ -270,6 +269,16 @@ export default function Settings({ state }) {
       {confirmDialog}
       <p className="muted small center">Version {__APP_VERSION__}</p>
     </div>
+  )
+}
+
+/** "›" at the right of a card that opens another screen. */
+function Chevron() {
+  return (
+    <svg className="chevron" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" fill="none"
+      stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M9 5l7 7-7 7" />
+    </svg>
   )
 }
 

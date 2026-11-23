@@ -79,6 +79,16 @@ button.icon-btn {
   gap: var(--space-2);
   text-align: left;
 }
+/* A card that opens another screen: tappable as a whole, chevron on the right */
+button.nav-card {
+  flex-direction: row; align-items: center; gap: var(--space-3);
+  width: 100%; text-align: left; font: inherit; color: var(--text);
+}
+button.nav-card:active { background: var(--border); }
+.nav-card-text { display: flex; flex-direction: column; gap: var(--space-2); flex: 1; }
+.nav-card-title { font-size: var(--text-md); font-weight: var(--weight-bold); }
+.nav-card .chevron { flex: none; color: var(--muted); }
+
 .card.highlight { border-color: var(--accent); }
 .next-up { gap: var(--space-1); border-color: var(--accent); }
 
