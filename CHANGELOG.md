@@ -9,6 +9,34 @@ The current version is shown at the bottom of **Settings**.
 
 ---
 
+## 0.15.0 — 2026-11-23 · Installable app, clearer rest timer
+
+| Session | History | Finished session |
+|---|---|---|
+| ![Session with a running rest timer](docs/screenshots/v0.15.0/session.jpg) | ![History with green, orange and red marks](docs/screenshots/v0.15.0/history.jpg) | ![Finished session with red ✗ on unticked sets](docs/screenshots/v0.15.0/finished-session.jpg) |
+
+### Added
+- **Installable app (PWA)**: add it to the home screen and it opens full screen, also without a
+  network. When a new version is published, the app shows *New version available* → *Reload*;
+  it never switches on its own in the middle of a workout.
+- **Keep screen on** in Settings → Preferences (on by default): the screen stays on while a
+  session is in progress and the app is open.
+- **Big countdown**: the rest left for the current set is shown in large digits next to
+  Start/Pause. Its colour shows how much is left: green from 60 s, yellow 30–59 s, orange
+  15–29 s, red under 15 s; grey while paused.
+- **Red ✗** for work that wasn't done: in History for an exercise or accessory group with no
+  sets ticked, and in a finished session on every unticked set.
+
+### Changed
+- **+15s Rest** is now a real button next to Pause (it replaces "add 15s").
+- Rest timer: segments of sets whose rest is over turn green.
+- Exercise cards: the rest time (clock), a comment icon and the pen sit together in the
+  header row. The comment icon opens the comment dialog and is filled once a comment is saved.
+- The timer line shows only the total time left; "Paused", "Set x" and "left" are gone.
+- History: accessory work is green when all its sets are ticked, even if some reps were missed.
+
+---
+
 ## 0.14.0 — 2026-11-23 · Extra rest
 
 | Rest timer running |
