@@ -62,19 +62,19 @@ export const DATE_FORMATS = [
 let currentDateFormat = 'dmy'
 export const dateFormat = () => currentDateFormat
 export const setDateFormat = (f) => void (currentDateFormat = f === 'mdy' ? 'mdy' : 'dmy')
-// Rounding of planned main-lift weights (1RM × %): to 0.1 (default), whole units or 2.5, either
-// to the nearest step ('regular', default) or always up ('up')
+// Rounding of planned main-lift weights (1RM × %): to 0.1, whole units (default) or 2.5, either
+// to the nearest step ('regular') or always up ('up', default)
 export const ROUNDINGS = [0.1, 1, 2.5]
 export const ROUNDING_MODES = [
   { id: 'regular', label: 'Regular' },
   { id: 'up', label: 'Round up' },
 ]
-let currentRounding = 0.1
-let currentRoundingMode = 'regular'
+let currentRounding = 1
+let currentRoundingMode = 'up'
 export const rounding = () => currentRounding
 export const roundingMode = () => currentRoundingMode
-export const setRounding = (r) => void (currentRounding = ROUNDINGS.includes(r) ? r : 0.1)
-export const setRoundingMode = (m) => void (currentRoundingMode = m === 'up' ? 'up' : 'regular')
+export const setRounding = (r) => void (currentRounding = ROUNDINGS.includes(r) ? r : 1)
+export const setRoundingMode = (m) => void (currentRoundingMode = m === 'regular' ? 'regular' : 'up')
 /**
  * Round to the chosen step: 85.6 -> 86 (whole) or 85 (2.5) regularly, 86 or 87.5 when rounding
  * up. The tiny tolerance keeps float noise (855.9999… steps) from rounding up a whole step.
