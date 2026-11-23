@@ -1,6 +1,8 @@
 import { useState } from 'react'
 import FinishDialog from '../components/FinishDialog'
 import FinishedSession from '../components/FinishedSession'
+import CommentDialog from '../components/CommentDialog'
+import CommentIcon from '../components/CommentIcon'
 import { PrescriptionDialog } from '../components/Groups'
 import Note from '../components/Note'
 import Planned from '../components/Planned'
@@ -231,6 +233,8 @@ function SecondaryBlock({ state, cycle, plan, id, open }) {
 function ExerciseCard({ cycle, plan, entry, name, pres, last, lastLine, open, highlight, hint, onRemove }) {
   const countKey = `${plan.key}:${entry}`
   const count = cycle.setCounts[countKey] ?? pres?.sets ?? Math.max(last?.sets.length ?? 3, 1)
+  const comment = cycle.notes[countKey]
+  const [commenting, setCommenting] = useState(false)
   const [editing, setEditing] = useState(false)
   const keys = Array.from({ length: count }, (_, i) => setKey(plan.key, entry, i))
   // What an empty set stands for: the prescription, else last time's set
@@ -259,19 +263,30 @@ function ExerciseCard({ cycle, plan, entry, name, pres, last, lastLine, open, hi
 
   return (
     <section className={`card ${highlight ? 'highlight' : ''}`}>
-      <h2>{name}</h2>
-      {/* Prescription (and last time) on the left, the pen for editing all sets on the right */}
-      <div className="sec-head">
-        <div>
+      {/* Name on the left; comment (filled when one is saved) and the pen for all sets on the right */}
+      <div className="card-head">
+        <h2>{name}</h2>
+        {open && (
+          <span className="card-actions">
+            <button
+              className="icon-action"
+              aria-label={comment ? `${name} comment: ${comment}` : `Add a comment to ${name}`}
+              onClick={() => setCommenting(true)}
+            >
+              <CommentIcon filled={!!comment} />
+            </button>
+            <button className="sec-pen" aria-label={`Edit ${name} sets`} onClick={() => setEditing(true)}>
+              ✎
+            </button>
+          </span>
+        )}
+      </div>
+      {(pres || lastLine) && (
+        <div className="card-plan">
           {pres && <Planned sets={pres.sets} reps={pres.reps} weight={pres.weight} />}
           {lastLine && <p className="muted small">{lastLine}</p>}
         </div>
-        {open && (
-          <button className="sec-pen" aria-label={`Edit ${name} sets`} onClick={() => setEditing(true)}>
-            ✎
-          </button>
-        )}
-      </div>
+      )}
       {hint && <p className="small">{hint}</p>}
       {/* Toggles in equal columns that line up with the timer segments below, lines of up to 6
           sets; a set done differently from the plan shows its reps@weight underneath */}
@@ -301,6 +316,14 @@ function ExerciseCard({ cycle, plan, entry, name, pres, last, lastLine, open, hi
           ]
         })}
       </div>
+      {commenting && (
+        <CommentDialog
+          title={`${name} · comment`}
+          value={comment}
+          onSave={(t) => setNote(countKey, t)}
+          onClose={() => setCommenting(false)}
+        />
+      )}
       {editing && (
         <SetsDialog
           title={`${name} · sets`}
@@ -325,7 +348,6 @@ function ExerciseCard({ cycle, plan, entry, name, pres, last, lastLine, open, hi
           sets={count}
           defaultRest={pres?.rest}
           label={name}
-          note={<Note value={cycle.notes[countKey]} onChange={(t) => setNote(countKey, t)} />}
         />
       )}
     </section>

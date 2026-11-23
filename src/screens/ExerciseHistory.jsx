@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import CommentIcon from '../components/CommentIcon'
 import Sheet from '../components/Sheet'
 import useConfirm from '../components/useConfirm'
 import { GROUPS, bestByReps, exerciseHistory, fmt, fmtDate, fmtDateShort, sessionName, setsSummary } from '../program'
@@ -81,7 +82,7 @@ export default function ExerciseHistory({ state, ex, onBack }) {
                 <span>{setsSummary(h.sets)}</span>
                 {h.note ? (
                   <button className="comment-btn" aria-label={`Comment from ${when(h)}`} onClick={() => setComment(h)}>
-                    <BubbleIcon />
+                    <CommentIcon filled />
                   </button>
                 ) : (
                   <span />
@@ -119,14 +120,6 @@ export default function ExerciseHistory({ state, ex, onBack }) {
         />
       )}
     </div>
-  )
-}
-
-function BubbleIcon() {
-  return (
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinejoin="round" aria-hidden="true">
-      <path d="M4 5h16v11H9l-5 4z" />
-    </svg>
   )
 }
 
