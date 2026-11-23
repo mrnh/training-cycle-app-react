@@ -93,10 +93,42 @@ export default function Settings({ state }) {
 
   const show = (screen) => {
     setSubScreen(screen)
+    setMessage('')
     window.scrollTo(0, 0)
   }
   if (subScreen === 'groups') return <GroupsEditor state={state} onBack={() => show(null)} />
   if (subScreen === 'exercises') return <Exercises state={state} onBack={() => show(null)} />
+  if (subScreen === 'data')
+    return (
+      <div className="screen">
+        <header className="session-head">
+          <button className="icon" data-back aria-label="Back to settings" onClick={() => show(null)}>
+            ‹
+          </button>
+          <h1>Data &amp; Backup</h1>
+          <span className="icon-spacer" />
+        </header>
+        <section className="card">
+          <p className="muted small">Your data lives only on this device. Export a backup now and then.</p>
+          {/* In the browser (not the installed app): on iPhone the home-screen app has its own,
+              empty storage, so the data has to be carried over once */}
+          {!installed && (
+            <p className="muted small">
+              Adding the app to your home screen? On iPhone it starts empty: export a backup here, then import it in the
+              installed app.
+            </p>
+          )}
+          <div className="button-row">
+            <button onClick={exportData}>Export backup</button>
+            <button onClick={() => fileRef.current.click()}>Import backup</button>
+            <input ref={fileRef} type="file" accept="application/json,.json" hidden onChange={importData} />
+          </div>
+          <button onClick={loadSample}>Use sample data</button>
+          {message && <p className="small">{message}</p>}
+        </section>
+        {confirmDialog}
+      </div>
+    )
 
   return (
     <div className="screen">
@@ -172,33 +204,9 @@ export default function Settings({ state }) {
         {newCycleOpen && <NewCycleDialog state={state} onClose={() => setNewCycleOpen(false)} />}
       </section>
 
-      {/* The whole card opens the catalog; the chevron marks it as leading to another screen */}
-      <button className="card nav-card" onClick={() => show('exercises')}>
-        <span className="nav-card-text">
-          <span className="nav-card-title">Exercise catalog</span>
-        </span>
-        <Chevron />
-      </button>
+      <NavCard title="Exercise catalog" onClick={() => show('exercises')} />
 
-      <section className="card">
-        <h2>Backup</h2>
-        <p className="muted small">Your data lives only on this device. Export a backup now and then.</p>
-        {/* In the browser (not the installed app): on iPhone the home-screen app has its own,
-            empty storage, so the data has to be carried over once */}
-        {!installed && (
-          <p className="muted small">
-            Adding the app to your home screen? On iPhone it starts empty: export a backup here, then import it in the
-            installed app.
-          </p>
-        )}
-        <div className="button-row">
-          <button onClick={exportData}>Export backup</button>
-          <button onClick={() => fileRef.current.click()}>Import backup</button>
-          <input ref={fileRef} type="file" accept="application/json,.json" hidden onChange={importData} />
-        </div>
-        <button onClick={loadSample}>Use sample data</button>
-        {message && <p className="small">{message}</p>}
-      </section>
+      <NavCard title="Data & Backup" onClick={() => show('data')} />
 
       <section className="card">
         <h2>Preferences</h2>
@@ -266,6 +274,18 @@ export default function Settings({ state }) {
       {confirmDialog}
       <p className="muted small center">Version {__APP_VERSION__}</p>
     </div>
+  )
+}
+
+/** A card that opens another screen: tappable as a whole, with a "›" on the right. */
+function NavCard({ title, onClick }) {
+  return (
+    <button className="card nav-card" onClick={onClick}>
+      <span className="nav-card-text">
+        <span className="nav-card-title">{title}</span>
+      </span>
+      <Chevron />
+    </button>
   )
 }
 
