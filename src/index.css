@@ -13,6 +13,8 @@
   --success-soft: #e3f5ea;
   --off-target: #8aa21c; /* a set done, but below plan (fewer reps or less weight) */
   --caution: #e09a0b; /* History: an exercise not done as prescribed */
+  --timer-yellow: #c99700; /* rest countdown, 30-59 s left (dark enough to read on white) */
+  --timer-orange: #e06a00; /* rest countdown, 15-29 s left */
   --danger: #d93d42;
   --warning: #8a5a00;
   --warning-soft: #fdf3dc;
@@ -67,6 +69,8 @@
     --success-soft: #1b3326;
     --off-target: #a9c23f;
     --caution: #f0b84a;
+    --timer-yellow: #f2cc4a;
+    --timer-orange: #f58a3c;
     --danger: #f2555a;
     --warning: #f0b84a;
     --warning-soft: #33280f;

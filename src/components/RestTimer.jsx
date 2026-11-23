@@ -15,6 +15,10 @@ function useNow(running) {
   return now
 }
 
+/** Colour band of the countdown: 60 s or more green, 30–59 yellow, 15–29 orange, under 15 red. */
+const restLevel = (secondsLeft) =>
+  secondsLeft >= 60 ? 'level-green' : secondsLeft >= 30 ? 'level-yellow' : secondsLeft >= 15 ? 'level-orange' : 'level-red'
+
 /**
  * Interval timer of one exercise card: a bar with one segment per set, then a row with the rest
  * left for the current set in large digits (left), Start/Pause/Resume (centre) and, while it
@@ -35,6 +39,7 @@ export default function RestTimer({ cycle, card, sets, defaultRest }) {
   const t = mine ? Math.max(0, (until - Date.parse(cycle.timer.startedAt)) / 1000) : null
   const done = t != null && t >= total
   const idx = t == null ? -1 : Math.min(sets - 1, Math.floor(t / rest))
+  const left = t == null ? 0 : Math.ceil(rest - (t - idx * rest)) // seconds left in the current set
   const fill = (i) => (t == null ? 0 : done || i < idx ? 1 : i === idx ? (t - idx * rest) / rest : 0)
 
   // Starting a timer replaces any other one
@@ -91,10 +96,11 @@ export default function RestTimer({ cycle, card, sets, defaultRest }) {
         )}
       </p>
       <div className="timer-row">
-        {/* Rest left for the current set, big enough to read from a distance; dimmed while paused */}
+        {/* Rest left for the current set, big enough to read from a distance. Its colour shows
+            how much is left (green, yellow, orange, red); grey while paused */}
         {mine && !done && (
-          <span className={`rest-countdown ${paused ? 'is-paused' : ''}`} aria-live="off" aria-label={paused ? 'paused' : undefined}>
-            {minSec(Math.ceil(rest - (t - idx * rest)))}
+          <span className={`rest-countdown ${paused ? 'is-paused' : restLevel(left)}`} aria-live="off" aria-label={paused ? 'paused' : undefined}>
+            {minSec(left)}
           </span>
         )}
         <span className="timer-actions">
