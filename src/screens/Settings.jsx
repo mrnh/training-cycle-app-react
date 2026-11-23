@@ -226,7 +226,7 @@ export default function Settings({ state }) {
         <div className="row unit-row end">
           <Segmented
             label="Rounding of planned weights"
-            options={ROUNDINGS.map((r) => ({ id: r, label: `${r === 0.1 ? '.1' : r === 1 ? 'full' : r} ${unit()}` }))}
+            options={ROUNDINGS.map((r) => ({ id: r, label: `${r === 0.1 ? '.1' : r} ${unit()}` }))}
             value={rounding()}
             onChange={(r) => update((d) => void (d.rounding = r))}
           />
