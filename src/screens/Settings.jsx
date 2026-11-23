@@ -126,6 +126,10 @@ export default function Settings({ state }) {
           <button onClick={loadSample}>Use sample data</button>
           {message && <p className="small">{message}</p>}
         </section>
+        <section className="card">
+          <h2>Reset</h2>
+          <button className="danger" onClick={resetAll}>Delete all data</button>
+        </section>
         {confirmDialog}
       </div>
     )
@@ -264,11 +268,6 @@ export default function Settings({ state }) {
             <p className="muted small">While a session is in progress and the app is open.</p>
           </>
         )}
-      </section>
-
-      <section className="card">
-        <h2>Reset</h2>
-        <button className="danger" onClick={resetAll}>Delete all data</button>
       </section>
 
       {confirmDialog}
