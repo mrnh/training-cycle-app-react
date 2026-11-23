@@ -6,6 +6,7 @@ import CommentIcon from '../components/CommentIcon'
 import { PrescriptionDialog } from '../components/Groups'
 import Note from '../components/Note'
 import Planned from '../components/Planned'
+import RestSetting from '../components/RestSetting'
 import RestTimer from '../components/RestTimer'
 import SetsDialog from '../components/SetsDialog'
 import useConfirm from '../components/useConfirm'
@@ -268,6 +269,7 @@ function ExerciseCard({ cycle, plan, entry, name, pres, last, lastLine, open, hi
         <h2>{name}</h2>
         {open && (
           <span className="card-actions">
+            <RestSetting cycle={cycle} card={countKey} defaultRest={pres?.rest} label={name} />
             <button
               className="icon-action"
               aria-label={comment ? `${name} comment: ${comment}` : `Add a comment to ${name}`}
@@ -347,7 +349,6 @@ function ExerciseCard({ cycle, plan, entry, name, pres, last, lastLine, open, hi
           card={countKey}
           sets={count}
           defaultRest={pres?.rest}
-          label={name}
         />
       )}
     </section>

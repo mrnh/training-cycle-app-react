@@ -325,7 +325,8 @@ button.link.inline { display: inline; min-height: 0; padding: 0; font-size: inhe
 .rest-countdown.is-paused { color: var(--muted); }
 /* The reset icon hangs off the right of the button, so the button stays centred */
 button.timer-reset { position: absolute; left: 100%; top: 50%; transform: translateY(-50%); color: var(--accent); }
-.timer-row .rest-time, .timer-row .rest-extra { grid-column: 3; grid-row: 1; }
+.timer-row .rest-extra { grid-column: 3; grid-row: 1; }
+.card-actions .rest-time { padding-right: var(--space-1); }
 button.rest-extra { justify-self: end; white-space: nowrap; padding-left: var(--space-2); padding-right: var(--space-2); }
 .timer-btn { min-width: 104px; font-variant-numeric: tabular-nums; }
 button.rest-time {

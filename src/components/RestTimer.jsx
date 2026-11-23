@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react'
-import Sheet from './Sheet'
-import { REST_MAX, REST_MIN, REST_STEP, minSec, restOf } from '../program'
+import { minSec, restOf } from '../program'
 
 const EXTRA_REST = 15 // seconds the "+15s Rest" button gives
 import { updateCycle } from '../store'
@@ -18,19 +17,18 @@ function useNow(running) {
 
 /**
  * Interval timer of one exercise card: a bar with one segment per set, then a row with the rest
- * left for the current set in large digits (left), Start/Pause/Resume (centre) and the rest
- * interval or "+15s Rest" (right). It runs for
+ * left for the current set in large digits (left), Start/Pause/Resume (centre) and, while it
+ * runs, "+15s Rest" (right). The rest interval itself is set via RestSetting in the card header. It runs for
  * interval × sets from the moment Start is tapped; ticking sets doesn't change it. While it runs,
  * "+15s Rest" (in place of the interval on the right) gives 15 s more rest; while paused, a reset
  * icon next to Resume clears it.
  */
-export default function RestTimer({ cycle, card, sets, label, defaultRest }) {
+export default function RestTimer({ cycle, card, sets, defaultRest }) {
   const rest = restOf(cycle, card, defaultRest)
   const total = rest * sets
   const mine = cycle.timer?.card === card
   const paused = mine && !!cycle.timer.pausedAt
   const now = useNow(mine && !paused)
-  const [editing, setEditing] = useState(false)
 
   // A paused timer stands still at the moment it was paused
   const until = paused ? Date.parse(cycle.timer.pausedAt) : now
@@ -63,11 +61,6 @@ export default function RestTimer({ cycle, card, sets, label, defaultRest }) {
   const reset = () =>
     updateCycle((c) => {
       c.timer = null
-    })
-  const save = (v) =>
-    updateCycle((c) => {
-      c.rest ??= {}
-      c.rest[card] = v
     })
 
   return (
@@ -123,48 +116,13 @@ export default function RestTimer({ cycle, card, sets, label, defaultRest }) {
             </button>
           )}
         </span>
-        {/* While the timer runs, the right spot offers extra rest instead of the interval setting */}
-        {mine && !paused && !done ? (
+        {/* While the timer runs: 15 s more rest (the interval itself is set in the card header) */}
+        {mine && !paused && !done && (
           <button className="small-btn rest-extra" onClick={addRest}>
             +{EXTRA_REST}s Rest
           </button>
-        ) : (
-          <button className="rest-time" aria-label={`Rest interval ${minSec(rest)}, change`} onClick={() => setEditing(true)}>
-            <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-              <circle cx="12" cy="13" r="8" />
-              <path d="M12 9v4l2.5 2M9.5 2.5h5" />
-            </svg>
-            {minSec(rest)}
-          </button>
         )}
       </div>
-      {editing && <RestDialog title={label} value={rest} onSave={save} onClose={() => setEditing(false)} />}
     </>
-  )
-}
-
-/** Rest interval in 15-second steps, 0:15 to 10:00. Nothing is saved until "Save". */
-function RestDialog({ title, value, onSave, onClose }) {
-  const [draft, setDraft] = useState(value)
-
-  function save() {
-    onSave(draft)
-    onClose()
-  }
-
-  return (
-    <Sheet onClose={onClose} onSubmit={save}>
-      <h2>{title} · rest</h2>
-      <p className="muted small">Time per set, including the set itself.</p>
-      <div className="rest-stepper">
-        <button type="button" aria-label="15 seconds less" disabled={draft <= REST_MIN} onClick={() => setDraft(draft - REST_STEP)}>−</button>
-        <strong aria-live="polite">{minSec(draft)}</strong>
-        <button type="button" aria-label="15 seconds more" disabled={draft >= REST_MAX} onClick={() => setDraft(draft + REST_STEP)}>+</button>
-      </div>
-      <div className="button-row end">
-        <button type="button" onClick={onClose}>Cancel</button>
-        <button type="submit" className="primary">Save</button>
-      </div>
-    </Sheet>
   )
 }
