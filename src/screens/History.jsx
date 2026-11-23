@@ -53,10 +53,10 @@ export default function History({ state }) {
               <tr>
                 <th>Date</th>
                 <th>Session</th>
-                <th>Exercise</th>
                 <th>
                   <span className="sr-only">Done as prescribed</span>
                 </th>
+                <th>Exercise</th>
                 <th />
               </tr>
             </thead>
@@ -89,12 +89,12 @@ export default function History({ state }) {
                           </td>
                         </>
                       )}
-                      <td className="name">{r.name}</td>
                       <td className="check">
                         <span className={r.status} aria-label={STATUS_LABEL[r.status]}>
                           {r.status === 'none' ? '✗' : '✓'}
                         </span>
                       </td>
+                      <td className="name">{r.name}</td>
                       {/* The whole workout opens its session; the chevron marks it */}
                       {i === 0 && (
                         <td rowSpan={rows.length} className="go">
