@@ -122,7 +122,7 @@ export default function History({ state }) {
 
   return (
     <div className="screen">
-      <h1>History</h1>
+      <h1>Workout history</h1>
       {newestFirst.length === 0 ? (
         <p className="muted small center">No finished workouts yet.</p>
       ) : (
@@ -178,24 +178,27 @@ function ExerciseCard({ state, onOpen, onShowAll }) {
     </button>
   )
   return (
-    <section className="card exercise-card">
-      <div className="sec-head">
-        <h2>Exercise history</h2>
+    <>
+      {/* Heading outside the card, like the screen title above; the pen picks the exercises */}
+      <div className="sec-head screen-subtitle">
+        <h1>Exercise history</h1>
         <button className="sec-pen" aria-label="Pick exercises" onClick={() => setEditing(true)}>
           ✎
         </button>
       </div>
-      <div className="exercise-rows">{mainIds.map(row)}</div>
-      {picked.length ? (
-        <div className="exercise-rows">{picked.map(row)}</div>
-      ) : (
-        <p className="muted small">Tap ✎ to add up to five exercises.</p>
-      )}
-      <button className="link show-all" onClick={onShowAll}>
-        Show all
-      </button>
-      {editing && <PickDialog state={state} mainIds={mainIds} picked={picked} onClose={() => setEditing(false)} />}
-    </section>
+      <section className="card exercise-card">
+        <div className="exercise-rows">{mainIds.map(row)}</div>
+        {picked.length ? (
+          <div className="exercise-rows">{picked.map(row)}</div>
+        ) : (
+          <p className="muted small">Tap ✎ to add up to five exercises.</p>
+        )}
+        <button className="link show-all" onClick={onShowAll}>
+          Show all
+        </button>
+        {editing && <PickDialog state={state} mainIds={mainIds} picked={picked} onClose={() => setEditing(false)} />}
+      </section>
+    </>
   )
 }
 
