@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import Sheet from './Sheet'
 import { REST_MAX, REST_MIN, REST_STEP, minSec, restOf } from '../program'
 
-const EXTRA_REST = 15 // seconds the "add 15s" button gives
+const EXTRA_REST = 15 // seconds the "+15s Rest" button gives
 import { updateCycle } from '../store'
 
 /** Re-renders four times a second while `running`, so the bar moves. */
@@ -20,7 +20,7 @@ function useNow(running) {
  * Interval timer of one exercise card: a bar with one segment per set, then a row with the
  * comment (left), Start/Pause/Resume (centre) and the rest interval (right). It runs for
  * interval × sets from the moment Start is tapped; ticking sets doesn't change it. While it runs,
- * "add 15s" (in place of the interval on the right) gives 15 s more rest; while paused, a reset
+ * "+15s Rest" (in place of the interval on the right) gives 15 s more rest; while paused, a reset
  * icon next to Resume clears it.
  */
 export default function RestTimer({ cycle, card, sets, label, note, defaultRest }) {
@@ -118,8 +118,8 @@ export default function RestTimer({ cycle, card, sets, label, note, defaultRest 
         </span>
         {/* While the timer runs, the right spot offers extra rest instead of the interval setting */}
         {mine && !paused && !done ? (
-          <button className="rest-time" onClick={addRest}>
-            add {EXTRA_REST}s
+          <button className="small-btn rest-extra" onClick={addRest}>
+            +{EXTRA_REST}s Rest
           </button>
         ) : (
           <button className="rest-time" aria-label={`Rest interval ${minSec(rest)}, change`} onClick={() => setEditing(true)}>
