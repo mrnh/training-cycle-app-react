@@ -17,8 +17,9 @@ function useNow(running) {
 }
 
 /**
- * Interval timer of one exercise card: a bar with one segment per set, then a row with
- * Start/Pause/Resume (centre) and the rest interval (right). It runs for
+ * Interval timer of one exercise card: a bar with one segment per set, then a row with the rest
+ * left for the current set in large digits (left), Start/Pause/Resume (centre) and the rest
+ * interval or "+15s Rest" (right). It runs for
  * interval × sets from the moment Start is tapped; ticking sets doesn't change it. While it runs,
  * "+15s Rest" (in place of the interval on the right) gives 15 s more rest; while paused, a reset
  * icon next to Resume clears it.
@@ -91,12 +92,18 @@ export default function RestTimer({ cycle, card, sets, label, defaultRest }) {
           <span className="rest-done">Done · {minSec(total)}</span>
         ) : (
           <>
-            <span>{paused && 'Paused · '}Set {idx + 1} · {minSec(Math.ceil(rest - (t - idx * rest)))} left</span>
+            <span />
             <span>{minSec(Math.ceil(total - t))} total</span>
           </>
         )}
       </p>
       <div className="timer-row">
+        {/* Rest left for the current set, big enough to read from a distance; dimmed while paused */}
+        {mine && !done && (
+          <span className={`rest-countdown ${paused ? 'is-paused' : ''}`} aria-live="off" aria-label={paused ? 'paused' : undefined}>
+            {minSec(Math.ceil(rest - (t - idx * rest)))}
+          </span>
+        )}
         <span className="timer-actions">
           {!mine ? (
             <button className="small-btn timer-btn" onClick={start}>▶ Start</button>
