@@ -46,7 +46,9 @@ function Entry({ e }) {
             <li key={i} className={x.done ? 'is-done' : 'muted'}>
               <span className="set-no">{i + 1}</span>
               <span>{setText(x)}</span>
-              <span aria-label={x.done ? 'done' : 'not done'}>{x.done ? '✓' : ''}</span>
+              <span className={x.done ? undefined : 'not-done'} aria-label={x.done ? 'done' : 'not done'}>
+                {x.done ? '✓' : '✗'}
+              </span>
             </li>
           ))}
         </ol>
