@@ -74,7 +74,8 @@ export default function RestTimer({ cycle, card, sets, label, note, defaultRest 
       <div className={`rest-bar ${done ? 'is-done' : ''}`} role="progressbar" aria-label="Rest timer"
         aria-valuemin={0} aria-valuemax={total} aria-valuenow={t == null ? 0 : Math.min(total, Math.floor(t))}>
         {Array.from({ length: sets }, (_, i) => (
-          <span key={i}>
+          // A segment whose rest is over turns green; the running one stays in the accent colour
+          <span key={i} className={fill(i) === 1 ? 'is-full' : undefined}>
             <i style={{ width: `${fill(i) * 100}%` }} />
           </span>
         ))}

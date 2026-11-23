@@ -313,7 +313,7 @@ button.link.inline { display: inline; min-height: 0; padding: 0; font-size: inhe
 .rest-bar { display: flex; gap: var(--space-1); height: 6px; margin-top: var(--space-1); }
 .rest-bar span { flex: 1; background: var(--border); border-radius: var(--radius-sm); overflow: hidden; }
 .rest-bar i { display: block; height: 100%; background: var(--accent); transition: width 0.25s linear; }
-.rest-bar.is-done i { background: var(--success); }
+.rest-bar.is-done i, .rest-bar span.is-full i { background: var(--success); }
 .rest-info { display: flex; justify-content: space-between; min-height: 1.2em; font-variant-numeric: tabular-nums; }
 .rest-done { color: var(--success); font-weight: var(--weight-bold); }
 .timer-row { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: var(--space-2); }
