@@ -9,6 +9,24 @@ The current version is shown at the bottom of **Settings**.
 
 ---
 
+## 0.18.0 — 2026-11-23 · Exercise history on the History tab
+
+| Workout history | Exercise history | Picking exercises | All exercises |
+|---|---|---|---|
+| ![Workout history with the four most recent workouts](docs/screenshots/v0.18.0/history.jpg) | ![Exercise history card](docs/screenshots/v0.18.0/exercise-history.jpg) | ![Dialog to pick exercises](docs/screenshots/v0.18.0/pick-exercises.jpg) | ![All exercises](docs/screenshots/v0.18.0/all-exercises.jpg) |
+
+### Added
+- **Exercise history** on the History tab: the main lifts, then up to five other exercises,
+  each opening its exercise history. The ✎ next to the heading picks them in a dialog of
+  dropdowns; until then the first three accessory exercises are shown. **Show all** opens
+  **All exercises**, the exercise catalog list without the add field.
+
+### Changed
+- The History tab is headed **Workout history** and shows the **four** most recent workouts
+  (Show all still lists every one).
+
+---
+
 ## 0.17.0 — 2026-11-23 · Recent history, all workouts
 
 | History | All workouts | Preferences |
