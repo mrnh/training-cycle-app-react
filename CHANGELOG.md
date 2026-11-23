@@ -9,6 +9,23 @@ The current version is shown at the bottom of **Settings**.
 
 ---
 
+## 0.18.1 — 2026-11-23 · Consistency pass
+
+| All exercises | Settings |
+|---|---|
+| ![All exercises with the drawn chevrons](docs/screenshots/v0.18.1/all-exercises.jpg) | ![Settings with "Data & backup"](docs/screenshots/v0.18.1/settings.jpg) |
+
+### Changed
+- All exercises and the exercise catalog use the same chevron as the rest of the app, and all
+  exercise lists share one row style (same height everywhere).
+- "Data & Backup" is now **Data & backup**, like the other screen titles.
+- Back buttons name the screen they return to (for VoiceOver); the accessory work editor's says
+  "Back to current cycle", Exercise history's names the list it was opened from.
+- Behind the scenes: one shared title bar for all screens below a tab, and duplicated styles
+  merged.
+
+---
+
 ## 0.18.0 — 2026-11-23 · Exercise history on the History tab
 
 | Workout history | Exercise history | Picking exercises | All exercises |
