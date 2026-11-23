@@ -4,7 +4,7 @@ import MainLiftFields from '../components/MainLiftFields'
 import NewCycleDialog from '../components/NewCycleDialog'
 import useConfirm from '../components/useConfirm'
 import Exercises from './Exercises'
-import { DATE_FORMATS, UNITS, dateFormat, exerciseName, fmt, heaviestWeight, mainLiftsError, todayIso, unit } from '../program'
+import { DATE_FORMATS, ROUNDINGS, UNITS, dateFormat, rounding, exerciseName, fmt, heaviestWeight, mainLiftsError, todayIso, unit } from '../program'
 import { currentCycle, migrate, replaceState, update, updateCycle } from '../store'
 import { sampleState } from '../sampleData'
 
@@ -206,7 +206,7 @@ export default function Settings({ state }) {
         </div>
         <p className="muted small">Changes the label only. Numbers are not converted.</p>
         <div className="row unit-row">
-          <h3>Date</h3>
+          <h3>Date format</h3>
           <Segmented
             label="Date format"
             options={DATE_FORMATS}
@@ -214,6 +214,16 @@ export default function Settings({ state }) {
             onChange={(f) => update((d) => void (d.dateFormat = f))}
           />
         </div>
+        <div className="row unit-row">
+          <h3>Rounding</h3>
+          <Segmented
+            label="Rounding of planned weights"
+            options={ROUNDINGS.map((r) => ({ id: r, label: `${r === 0.1 ? '.1' : r === 1 ? 'full' : r} ${unit()}` }))}
+            value={rounding()}
+            onChange={(r) => update((d) => void (d.rounding = r))}
+          />
+        </div>
+        <p className="muted small">Planned main-lift weights are rounded to this step. Finished sessions keep theirs.</p>
       </section>
 
       <section className="card">

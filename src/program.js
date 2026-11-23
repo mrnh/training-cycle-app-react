@@ -62,6 +62,13 @@ export const DATE_FORMATS = [
 let currentDateFormat = 'dmy'
 export const dateFormat = () => currentDateFormat
 export const setDateFormat = (f) => void (currentDateFormat = f === 'mdy' ? 'mdy' : 'dmy')
+// Rounding of planned main-lift weights (1RM × %): to 0.1 (default), whole units or 2.5
+export const ROUNDINGS = [0.1, 1, 2.5]
+let currentRounding = 0.1
+export const rounding = () => currentRounding
+export const setRounding = (r) => void (currentRounding = ROUNDINGS.includes(r) ? r : 0.1)
+/** Round to the chosen step, to the nearest: 85.6 -> 86 (whole) or 85 (2.5) */
+export const roundToStep = (x, step = currentRounding) => round1(Math.round(x / step) * step)
 
 export const sessionKey = (week, session) => `w${week}s${session}`
 /** How sessions are named everywhere: "Session 1.2" = week 1, session 2. */
@@ -97,7 +104,7 @@ export const ALL_SESSIONS = Array.from({ length: WEEKS * SESSIONS_PER_WEEK }, (_
 export const liftOf = (cycle, p) => cycle.primaries[p.slot] ?? null
 /** The planned main lifts of a session whose slot has an exercise in this cycle. */
 export const mainLifts = (cycle, plan) => plan.primaries.filter((p) => liftOf(cycle, p))
-export const targetWeight = (cycle, p) => round1((cycle.oneRM[liftOf(cycle, p)] * p.pct) / 100)
+export const targetWeight = (cycle, p) => roundToStep((cycle.oneRM[liftOf(cycle, p)] * p.pct) / 100)
 /** Main-lift slots being edited ([{ id, rm }], id '' = empty): at least one lift, and a 1RM for each picked lift. */
 export function mainLiftsError(rows) {
   const picked = rows.filter((r) => r.id)
