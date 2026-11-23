@@ -9,6 +9,26 @@ The current version is shown at the bottom of **Settings**.
 
 ---
 
+## 0.17.0 — 2026-11-23 · Recent history, all workouts
+
+| History | All workouts | Preferences |
+|---|---|---|
+| ![History with the five most recent workouts](docs/screenshots/v0.17.0/history.jpg) | ![All workouts with the sort button](docs/screenshots/v0.17.0/all-workouts.jpg) | ![Preferences with divider lines](docs/screenshots/v0.17.0/preferences.jpg) |
+
+### Added
+- **All workouts**: the History tab shows the five most recent workouts; **Show all** opens a
+  screen with every workout. Its **sort button** shows newest or oldest first (newest first by
+  default; the choice is remembered on the device).
+
+### Changed
+- History: a › on each workout shows it opens the session, and the checkmarks now stand before
+  the exercise names.
+- Preferences: divider lines between the settings, Date format now after Rounding, and shorter
+  notes ("Affects just the label…", "Applies to main lifts only.", "Prevents screen lock during
+  a session.").
+
+---
+
 ## 0.16.0 — 2026-11-23 · Swipe back, tidier Settings
 
 | Settings | Current cycle | Data & Backup | Swipe back |
