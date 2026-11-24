@@ -107,7 +107,6 @@ export default function App() {
             key={sessionKey}
             state={state}
             sessionKey={sessionKey}
-            onNavigate={openSession}
             onBack={backStack.length ? goBack : undefined}
           />}
         {tab === 'history' && <History key={tabTaps} state={state} />}

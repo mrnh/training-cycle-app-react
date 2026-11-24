@@ -5,9 +5,9 @@ Russian Masters Squat Routine adapted for up to three main lifts (squat, bench p
 by default).
 
 - **Overview:** all 27 sessions at a glance, with progress
-- **Session:** start the next session in order, tick sets and log weight and reps; values save
-  instantly, and "Finish session" stores the workout permanently. One session is open at a time;
-  the others are previews. Each exercise has a rest timer, and exercises can be added for the
+- **Session:** start a session (in any order; a warning shows when earlier ones are unfinished),
+  tick sets and log weight and reps; values save instantly, and "Finish session" stores the
+  workout permanently. One session is open at a time; starting another finishes it. Each exercise has a rest timer, and exercises can be added for the
   session
 - **History:** every finished workout, newest first, with a check per exercise for done as
   prescribed; tap one for its sets and weights, and "Edit" to correct what was logged wrong

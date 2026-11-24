@@ -181,15 +181,14 @@ export const nextSession = (cycle) => ALL_SESSIONS.find((p) => !isFinished(cycle
 
 /**
  * One session is open at a time (cycle.active = { key, startedAt }). Only an open session can
- * be logged; the others are previews. Sessions are started in order: the one after the open
- * session, or the first unfinished one when none is open.
+ * be logged; the others are previews. Any unfinished session can be started, in any order;
+ * starting one finishes the open session as it is.
  */
 export const activeSession = (cycle) => (cycle.active ? ALL_SESSIONS.find((p) => p.key === cycle.active.key) : null)
-export function startableSession(cycle) {
-  const active = activeSession(cycle)
-  if (!active) return nextSession(cycle)
-  return ALL_SESSIONS[ALL_SESSIONS.indexOf(active) + 1] ?? null
-}
+
+/** Sessions before this one that are neither finished nor the open one, i.e. skipped so far. */
+export const unfinishedBefore = (cycle, plan) =>
+  ALL_SESSIONS.slice(0, ALL_SESSIONS.findIndex((p) => p.key === plan.key)).filter((p) => !isFinished(cycle, p) && p.key !== cycle.active?.key)
 
 /** Start a session (mutates). An open session is finished as it is first. */
 export function startSession(state, cycle, plan, now = new Date()) {
@@ -309,8 +308,9 @@ export function retestResults(cycle) {
   return out
 }
 
-/** The cycle is complete once its last session (week 9, session 3) is finished. */
-export const cycleComplete = (cycle) => !!cycle.finished[sessionKey(WEEKS, SESSIONS_PER_WEEK)]
+/** The cycle is complete once all three week-9 sessions (one re-test each) are finished. */
+export const cycleComplete = (cycle) =>
+  Array.from({ length: SESSIONS_PER_WEEK }, (_, i) => sessionKey(WEEKS, i + 1)).every((k) => !!cycle.finished[k])
 
 export function addDays(isoDate, days) {
   const d = new Date(isoDate + 'T00:00:00')

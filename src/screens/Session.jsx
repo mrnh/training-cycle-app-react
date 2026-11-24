@@ -8,7 +8,7 @@ import SetsCard from '../components/SetsCard'
 import useConfirm from '../components/useConfirm'
 import {
   ALL_SESSIONS, activeSession, isExtra, removeExtra, restOf, sessionEntry, sessionName, clockTime, draftSecondaries, exerciseHistory, exerciseName, finishSession, finishedDate,
-  liftOf, mainLifts, parseKey, secondaryKey, sessionPlan, setKey, setsSummary, startSession, startableSession, targetWeight,
+  liftOf, mainLifts, parseKey, secondaryKey, sessionPlan, setKey, setsSummary, startSession, targetWeight, unfinishedBefore,
   todayIso, untickedSets, weekRange,
 } from '../program'
 import { currentCycle, update, updateCycle } from '../store'
@@ -23,14 +23,15 @@ const setNote = (key, text) =>
     c.notes[key] = text
   })
 
-export default function Session({ state, sessionKey, onNavigate, onBack }) {
+export default function Session({ state, sessionKey, onBack }) {
   const cycle = currentCycle(state)
   const { week, session } = parseKey(sessionKey)
   const plan = sessionPlan(week, session)
   const record = cycle.finished[plan.key]
   const active = activeSession(cycle)
   const isOpen = active?.key === plan.key
-  const canStart = !record && !isOpen && startableSession(cycle)?.key === plan.key
+  const canStart = !record && !isOpen
+  const skipped = canStart && unfinishedBefore(cycle, plan).length > 0
   const [dialog, setDialog] = useState(null) // 'finish' | 'start'
   const unticked = (p) => untickedSets(cycle, p).map((u) => ({ ...u, name: exerciseName(state, u.id) }))
   const finish = () =>
@@ -56,11 +57,11 @@ export default function Session({ state, sessionKey, onNavigate, onBack }) {
           {isOpen && <p className="in-progress small">● In progress since {clockTime(cycle.active.startedAt)}</p>}
           {canStart && (
             <div className="card start-card">
+              {skipped && <p className="warning small">There are unfinished previous workouts.</p>}
               {active && <p className="small">{sessionName(active)} is still open. Starting this session finishes it.</p>}
               <button className="primary" onClick={onStart}>Start session</button>
             </div>
           )}
-          {!isOpen && !canStart && <NotYet cycle={cycle} active={active} onNavigate={onNavigate} />}
           <Draft state={state} cycle={cycle} plan={plan} open={isOpen} onFinish={() => setDialog('finish')} />
         </>
       )}
@@ -81,23 +82,10 @@ export default function Session({ state, sessionKey, onNavigate, onBack }) {
   )
 }
 
-/** A session that can't be started yet: points to the one to do first. */
-function NotYet({ cycle, active, onNavigate }) {
-  const first = active ?? startableSession(cycle)
-  if (!first) return null
-  return (
-    <p className="muted small center">
-      Preview. Sessions are done in order:{' '}
-      <button className="link inline" onClick={() => onNavigate(first.key)}>
-        {active ? `${sessionName(first)} is open` : `start ${sessionName(first)}`}
-      </button>
-    </p>
-  )
-}
-
 /**
  * The open session: every change is saved to the device straight away (the draft).
- * Any other unfinished session is shown the same way as a preview, with all controls disabled.
+ * An unfinished session that isn't open is shown the same way as a preview, with all controls
+ * disabled, above a "Start session" button.
  */
 function Draft({ state, cycle, plan, open, onFinish }) {
   const secondaries = draftSecondaries(state, cycle, plan)
