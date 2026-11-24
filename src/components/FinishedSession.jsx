@@ -74,16 +74,14 @@ export default function FinishedWorkout({ state, cycleIndex, planKey }) {
       {editing && (
         <section className="card">
           <h2>Date</h2>
-          <label className="field">
-            <span>Finished on</span>
-            {/* Any day up to today; an emptied field keeps the old date */}
-            <input
-              type="date"
-              value={record.finishedAt ?? ''}
-              max={todayIso()}
-              onChange={(e) => e.target.value && change((rec) => (rec.finishedAt = e.target.value))}
-            />
-          </label>
+          {/* Any day up to today; an emptied field keeps the old date */}
+          <input
+            type="date"
+            aria-label="Date finished"
+            value={record.finishedAt ?? ''}
+            max={todayIso()}
+            onChange={(e) => e.target.value && change((rec) => (rec.finishedAt = e.target.value))}
+          />
         </section>
       )}
 
