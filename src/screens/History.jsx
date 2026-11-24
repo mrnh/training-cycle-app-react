@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import FinishedWorkout from '../components/FinishedSession'
 import Sheet from '../components/Sheet'
-import { GROUPS, entryAsPrescribed, entryNotDone, exerciseName, finishedWorkouts, fmtDateShort, sessionName } from '../program'
+import { GROUPS, entryAsPrescribed, entryNotDone, exerciseName, finishedDate, finishedWorkouts, fmtDateShort, sessionName } from '../program'
 import { currentCycle, update } from '../store'
 import Chevron from '../components/Chevron'
 import ExerciseHistory from './ExerciseHistory'
@@ -80,7 +80,7 @@ export default function History({ state }) {
       <div className="screen">
         <ScreenHeader
           title={sessionName(detail.plan)}
-          subtitle={`${detail.cycle !== current ? `Cycle ${detail.cycle + 1} · ` : ''}Group ${detail.record.group}`}
+          subtitle={finishedDate(state.cycles[detail.cycle].finished[detail.plan.key])}
           backLabel={showAll ? 'Back to all workouts' : 'Back to history'}
           onBack={() => backTo(detail.scrollY, () => setDetail(null))}
         />

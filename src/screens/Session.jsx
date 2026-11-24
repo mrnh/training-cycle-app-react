@@ -7,7 +7,7 @@ import RestTimer from '../components/RestTimer'
 import SetsCard from '../components/SetsCard'
 import useConfirm from '../components/useConfirm'
 import {
-  ALL_SESSIONS, activeSession, isExtra, removeExtra, restOf, sessionEntry, sessionName, clockTime, draftSecondaries, exerciseHistory, exerciseName, finishSession,
+  ALL_SESSIONS, activeSession, isExtra, removeExtra, restOf, sessionEntry, sessionName, clockTime, draftSecondaries, exerciseHistory, exerciseName, finishSession, finishedDate,
   liftOf, mainLifts, parseKey, secondaryKey, sessionPlan, setKey, setsSummary, startSession, startableSession, targetWeight,
   todayIso, untickedSets, weekRange,
 } from '../program'
@@ -47,7 +47,7 @@ export default function Session({ state, sessionKey, onNavigate, onBack }) {
   return (
     <div className="screen">
       {/* Back to the screen this session was opened from (none when opened from the tab bar) */}
-      <ScreenHeader title={sessionName(plan)} subtitle={`${weekRange(cycle, week)} · Group ${plan.group}`} onBack={onBack} />
+      <ScreenHeader title={sessionName(plan)} subtitle={record ? finishedDate(record) : `${weekRange(cycle, week)} · Group ${plan.group}`} onBack={onBack} />
 
       {record ? (
         <FinishedWorkout state={state} cycleIndex={state.cycles.length - 1} planKey={plan.key} />

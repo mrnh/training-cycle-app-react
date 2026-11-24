@@ -4,7 +4,7 @@ import Note from './Note'
 import NumInput from './NumInput'
 import Planned from './Planned'
 import useConfirm from './useConfirm'
-import { MAX_SETS, exerciseName, fmtDate, setText, todayIso, unit } from '../program'
+import { MAX_SETS, exerciseName, setText, todayIso, unit } from '../program'
 import { update } from '../store'
 
 /**
@@ -63,9 +63,6 @@ export default function FinishedWorkout({ state, cycleIndex, planKey }) {
   return (
     <>
       <div className="finished-row">
-        <p className="finished-banner small">
-          ✓ Finished{record.finishedAt ? ` on ${fmtDate(record.finishedAt)}` : ''}
-        </p>
         <button className={`small-btn ${editing ? 'primary' : ''}`} onClick={toggleEditing}>
           {editing ? 'Done' : 'Edit'}
         </button>

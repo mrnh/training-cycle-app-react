@@ -418,6 +418,9 @@ export const fmtDate = (iso) => {
   const [y, m, d] = iso.split('-')
   return dateFormat() === 'mdy' ? `${+m}/${+d}/${y}` : `${+d}.${+m}.${y}`
 }
+
+/** The title bar's subtitle of a finished workout: the day it was finished ("–" if unknown). */
+export const finishedDate = (record) => (record.finishedAt ? fmtDate(record.finishedAt) : '–')
 /** Two-digit year for tight spots: "9.11.26" or "11/9/26" */
 export const fmtDateShort = (iso) => fmtDate(iso).replace(/(\d{2})(\d{2})$/, '$2')
 
