@@ -35,7 +35,7 @@ export default defineConfig(({ command, isPreview }) => ({
         description: 'A 9-week strength cycle with sessions, rest timers and history.',
         lang: 'en',
         display: 'standalone',
-        orientation: 'any', // portrait-only is up to Settings → Screen-rotate (an in-app notice)
+        orientation: 'portrait',
         theme_color: '#f4f4f8',
         background_color: '#f4f4f8',
         icons: [

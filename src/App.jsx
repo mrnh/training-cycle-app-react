@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react'
 import './App.css'
-import RotateNotice from './components/RotateNotice'
 import UpdatePrompt from './components/UpdatePrompt'
 import useEdgeSwipeBack from './useEdgeSwipeBack'
 import { ALL_SESSIONS, activeSession, nextSession } from './program'
@@ -68,7 +67,6 @@ export default function App() {
     return (
       <>
         <Setup />
-        <RotateNotice />
         <UpdatePrompt />
       </>
     )
@@ -116,7 +114,6 @@ export default function App() {
         {tab === 'settings' && <Settings key={tabTaps} state={state} />}
       </main>
       <UpdatePrompt />
-      {state.screenRotate !== true && <RotateNotice />}
       <nav className="tabbar">
         {TABS.map((t) => (
           <button key={t.id} className={tab === t.id ? 'active' : ''} onClick={() => switchTab(t.id)} aria-current={tab === t.id ? 'page' : undefined}>

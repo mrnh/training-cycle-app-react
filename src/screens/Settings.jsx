@@ -301,21 +301,6 @@ export default function Settings({ state }) {
             <p className="muted small">Prevents screen lock during a session.</p>
           </div>
         )}
-        <div className="pref">
-          <div className="row unit-row">
-            <h3>Screen-rotate</h3>
-            <Segmented
-              label="Screen-rotate"
-              options={[
-                { id: false, label: 'Off' },
-                { id: true, label: 'On' },
-              ]}
-              value={state.screenRotate === true}
-              onChange={(on) => update((d) => void (d.screenRotate = on))}
-            />
-          </div>
-          <p className="muted small">Off asks you to hold the phone upright.</p>
-        </div>
       </section>
 
       {confirmDialog}
