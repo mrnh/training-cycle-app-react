@@ -4,15 +4,15 @@ import Note from './Note'
 import NumInput from './NumInput'
 import Planned from './Planned'
 import useConfirm from './useConfirm'
-import { MAX_SETS, exerciseName, fmtDate, setText, unit } from '../program'
+import { MAX_SETS, exerciseName, fmtDate, setText, todayIso, unit } from '../program'
 import { update } from '../store'
 
 /**
  * A finished workout (of any cycle), shown from its permanent record. "Edit" turns the same
  * cards into a form to correct what was logged: weight, reps and done per set, sets added or
- * removed, comments, exercises added or removed, the session note. Every change is saved straight
- * away; "Done" ends editing. The prescription, names and finish date stay as they were, and the
- * workout doesn't become open again.
+ * removed, comments, exercises added or removed, the session note, the finish date. Every change
+ * is saved straight away; "Done" ends editing. The prescription and names stay as they were, and
+ * the workout doesn't become open again.
  */
 export default function FinishedWorkout({ state, cycleIndex, planKey }) {
   const record = state.cycles[cycleIndex].finished[planKey]
@@ -70,6 +70,22 @@ export default function FinishedWorkout({ state, cycleIndex, planKey }) {
           {editing ? 'Done' : 'Edit'}
         </button>
       </div>
+
+      {editing && (
+        <section className="card">
+          <h2>Date</h2>
+          <label className="field">
+            <span>Finished on</span>
+            {/* Any day up to today; an emptied field keeps the old date */}
+            <input
+              type="date"
+              value={record.finishedAt ?? ''}
+              max={todayIso()}
+              onChange={(e) => e.target.value && change((rec) => (rec.finishedAt = e.target.value))}
+            />
+          </label>
+        </section>
+      )}
 
       {record.entries.map((e) =>
         editing ? (
