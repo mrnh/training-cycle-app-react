@@ -15,7 +15,7 @@ export default function FinishDialog({
   return (
     <Sheet onClose={onClose} onSubmit={confirm}>
       <h2>{heading}</h2>
-      <p className="small">{message ?? 'Marking this session as finished prevents it from being changed afterwards. Do you want to proceed?'}</p>
+      <p className="small">{message ?? 'Finishing saves this session permanently. You can still correct it afterwards with Edit.'}</p>
       {unticked.length > 0 && (
         <div className="warning small">
           {unticked.map((u) => (

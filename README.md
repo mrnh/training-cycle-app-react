@@ -10,7 +10,7 @@ by default).
   the others are previews. Each exercise has a rest timer, and exercises can be added for the
   session
 - **History:** every finished workout, newest first, with a check per exercise for done as
-  prescribed; tap one for its sets and weights
+  prescribed; tap one for its sets and weights, and "Edit" to correct what was logged wrong
 - **Settings:** start date, up to three main lifts with their 1RM, accessory work groups A/B/C with
   sets, reps, weight and rest for each, the exercise catalog (each exercise with its history and
   personal bests for 1 to 5 reps), kg/lbs, date format and rounding of planned weights, backup export/import and sample data

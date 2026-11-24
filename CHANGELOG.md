@@ -9,6 +9,27 @@ The current version is shown at the bottom of **Settings**.
 
 ---
 
+## 0.20.0 — 2026-11-24 · Correct finished workouts
+
+| Editing a workout | After the correction |
+|---|---|
+| ![Editing a finished workout](docs/screenshots/v0.20.0/edit-workout.jpg) | ![Finished workout with the corrected set](docs/screenshots/v0.20.0/finished-session.jpg) |
+
+### Added
+- **Edit** on a finished workout (next to the "Finished" banner) turns its cards into a form to
+  fix what was logged wrong: weight, reps and done per set, **Add set** / **Remove set**, a
+  comment per exercise, **Remove exercise**, **Add exercise** and the session note. Changes
+  save straight away; **Done** ends editing.
+- A correction only changes the record of that workout. The plan, the other sessions and the
+  week-9 re-test result stay as they were, and the workout does not become open again.
+
+### Changed
+- The Finish dialog no longer says a finished session can't be changed.
+- Behind the scenes: the week-9 re-test stores its result when the session is finished, so a
+  later correction can't change the next cycle's 1RM.
+
+---
+
 ## 0.19.0 — 2026-11-23 · Release notes on update
 
 | Update bar | What's new |
