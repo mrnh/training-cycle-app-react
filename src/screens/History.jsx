@@ -210,7 +210,7 @@ function PickDialog({ state, mainIds, picked, onClose }) {
     <Sheet onClose={onClose} onSubmit={save}>
       <div>
         <h2>Exercise history</h2>
-        <p className="muted small">Shown below the main lifts.</p>
+        <p className="muted small">Choose up to five exercises for quick access. They are shown below the main lifts.</p>
       </div>
       {rows.map((r, i) => (
         <select
