@@ -318,11 +318,8 @@ button.new-cycle { margin-top: var(--space-2); }
   border-bottom: 1px solid var(--border); font-size: var(--text-sm);
 }
 .group-summary li:last-child { border-bottom: none; }
-/* Names only, as a bullet list */
-.group-summary ul.bullets { list-style: disc; padding-left: var(--space-5); }
-.group-summary ul.bullets li { display: list-item; border-bottom: none; padding: 0; }
 /* Settings, Current cycle: main lifts with start and goal weight */
-.lift-table { display: flex; flex-direction: column; font-size: var(--text-sm); }
+.lift-table { display: flex; flex-direction: column; font-size: var(--text-sm); margin-top: var(--space-3); }
 .lift-row {
   display: grid;
   grid-template-columns: 1fr 5rem 5rem;

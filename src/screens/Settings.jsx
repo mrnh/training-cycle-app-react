@@ -373,9 +373,6 @@ export default function Settings({ state }) {
           <h3>Start date</h3>
           <span>{fmtDate(cycle.startDate)}</span>
         </div>
-        <div className="row subhead">
-          <h3>Main lifts</h3>
-        </div>
         {/* Start = the 1RM the cycle is built on, Goal = the week-9 single */}
         <div className="lift-table">
           <div className="lift-row head">
@@ -391,7 +388,6 @@ export default function Settings({ state }) {
             </div>
           ))}
         </div>
-        <GroupsSummary state={state} compact />
       </section>
 
       <NavCard title="Exercise catalog" onClick={() => show('exercises')} />
