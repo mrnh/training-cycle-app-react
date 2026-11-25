@@ -307,7 +307,9 @@ export default function Settings({ state }) {
           </div>
 
           <div className="row subhead">
-            <h3>Main lifts</h3>
+            <h3>
+              Main lifts <span className="head-note">(current 1RMs)</span>
+            </h3>
             {!draft && (
               <button
                 className="sec-pen"

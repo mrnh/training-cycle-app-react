@@ -59,6 +59,7 @@ button.icon-btn {
 .inline-field input { width: auto; flex: 0 1 170px; }
 .subhead { margin-top: var(--space-2); }
 .subhead h3 { margin: 0; }
+.head-note { font-weight: var(--weight-normal); color: var(--muted); }
 .card > .list { padding: 0; }
 .notice {
   display: flex;
