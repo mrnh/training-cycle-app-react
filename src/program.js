@@ -256,9 +256,8 @@ export function buildRecord(state, cycle, plan, finishedAt) {
   return { finishedAt, group: plan.group, note: cycle.notes[plan.key] || undefined, entries: [...main, ...secondary] }
 }
 
-/** Move a session from draft to finished (mutates the cycle). */
-export function finishSession(state, cycle, plan, finishedAt) {
-  cycle.finished[plan.key] = buildRecord(state, cycle, plan, finishedAt)
+/** Deletes everything kept for a session's draft and closes it (mutates the cycle). */
+function clearDraft(cycle, plan) {
   const own = (k) => k === plan.key || k.startsWith(`${plan.key}:`)
   for (const obj of [cycle.logs, cycle.notes, cycle.setCounts, cycle.rest ?? {}]) {
     for (const k of Object.keys(obj)) if (own(k)) delete obj[k]
@@ -267,6 +266,15 @@ export function finishSession(state, cycle, plan, finishedAt) {
   if (cycle.active?.key === plan.key) cycle.active = null
   if (cycle.timer && own(cycle.timer.card)) cycle.timer = null
 }
+
+/** Move a session from draft to finished (mutates the cycle). */
+export function finishSession(state, cycle, plan, finishedAt) {
+  cycle.finished[plan.key] = buildRecord(state, cycle, plan, finishedAt)
+  clearDraft(cycle, plan)
+}
+
+/** Cancel the open session: its draft is thrown away and no record is made (mutates the cycle). */
+export const cancelSession = clearDraft
 
 /** Remove an exercise added during the open session, with everything logged for it (mutates). */
 export function removeExtra(cycle, plan, id) {

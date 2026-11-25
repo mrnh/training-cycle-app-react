@@ -7,7 +7,7 @@ import RestTimer from '../components/RestTimer'
 import SetsCard from '../components/SetsCard'
 import useConfirm from '../components/useConfirm'
 import {
-  ALL_SESSIONS, activeSession, isExtra, removeExtra, restOf, sessionEntry, sessionName, clockTime, draftSecondaries, exerciseHistory, exerciseName, finishSession, finishedDate,
+  ALL_SESSIONS, activeSession, cancelSession, isExtra, removeExtra, restOf, sessionEntry, sessionName, clockTime, draftSecondaries, exerciseHistory, exerciseName, finishSession, finishedDate,
   liftOf, mainLifts, parseKey, secondaryKey, sessionPlan, setKey, setsSummary, startSession, targetWeight, unfinishedBefore,
   todayIso, untickedSets, weekRange,
 } from '../program'
@@ -42,6 +42,17 @@ export default function Session({ state, sessionKey, onBack }) {
     update((d) => {
       startSession(d, currentCycle(d), plan)
     })
+  const [confirmDialog, confirm] = useConfirm()
+  const cancel = async () => {
+    const ok = await confirm({
+      title: 'Cancel this session?',
+      message: 'Everything logged in it is discarded and nothing is saved to History. The session stays unstarted.',
+      confirmLabel: 'Cancel session',
+      cancelLabel: 'Keep session',
+      danger: true,
+    })
+    if (ok) update((d) => cancelSession(currentCycle(d), plan))
+  }
   // Starting finishes an open session first, so that needs a confirmation
   const onStart = () => (active ? setDialog('start') : start())
 
@@ -62,9 +73,10 @@ export default function Session({ state, sessionKey, onBack }) {
               <button className="primary" onClick={onStart}>Start session</button>
             </div>
           )}
-          <Draft state={state} cycle={cycle} plan={plan} open={isOpen} onFinish={() => setDialog('finish')} />
+          <Draft state={state} cycle={cycle} plan={plan} open={isOpen} onFinish={() => setDialog('finish')} onCancel={cancel} />
         </>
       )}
+      {confirmDialog}
       {dialog === 'finish' && (
         <FinishDialog unticked={unticked(plan)} onConfirm={finish} onClose={() => setDialog(null)} />
       )}
@@ -87,7 +99,7 @@ export default function Session({ state, sessionKey, onBack }) {
  * An unfinished session that isn't open is shown the same way as a preview, with all controls
  * disabled, above a "Start session" button.
  */
-function Draft({ state, cycle, plan, open, onFinish }) {
+function Draft({ state, cycle, plan, open, onFinish, onCancel }) {
   const secondaries = draftSecondaries(state, cycle, plan)
   const [adding, setAdding] = useState(false)
   // Any catalog exercise not already among this session's accessory work
@@ -131,9 +143,14 @@ function Draft({ state, cycle, plan, open, onFinish }) {
             <Note label="Add a session note" value={cycle.notes[plan.key]} onChange={(t) => setNote(plan.key, t)} />
           </section>
 
-          <button className="primary finish" onClick={onFinish}>
-            Finish session
-          </button>
+          <div className="finish-row">
+            <button className="primary finish" onClick={onFinish}>
+              Finish session
+            </button>
+            <button className="small-btn" onClick={onCancel}>
+              Cancel session
+            </button>
+          </div>
         </>
       )}
     </fieldset>

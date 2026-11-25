@@ -5,7 +5,7 @@ import Sheet from './Sheet'
  * In-app replacement for the browser's confirm(), which some browsers and embedded views block
  * (it then returns false at once and nothing happens). Usage:
  *   const [confirmDialog, confirm] = useConfirm()
- *   if (!(await confirm({ title, message, confirmLabel, danger }))) return
+ *   if (!(await confirm({ title, message, confirmLabel, cancelLabel, danger }))) return
  * and render {confirmDialog} somewhere in the component.
  */
 export default function useConfirm() {
@@ -20,7 +20,7 @@ export default function useConfirm() {
       <h2>{ask.title}</h2>
       {ask.message && <p className="small">{ask.message}</p>}
       <div className="button-row end">
-        <button type="button" onClick={() => answer(false)}>Cancel</button>
+        <button type="button" onClick={() => answer(false)}>{ask.cancelLabel ?? 'Cancel'}</button>
         <button type="submit" className={ask.danger ? 'danger' : 'primary'}>{ask.confirmLabel ?? 'OK'}</button>
       </div>
     </Sheet>
