@@ -157,7 +157,7 @@ main.fit { padding-bottom: calc(var(--tabbar-h) + env(safe-area-inset-bottom)); 
   color: var(--muted);
 }
 .dot.partial { background: var(--success-soft); border-color: var(--success); color: var(--success); }
-.dot.done { background: var(--success); border-color: var(--success); color: var(--on-accent); }
+.dot.done { background: var(--success); border-color: var(--success); color: var(--on-success); }
 .dot.next { border: 2px solid var(--accent); color: var(--accent); font-weight: var(--weight-bold); }
 
 /* Session */
@@ -197,7 +197,7 @@ dialog.sheet form { display: flex; flex-direction: column; gap: var(--space-3); 
   font-weight: var(--weight-bold);
   color: var(--muted);
 }
-.set-toggle.is-done { background: var(--success); border-color: var(--success); color: var(--on-accent); }
+.set-toggle.is-done { background: var(--success); border-color: var(--success); color: var(--on-success); }
 /* Done, but below plan (fewer reps or less weight) */
 .set-toggle.is-done.off-target { background: var(--off-target); border-color: var(--off-target); }
 
@@ -473,3 +473,12 @@ button.link.inline { display: inline; padding: 0; min-height: 0; font-size: inhe
 /* What's new dialog: the CHANGELOG entry */
 .whats-new h3 { margin: 0 0 var(--space-1); font-size: var(--text-sm); }
 .whats-new ul { margin: 0; padding-left: var(--space-4); display: flex; flex-direction: column; gap: var(--space-1); font-size: var(--text-sm); }
+
+/* Accent colour picker (Appearance): round swatches, each in its own accent */
+.swatches { display: flex; flex-wrap: wrap; gap: var(--space-3); }
+button.swatch {
+  width: var(--tap); height: var(--tap); padding: 0; border: none; background: none;
+  display: grid; place-items: center; border-radius: var(--radius-full);
+}
+button.swatch::before { content: ''; width: 28px; height: 28px; border-radius: var(--radius-full); background: var(--accent); }
+button.swatch[aria-checked='true']::before { box-shadow: 0 0 0 3px var(--card), 0 0 0 5px var(--accent); }

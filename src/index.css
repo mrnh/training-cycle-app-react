@@ -1,14 +1,12 @@
 :root {
   /* ---- Design tokens: every rule in App.css uses these, no raw values for type, colour or spacing ---- */
 
-  /* Colours (dark-mode values below) */
+  /* Colours (dark-mode values below; --accent and --accent-soft are in the accent palette below) */
   --bg: #f4f4f8;
   --card: #ffffff;
   --border: #e2e2ea;
   --muted: #6b6b78;
   --text: #1c1c24;
-  --accent: #6e56cf;
-  --accent-soft: #eeeafd;
   --success: #2f9e5b;
   --success-soft: #e3f5ea;
   --off-target: #8aa21c; /* a set done, but below plan (fewer reps or less weight) */
@@ -18,7 +16,8 @@
   --danger: #d93d42;
   --warning: #8a5a00;
   --warning-soft: #fdf3dc;
-  --on-accent: #ffffff; /* text and icons on accent or success fills */
+  --on-accent: #ffffff; /* text and icons on accent fills */
+  --on-success: #ffffff; /* text and icons on success fills */
   --overlay: rgba(0, 0, 0, 0.45); /* behind dialogs */
 
   /* Typography: one font, five sizes, two weights */
@@ -64,8 +63,6 @@
   --border: #30303c;
   --muted: #9a9aa8;
   --text: #ececf1;
-  --accent: #9b87f5;
-  --accent-soft: #2a2443;
   --success: #4cc27c;
   --success-soft: #1b3326;
   --off-target: #a9c23f;
@@ -76,6 +73,24 @@
   --warning: #f0b84a;
   --warning-soft: #33280f;
 }
+
+/*
+ * Accent colours, picked under Settings → Appearance (theme.js puts the choice on <html> as
+ * data-accent). Selectors without :root also apply to the swatches in the picker, which carry
+ * their own data-accent. Purple is the default. Green and red are left out on purpose: they mean
+ * done and danger. --on-accent is the text on a filled accent button (dark where the dark-mode
+ * accent is light).
+ */
+[data-accent='purple'] { --accent: #6e56cf; --accent-soft: #eeeafd; }
+[data-accent='blue'] { --accent: #2563eb; --accent-soft: #e6eefe; }
+[data-accent='teal'] { --accent: #0b7285; --accent-soft: #e0f3f6; }
+[data-accent='pink'] { --accent: #c2255c; --accent-soft: #fdebf2; }
+[data-accent='graphite'] { --accent: #454552; --accent-soft: #ececf0; }
+[data-theme='dark'] [data-accent='purple'], [data-theme='dark'][data-accent='purple'] { --accent: #9b87f5; --accent-soft: #2a2443; }
+[data-theme='dark'] [data-accent='blue'], [data-theme='dark'][data-accent='blue'] { --accent: #6ea0ff; --accent-soft: #1a2742; --on-accent: #121217; }
+[data-theme='dark'] [data-accent='teal'], [data-theme='dark'][data-accent='teal'] { --accent: #3cc3d6; --accent-soft: #10303a; --on-accent: #121217; }
+[data-theme='dark'] [data-accent='pink'], [data-theme='dark'][data-accent='pink'] { --accent: #f06595; --accent-soft: #3d1a29; }
+[data-theme='dark'] [data-accent='graphite'], [data-theme='dark'][data-accent='graphite'] { --accent: #c4c4d2; --accent-soft: #2c2c36; --on-accent: #121217; }
 
 * { box-sizing: border-box; }
 

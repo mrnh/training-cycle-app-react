@@ -9,7 +9,7 @@ import { DATE_FORMATS, ROUNDINGS, ROUNDING_MODES, UNITS, dateFormat, fmtDate, ro
 import { currentCycle, migrate, replaceState, update, updateCycle } from '../store'
 import { sampleState } from '../sampleData'
 import ScreenHeader from '../components/ScreenHeader'
-import { THEMES, getTheme, setTheme } from '../theme'
+import { ACCENTS, THEMES, getAccent, getTheme, setAccent, setTheme } from '../theme'
 
 // Running as an installed home-screen app (not in a browser tab)
 const installed = window.matchMedia?.('(display-mode: standalone)').matches || navigator.standalone === true
@@ -24,6 +24,11 @@ export default function Settings({ state }) {
   const changeTheme = (t) => {
     setTheme(t)
     setThemeState(t)
+  }
+  const [accent, setAccentState] = useState(getAccent)
+  const changeAccent = (a) => {
+    setAccent(a)
+    setAccentState(a)
   }
   const [subScreen, setSubScreen] = useState(null) // 'cycle' | 'groups' | 'exercises' | 'data' | 'appearance' | null
 
@@ -118,6 +123,23 @@ export default function Settings({ state }) {
               <Segmented label="Mode" options={THEMES} value={theme} onChange={changeTheme} />
             </div>
             <p className="muted small">Auto follows your device. Kept on this device only.</p>
+          </div>
+          <div className="pref">
+            <h3>Accent color</h3>
+            <div className="swatches" role="radiogroup" aria-label="Accent color">
+              {ACCENTS.map((x) => (
+                <button
+                  key={x.id}
+                  className="swatch"
+                  role="radio"
+                  aria-checked={accent === x.id}
+                  aria-label={x.label}
+                  data-accent={x.id}
+                  onClick={() => changeAccent(x.id)}
+                />
+              ))}
+            </div>
+            <p className="muted small">{ACCENTS.find((x) => x.id === accent).label}. Kept on this device only.</p>
           </div>
         </section>
       </div>
