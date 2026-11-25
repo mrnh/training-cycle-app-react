@@ -9,6 +9,32 @@ The current version is shown at the bottom of **Settings**.
 
 ---
 
+## 0.24.0 — 2026-11-25 · Cancel session, tidier Settings
+
+| Session | Cancel dialog | Settings |
+|---|---|---|
+| ![Cancel session next to Finish session](docs/screenshots/v0.24.0/session-buttons.jpg) | ![Confirmation before a session is cancelled](docs/screenshots/v0.24.0/cancel-dialog.jpg) | ![Settings with the cycle's start and goal weights](docs/screenshots/v0.24.0/settings.jpg) |
+
+| Appearance & behavior | Backup restored |
+|---|---|
+| ![Appearance and behavior with Keep screen on](docs/screenshots/v0.24.0/appearance-behavior.jpg) | ![Banner after importing a backup](docs/screenshots/v0.24.0/backup-restored.jpg) |
+
+### Added
+- **Cancel session**: a smaller button left of "Finish session" throws the open session away after a
+  confirmation. Nothing goes to History, and the session is unstarted again.
+- **Goal weights**: the Current cycle card on Settings shows each main lift's start (1RM) and goal
+  (the week-9 single, 105%, rounded as set in Preferences), with the cycle's time frame in its heading.
+- **Import confirmation**: a banner on Data & backup tells that a backup was restored (with the
+  number of cycles and workouts). Export, sample data and files that aren't backups get one too.
+- **+ Add exercise** is also available before a session is started, and an exercise added that
+  way can be removed again from its pen.
+
+### Changed
+- "Appearance" is now **Appearance & behavior** and also holds **Keep screen on**.
+- Units, Rounding and Date format moved to their own **Preferences** screen.
+- The Settings card for the current cycle no longer lists accessory work; the Current cycle screen still does.
+- The exercise history picker says that it sets the quick access entries.
+
 ## 0.23.0 — 2026-11-25 · Custom accent color
 
 | Custom accent | Custom accent, dark | Exercise picker |
