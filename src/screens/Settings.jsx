@@ -309,7 +309,7 @@ export default function Settings({ state }) {
         <h2>Preferences</h2>
         <div className="pref">
           <div className="row unit-row">
-            <h3>Weight</h3>
+            <h3>Units</h3>
             <Segmented
               label="Weight unit"
               options={UNITS.map((u) => ({ id: u, label: u }))}
