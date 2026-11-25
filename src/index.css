@@ -56,25 +56,25 @@
   -webkit-tap-highlight-color: transparent;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --bg: #121217;
-    --card: #1d1d25;
-    --border: #30303c;
-    --muted: #9a9aa8;
-    --text: #ececf1;
-    --accent: #9b87f5;
-    --accent-soft: #2a2443;
-    --success: #4cc27c;
-    --success-soft: #1b3326;
-    --off-target: #a9c23f;
-    --caution: #f0b84a;
-    --timer-yellow: #f2cc4a;
-    --timer-orange: #f58a3c;
-    --danger: #f2555a;
-    --warning: #f0b84a;
-    --warning-soft: #33280f;
-  }
+/* Dark theme: set on <html> by theme.js, from the device (Auto) or the Appearance setting */
+:root[data-theme='dark'] {
+  color-scheme: dark; /* native controls (date picker, selects, scrollbars) follow */
+  --bg: #121217;
+  --card: #1d1d25;
+  --border: #30303c;
+  --muted: #9a9aa8;
+  --text: #ececf1;
+  --accent: #9b87f5;
+  --accent-soft: #2a2443;
+  --success: #4cc27c;
+  --success-soft: #1b3326;
+  --off-target: #a9c23f;
+  --caution: #f0b84a;
+  --timer-yellow: #f2cc4a;
+  --timer-orange: #f58a3c;
+  --danger: #f2555a;
+  --warning: #f0b84a;
+  --warning-soft: #33280f;
 }
 
 * { box-sizing: border-box; }

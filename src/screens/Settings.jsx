@@ -9,6 +9,7 @@ import { DATE_FORMATS, ROUNDINGS, ROUNDING_MODES, UNITS, dateFormat, fmtDate, ro
 import { currentCycle, migrate, replaceState, update, updateCycle } from '../store'
 import { sampleState } from '../sampleData'
 import ScreenHeader from '../components/ScreenHeader'
+import { THEMES, getTheme, setTheme } from '../theme'
 
 // Running as an installed home-screen app (not in a browser tab)
 const installed = window.matchMedia?.('(display-mode: standalone)').matches || navigator.standalone === true
@@ -19,6 +20,11 @@ export default function Settings({ state }) {
   const [draft, setDraft] = useState(null) // [{ id, rm }] per main-lift slot while editing; null = not editing
   const [rmError, setRmError] = useState('')
   const [newCycleOpen, setNewCycleOpen] = useState(false)
+  const [theme, setThemeState] = useState(getTheme)
+  const changeTheme = (t) => {
+    setTheme(t)
+    setThemeState(t)
+  }
   const [subScreen, setSubScreen] = useState(null) // 'cycle' | 'groups' | 'exercises' | 'data' | 'appearance' | null
 
   function cancelRM() {
@@ -105,6 +111,15 @@ export default function Settings({ state }) {
     return (
       <div className="screen">
         <ScreenHeader title="Appearance" backLabel="Back to settings" onBack={() => show(null)} />
+        <section className="card">
+          <div className="pref">
+            <div className="row unit-row">
+              <h3>Mode</h3>
+              <Segmented label="Mode" options={THEMES} value={theme} onChange={changeTheme} />
+            </div>
+            <p className="muted small">Auto follows your device. Kept on this device only.</p>
+          </div>
+        </section>
       </div>
     )
   if (subScreen === 'data')
