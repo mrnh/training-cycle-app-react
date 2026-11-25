@@ -339,7 +339,7 @@ button.done-toggle.is-done { color: var(--success); background: var(--success-so
 
 /* One open session at a time; the others are previews */
 fieldset.draft { display: contents; border: none; margin: 0; padding: 0; min-width: 0; }
-fieldset.draft:disabled button, fieldset.draft:disabled input { opacity: 1; }
+button.set-toggle:disabled { opacity: 1; } /* an unstarted session looks like a preview, not greyed out */
 .start-card { border-color: var(--accent); }
 .in-progress { color: var(--success); font-weight: var(--weight-bold); text-align: center; }
 button.link.inline { display: inline; min-height: 0; padding: 0; font-size: inherit; }

@@ -10,11 +10,11 @@ import { meetsPlan, prescriptionText, setText } from '../program'
  * One exercise card, the same for main lifts and accessory work, in an open session and when
  * correcting a finished one: prescription (and last time) with rest, comment and pen on the
  * right, a toggle per set with its reps@weight underneath, then `children` (the rest timer).
- * `sets` are the logged values ({ w, r, done }, null = not entered), one per set; `hints` what an
+ * `locked` disables the set toggles (a session not started yet). `sets` are the logged values ({ w, r, done }, null = not entered), one per set; `hints` what an
  * empty value stands for. Where the data lives is up to the callbacks.
  */
 export default function SetsCard({
-  name, pres, lastLine, highlight, hint, sets, hints, editable,
+  name, pres, lastLine, highlight, hint, sets, hints, editable, locked,
   comment, onComment, rest, onRest, onToggle, onSaveSets, onRemove, children,
 }) {
   const [commenting, setCommenting] = useState(false)
@@ -68,6 +68,7 @@ export default function SetsCard({
               className={`set-toggle ${done ? 'is-done' : ''} ${done && !meetsPlan(shown(i), hints[i]) ? 'off-target' : ''}`}
               style={{ gridRow: line * 2 + 1, gridColumn: col }}
               aria-pressed={done}
+              disabled={locked}
               aria-label={`Set ${i + 1}, ${setText(shown(i))}${done ? (meetsPlan(shown(i), hints[i]) ? ', done' : ', done, below plan') : ''}`}
               onClick={() => onToggle(i, shown(i))}
             >

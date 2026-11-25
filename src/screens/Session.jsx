@@ -111,7 +111,7 @@ function Draft({ state, cycle, plan, open, onFinish, onCancel }) {
     })
   return (
     <>
-      <fieldset className="draft" disabled={!open}>
+      <fieldset className="draft">
         {mainLifts(cycle, plan).map((p) => (
           <PrimaryBlock key={p.slot} state={state} cycle={cycle} plan={plan} p={p} open={open} />
         ))}
@@ -185,7 +185,7 @@ function SecondaryBlock({ state, cycle, plan, id, open }) {
     .at(-1)
   const pres = sessionEntry(state, cycle, plan, id)
   const name = exerciseName(state, id)
-  // Added during this workout (not part of the group): the sets dialog can remove it while it's open
+  // Added to this session (not part of the group): the sets dialog can remove it, also before the session is started
   const [confirmDialog, confirm] = useConfirm()
   const remove = async () => {
     const ok = await confirm({
@@ -207,7 +207,7 @@ function SecondaryBlock({ state, cycle, plan, id, open }) {
         last={last}
         lastLine={last ? `Last time (${sessionName(last)}): ${setsSummary(last.sets)}` : 'First time, no history yet'}
         open={open}
-        onRemove={open && isExtra(cycle, plan, id) ? remove : undefined}
+        onRemove={isExtra(cycle, plan, id) ? remove : undefined}
       />
       {confirmDialog}
     </>
@@ -246,7 +246,8 @@ function ExerciseCard({ cycle, plan, entry, name, pres, last, lastLine, open, hi
       hint={hint}
       sets={sets}
       hints={hints}
-      editable={open}
+      editable={open || !!onRemove}
+      locked={!open}
       comment={cycle.notes[countKey]}
       onComment={(t) => setNote(countKey, t)}
       rest={rest}
