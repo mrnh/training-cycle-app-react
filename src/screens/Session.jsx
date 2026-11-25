@@ -144,11 +144,11 @@ function Draft({ state, cycle, plan, open, onFinish, onCancel }) {
           </section>
 
           <div className="finish-row">
-            <button className="primary finish" onClick={onFinish}>
-              Finish session
-            </button>
             <button className="small-btn" onClick={onCancel}>
               Cancel session
+            </button>
+            <button className="primary finish" onClick={onFinish}>
+              Finish session
             </button>
           </div>
         </>

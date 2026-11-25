@@ -321,6 +321,7 @@ button.finish { margin-top: var(--space-1); }
 /* Finish takes the width, Cancel session is a small button beside it */
 .finish-row { display: flex; align-items: center; gap: var(--space-2); margin-top: var(--space-1); }
 .finish-row button.finish { flex: 1; margin-top: 0; }
+.finish-row button.small-btn { min-height: var(--tap); } /* as tall as Finish */
 /* Correcting a finished workout: Edit next to the banner, then the cards as a form */
 .finished-row { display: flex; justify-content: flex-end; }
 .sets-edit.with-done { grid-template-columns: 32px 1fr 1fr var(--tap); }
