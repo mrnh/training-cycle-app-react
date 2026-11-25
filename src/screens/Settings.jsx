@@ -36,7 +36,7 @@ export default function Settings({ state }) {
     setCustomState(hex)
     setAccentState('custom')
   }
-  const [subScreen, setSubScreen] = useState(null) // 'cycle' | 'groups' | 'exercises' | 'data' | 'appearance' | null
+  const [subScreen, setSubScreen] = useState(null) // 'cycle' | 'groups' | 'exercises' | 'data' | 'appearance' | 'preferences' | null
 
   function cancelRM() {
     setDraft(null)
@@ -122,6 +122,58 @@ export default function Settings({ state }) {
   }
   if (subScreen === 'groups') return <GroupsEditor state={state} onBack={() => show('cycle')} />
   if (subScreen === 'exercises') return <Exercises state={state} onBack={() => show(null)} />
+  if (subScreen === 'preferences')
+    return (
+      <div className="screen">
+        <ScreenHeader title="Preferences" backLabel="Back to settings" onBack={() => show(null)} />
+        {/* One block per preference (control and its note), divided by lines */}
+        <section className="card">
+          <div className="pref">
+            <div className="row unit-row">
+              <h3>Units</h3>
+              <Segmented
+                label="Weight unit"
+                options={UNITS.map((u) => ({ id: u, label: u }))}
+                value={unit()}
+                onChange={(u) => update((d) => void (d.unit = u))}
+              />
+            </div>
+            <p className="muted small">Affects just the label. Numbers are not converted.</p>
+          </div>
+          <div className="pref">
+            <div className="row unit-row">
+              <h3>Rounding</h3>
+              <Segmented
+                label="Rounding direction"
+                options={ROUNDING_MODES}
+                value={roundingMode()}
+                onChange={(m) => update((d) => void (d.roundingMode = m))}
+              />
+            </div>
+            <div className="row unit-row end">
+              <Segmented
+                label="Rounding of planned weights"
+                options={ROUNDINGS.map((r) => ({ id: r, label: `${r === 0.1 ? '.1' : r} ${unit()}` }))}
+                value={rounding()}
+                onChange={(r) => update((d) => void (d.rounding = r))}
+              />
+            </div>
+            <p className="muted small">Applies to main lifts only.</p>
+          </div>
+          <div className="pref">
+            <div className="row unit-row">
+              <h3>Date format</h3>
+              <Segmented
+                label="Date format"
+                options={DATE_FORMATS}
+                value={dateFormat()}
+                onChange={(f) => update((d) => void (d.dateFormat = f))}
+              />
+            </div>
+          </div>
+        </section>
+      </div>
+    )
   if (subScreen === 'appearance')
     return (
       <div className="screen">
@@ -334,53 +386,7 @@ export default function Settings({ state }) {
 
       <NavCard title="Appearance & behavior" onClick={() => show('appearance')} />
 
-      {/* One block per preference (control and its note), divided by lines */}
-      <section className="card">
-        <h2>Preferences</h2>
-        <div className="pref">
-          <div className="row unit-row">
-            <h3>Units</h3>
-            <Segmented
-              label="Weight unit"
-              options={UNITS.map((u) => ({ id: u, label: u }))}
-              value={unit()}
-              onChange={(u) => update((d) => void (d.unit = u))}
-            />
-          </div>
-          <p className="muted small">Affects just the label. Numbers are not converted.</p>
-        </div>
-        <div className="pref">
-          <div className="row unit-row">
-            <h3>Rounding</h3>
-            <Segmented
-              label="Rounding direction"
-              options={ROUNDING_MODES}
-              value={roundingMode()}
-              onChange={(m) => update((d) => void (d.roundingMode = m))}
-            />
-          </div>
-          <div className="row unit-row end">
-            <Segmented
-              label="Rounding of planned weights"
-              options={ROUNDINGS.map((r) => ({ id: r, label: `${r === 0.1 ? '.1' : r} ${unit()}` }))}
-              value={rounding()}
-              onChange={(r) => update((d) => void (d.rounding = r))}
-            />
-          </div>
-          <p className="muted small">Applies to main lifts only.</p>
-        </div>
-        <div className="pref">
-          <div className="row unit-row">
-            <h3>Date format</h3>
-            <Segmented
-              label="Date format"
-              options={DATE_FORMATS}
-              value={dateFormat()}
-              onChange={(f) => update((d) => void (d.dateFormat = f))}
-            />
-          </div>
-        </div>
-      </section>
+      <NavCard title="Preferences" onClick={() => show('preferences')} />
 
       {confirmDialog}
       <p className="muted small center">Version {__APP_VERSION__}</p>
