@@ -19,7 +19,7 @@ export default function Settings({ state }) {
   const [draft, setDraft] = useState(null) // [{ id, rm }] per main-lift slot while editing; null = not editing
   const [rmError, setRmError] = useState('')
   const [newCycleOpen, setNewCycleOpen] = useState(false)
-  const [subScreen, setSubScreen] = useState(null) // 'groups' | 'exercises' | null
+  const [subScreen, setSubScreen] = useState(null) // 'cycle' | 'groups' | 'exercises' | 'data' | 'appearance' | null
 
   function cancelRM() {
     setDraft(null)
@@ -101,6 +101,12 @@ export default function Settings({ state }) {
   }
   if (subScreen === 'groups') return <GroupsEditor state={state} onBack={() => show('cycle')} />
   if (subScreen === 'exercises') return <Exercises state={state} onBack={() => show(null)} />
+  if (subScreen === 'appearance')
+    return (
+      <div className="screen">
+        <ScreenHeader title="Appearance" backLabel="Back to settings" onBack={() => show(null)} />
+      </div>
+    )
   if (subScreen === 'data')
     return (
       <div className="screen">
@@ -238,6 +244,8 @@ export default function Settings({ state }) {
       <NavCard title="Exercise catalog" onClick={() => show('exercises')} />
 
       <NavCard title="Data & backup" onClick={() => show('data')} />
+
+      <NavCard title="Appearance" onClick={() => show('appearance')} />
 
       {/* One block per preference (control and its note), divided by lines */}
       <section className="card">
