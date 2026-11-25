@@ -14,7 +14,11 @@
         var dark = t === 'dark' || (t !== 'light' && window.matchMedia('(prefers-color-scheme: dark)').matches)
         document.documentElement.dataset.theme = dark ? 'dark' : 'light'
         var accent = localStorage.getItem('accent')
-        document.documentElement.dataset.accent = /^(blue|teal|pink|graphite)$/.test(accent) ? accent : 'purple'
+        var custom = localStorage.getItem('accent-custom')
+        var hasCustom = /^#[0-9a-f]{6}$/i.test(custom)
+        if (hasCustom) document.documentElement.style.setProperty('--custom', custom.toLowerCase())
+        document.documentElement.dataset.accent =
+          accent === 'custom' && hasCustom ? 'custom' : /^(blue|teal|pink|graphite)$/.test(accent) ? accent : 'purple'
         document.querySelector('meta[name="theme-color"]').setAttribute('content', dark ? '#121217' : '#f4f4f8')
       } catch (e) {}
     </script>

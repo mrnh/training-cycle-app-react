@@ -9,7 +9,7 @@ import { DATE_FORMATS, ROUNDINGS, ROUNDING_MODES, UNITS, dateFormat, fmtDate, ro
 import { currentCycle, migrate, replaceState, update, updateCycle } from '../store'
 import { sampleState } from '../sampleData'
 import ScreenHeader from '../components/ScreenHeader'
-import { ACCENTS, THEMES, getAccent, getTheme, setAccent, setTheme } from '../theme'
+import { ACCENTS, THEMES, getAccent, getCustomAccent, getTheme, setAccent, setCustomAccent, setTheme } from '../theme'
 
 // Running as an installed home-screen app (not in a browser tab)
 const installed = window.matchMedia?.('(display-mode: standalone)').matches || navigator.standalone === true
@@ -26,9 +26,15 @@ export default function Settings({ state }) {
     setThemeState(t)
   }
   const [accent, setAccentState] = useState(getAccent)
+  const [custom, setCustomState] = useState(getCustomAccent) // the picked colour, or null
   const changeAccent = (a) => {
     setAccent(a)
     setAccentState(a)
+  }
+  const pickCustom = (hex) => {
+    setCustomAccent(hex)
+    setCustomState(hex)
+    setAccentState('custom')
   }
   const [subScreen, setSubScreen] = useState(null) // 'cycle' | 'groups' | 'exercises' | 'data' | 'appearance' | null
 
@@ -138,8 +144,22 @@ export default function Settings({ state }) {
                   onClick={() => changeAccent(x.id)}
                 />
               ))}
+              {/* Tapping opens the system colour picker; the colour applies while picking */}
+              <label className="swatch" data-accent="custom" style={custom ? { "--custom": custom } : undefined} data-checked={accent === 'custom'} data-picked={custom ? '' : undefined}>
+                <input
+                  type="color"
+                  aria-label={accent === 'custom' ? 'Custom color, selected' : 'Custom color'}
+                  value={custom ?? '#6e56cf'}
+                  onClick={() => custom && changeAccent('custom')}
+                  onChange={(e) => pickCustom(e.target.value)}
+                />
+              </label>
             </div>
-            <p className="muted small">{ACCENTS.find((x) => x.id === accent).label}. Kept on this device only.</p>
+            <p className="muted small">
+              {accent === 'custom'
+                ? 'Custom. Adjusted a little to stay readable. Kept on this device only.'
+                : `${ACCENTS.find((x) => x.id === accent).label}. Kept on this device only.`}
+            </p>
           </div>
         </section>
       </div>

@@ -476,9 +476,16 @@ button.link.inline { display: inline; padding: 0; min-height: 0; font-size: inhe
 
 /* Accent colour picker (Appearance): round swatches, each in its own accent */
 .swatches { display: flex; flex-wrap: wrap; gap: var(--space-3); }
-button.swatch {
-  width: var(--tap); height: var(--tap); padding: 0; border: none; background: none;
-  display: grid; place-items: center; border-radius: var(--radius-full);
+.swatch {
+  position: relative; width: var(--tap); height: var(--tap); padding: 0; border: none; background: none;
+  display: grid; place-items: center; border-radius: var(--radius-full); cursor: pointer;
 }
-button.swatch::before { content: ''; width: 28px; height: 28px; border-radius: var(--radius-full); background: var(--accent); }
-button.swatch[aria-checked='true']::before { box-shadow: 0 0 0 3px var(--card), 0 0 0 5px var(--accent); }
+.swatch::before { content: ''; width: 28px; height: 28px; border-radius: var(--radius-full); background: var(--accent); }
+.swatch[aria-checked='true']::before, .swatch[data-checked='true']::before { box-shadow: 0 0 0 3px var(--card), 0 0 0 5px var(--accent); }
+/* The sixth swatch opens the system colour picker: the (invisible) input covers it. It shows the
+   picked colour as it is, or a colour wheel until one was picked. */
+.swatch[data-accent='custom']::before {
+  background: conic-gradient(#e5484d, #f5a524, #f5d90a, #30a46c, #0ea5e9, #6e56cf, #d6409f, #e5484d);
+}
+.swatch[data-accent='custom'][data-picked]::before { background: var(--custom); }
+.swatch input[type='color'] { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; border: none; padding: 0; }

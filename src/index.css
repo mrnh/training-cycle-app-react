@@ -92,6 +92,27 @@
 [data-theme='dark'] [data-accent='pink'], [data-theme='dark'][data-accent='pink'] { --accent: #f06595; --accent-soft: #3d1a29; }
 [data-theme='dark'] [data-accent='graphite'], [data-theme='dark'][data-accent='graphite'] { --accent: #c4c4d2; --accent-soft: #2c2c36; --on-accent: #121217; }
 
+/*
+ * Custom accent: the colour the user picked is --custom (set on <html> by theme.js). It is kept
+ * readable by limiting its lightness in OKLCH: at most 0.55 in light mode (4.5:1 as text on white)
+ * and at least 0.68 in dark mode (4.5:1 on the dark cards), with the same hue and chroma. In dark
+ * mode filled buttons get dark text.
+ */
+[data-accent='custom'] {
+  --accent: oklch(from var(--custom, #6e56cf) min(l, 0.55) c h);
+  --accent-soft: color-mix(in oklab, var(--accent) 12%, var(--card));
+}
+[data-theme='dark'] [data-accent='custom'], [data-theme='dark'][data-accent='custom'] {
+  --accent: oklch(from var(--custom, #9b87f5) max(l, 0.68) c h);
+  --accent-soft: color-mix(in oklab, var(--accent) 20%, var(--card));
+  --on-accent: #121217;
+}
+/* Browsers without relative colours: custom looks like the default purple */
+@supports not (color: oklch(from red l c h)) {
+  [data-accent='custom'] { --accent: #6e56cf; --accent-soft: #eeeafd; }
+  [data-theme='dark'] [data-accent='custom'], [data-theme='dark'][data-accent='custom'] { --accent: #9b87f5; --accent-soft: #2a2443; --on-accent: #ffffff; }
+}
+
 * { box-sizing: border-box; }
 
 /* The page sliding out during a back swipe must not widen the page (on body this doesn't stop
