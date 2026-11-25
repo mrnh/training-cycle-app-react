@@ -9,6 +9,23 @@ The current version is shown at the bottom of **Settings**.
 
 ---
 
+## 0.23.0 — 2026-11-25 · Custom accent color
+
+| Custom accent | Custom accent, dark | Exercise picker |
+|---|---|---|
+| ![Appearance with a custom accent color](docs/screenshots/v0.23.0/custom-accent.jpg) | ![The same in dark mode](docs/screenshots/v0.23.0/custom-accent-dark.jpg) | ![Exercise history picker with the new hint](docs/screenshots/v0.23.0/exercise-picker.jpg) |
+
+### Added
+- **Custom accent color**: a sixth swatch in Appearance (a color wheel until used) opens the
+  device's color picker, so any color can be the accent. The color is adjusted a little in
+  lightness per mode to keep text and buttons readable. Like the other choices it stays on the
+  device and is not part of backups. Browsers without relative colors show purple.
+
+### Changed
+- The Preferences setting "Weight" is now called **Units**.
+- The exercise history picker and the empty History card now say that this is where you choose
+  up to five exercises for quick access.
+
 ## 0.22.0 — 2026-11-25 · Appearance
 
 | Appearance | Dark mode, blue accent | Settings |

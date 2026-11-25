@@ -186,7 +186,7 @@ function ExerciseCard({ state, onOpen, onShowAll }) {
         {picked.length ? (
           <div className="exercise-rows">{picked.map(row)}</div>
         ) : (
-          <p className="muted small">Tap ✎ to add up to five exercises.</p>
+          <p className="muted small">Tap ✎ to choose up to five exercises for quick access.</p>
         )}
         <button className="link show-all" onClick={onShowAll}>
           Show all
