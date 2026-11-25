@@ -116,6 +116,8 @@ export const ALL_SESSIONS = Array.from({ length: WEEKS * SESSIONS_PER_WEEK }, (_
 export const liftOf = (cycle, p) => cycle.primaries[p.slot] ?? null
 /** The planned main lifts of a session whose slot has an exercise in this cycle. */
 export const mainLifts = (cycle, plan) => plan.primaries.filter((p) => liftOf(cycle, p))
+/** The cycle's goal for a main lift: the week-9 single (1×1 at 105%), rounded like every planned weight. */
+export const goalWeight = (cycle, id) => roundToStep((cycle.oneRM[id] * V2[WEEKS - 1].pct) / 100)
 export const targetWeight = (cycle, p) => roundToStep((cycle.oneRM[liftOf(cycle, p)] * p.pct) / 100)
 /** Main-lift slots being edited ([{ id, rm }], id '' = empty): at least one lift, and a 1RM for each picked lift. */
 export function mainLiftsError(rows) {

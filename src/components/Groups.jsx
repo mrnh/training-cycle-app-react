@@ -11,7 +11,8 @@ import ScreenHeader from './ScreenHeader'
  * Part of the Current cycle card in Settings: what each group (A/B/C) adds to its sessions, one
  * line per exercise with its prescription and rest. The pen (only with `onEdit`) opens the editing screen.
  */
-export default function GroupsSummary({ state, onEdit }) {
+/** Accessory work per group. `compact`: just the exercise names as bullets, no sets, reps or rest. */
+export default function GroupsSummary({ state, onEdit, compact }) {
   return (
     <>
       <div className="row subhead">
@@ -28,13 +29,15 @@ export default function GroupsSummary({ state, onEdit }) {
           {state.groups[g].length === 0 ? (
             <p className="muted small">No exercises yet</p>
           ) : (
-            <ul>
+            <ul className={compact ? 'bullets' : undefined}>
               {state.groups[g].map((x) => (
                 <li key={x.id}>
                   <span>{exerciseName(state, x.id)}</span>
-                  <span className="muted">
-                    {prescriptionText(x)} · rest {minSec(x.rest)}
-                  </span>
+                  {!compact && (
+                    <span className="muted">
+                      {prescriptionText(x)} · rest {minSec(x.rest)}
+                    </span>
+                  )}
                 </li>
               ))}
             </ul>

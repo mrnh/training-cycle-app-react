@@ -5,7 +5,7 @@ import NewCycleDialog from '../components/NewCycleDialog'
 import useConfirm from '../components/useConfirm'
 import Chevron from '../components/Chevron'
 import Exercises from './Exercises'
-import { DATE_FORMATS, ROUNDINGS, ROUNDING_MODES, UNITS, dateFormat, fmtDate, rounding, roundingMode, exerciseName, fmt, heaviestWeight, mainLiftsError, todayIso, unit } from '../program'
+import { DATE_FORMATS, ROUNDINGS, ROUNDING_MODES, UNITS, dateFormat, fmtDate, rounding, roundingMode, exerciseName, fmt, goalWeight, heaviestWeight, mainLiftsError, todayIso, unit } from '../program'
 import { currentCycle, migrate, replaceState, update, updateCycle } from '../store'
 import { sampleState } from '../sampleData'
 import ScreenHeader from '../components/ScreenHeader'
@@ -376,8 +376,22 @@ export default function Settings({ state }) {
         <div className="row subhead">
           <h3>Main lifts</h3>
         </div>
-        {liftList}
-        <GroupsSummary state={state} />
+        {/* Start = the 1RM the cycle is built on, Goal = the week-9 single */}
+        <div className="lift-table">
+          <div className="lift-row head">
+            <span />
+            <span>Start</span>
+            <span>Goal</span>
+          </div>
+          {lifts.map((id) => (
+            <div className="lift-row" key={id}>
+              <span>{exerciseName(state, id)}</span>
+              <span>{fmt(cycle.oneRM[id])} {unit()}</span>
+              <strong>{fmt(goalWeight(cycle, id))} {unit()}</strong>
+            </div>
+          ))}
+        </div>
+        <GroupsSummary state={state} compact />
       </section>
 
       <NavCard title="Exercise catalog" onClick={() => show('exercises')} />
