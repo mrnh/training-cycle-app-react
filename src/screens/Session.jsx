@@ -110,50 +110,52 @@ function Draft({ state, cycle, plan, open, onFinish, onCancel }) {
       c.extras[plan.key] = [...(c.extras[plan.key] ?? []), { id, ...pres }]
     })
   return (
-    <fieldset className="draft" disabled={!open}>
-      {mainLifts(cycle, plan).map((p) => (
-        <PrimaryBlock key={p.slot} state={state} cycle={cycle} plan={plan} p={p} open={open} />
-      ))}
+    <>
+      <fieldset className="draft" disabled={!open}>
+        {mainLifts(cycle, plan).map((p) => (
+          <PrimaryBlock key={p.slot} state={state} cycle={cycle} plan={plan} p={p} open={open} />
+        ))}
 
-      {secondaries.map((id) => (
-        <SecondaryBlock key={id} state={state} cycle={cycle} plan={plan} id={id} open={open} />
-      ))}
-      {secondaries.length === 0 && (
-        <p className="muted small center">No accessory work in group {plan.group} yet. Add it in Settings.</p>
-      )}
-      {open && (
+        {secondaries.map((id) => (
+          <SecondaryBlock key={id} state={state} cycle={cycle} plan={plan} id={id} open={open} />
+        ))}
+        {secondaries.length === 0 && (
+          <p className="muted small center">No accessory work in group {plan.group} yet. Add it in Settings.</p>
+        )}
+      </fieldset>
+
+        {/* Outside the (disabled) fieldset: exercises can be added before the session is started too */}
         <button className="add-exercise" onClick={() => setAdding(true)}>
           + Add exercise
         </button>
-      )}
-      {adding && (
-        <PrescriptionDialog
-          title="Add exercise"
-          choices={choices}
-          saveLabel="Add"
-          onSave={addExtra}
-          onClose={() => setAdding(false)}
-        />
-      )}
+        {adding && (
+          <PrescriptionDialog
+            title="Add exercise"
+            choices={choices}
+            saveLabel="Add"
+            onSave={addExtra}
+            onClose={() => setAdding(false)}
+          />
+        )}
 
-      {open && (
-        <>
-          <section className="card">
-            <h2>Session note</h2>
-            <Note label="Add a session note" value={cycle.notes[plan.key]} onChange={(t) => setNote(plan.key, t)} />
-          </section>
+        {open && (
+          <fieldset className="draft">
+            <section className="card">
+              <h2>Session note</h2>
+              <Note label="Add a session note" value={cycle.notes[plan.key]} onChange={(t) => setNote(plan.key, t)} />
+            </section>
 
-          <div className="finish-row">
-            <button className="small-btn" onClick={onCancel}>
-              Cancel session
-            </button>
-            <button className="primary finish" onClick={onFinish}>
-              Finish session
-            </button>
-          </div>
-        </>
-      )}
-    </fieldset>
+            <div className="finish-row">
+              <button className="small-btn" onClick={onCancel}>
+                Cancel session
+              </button>
+              <button className="primary finish" onClick={onFinish}>
+                Finish session
+              </button>
+            </div>
+          </fieldset>
+        )}
+    </>
   )
 }
 
