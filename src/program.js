@@ -330,6 +330,8 @@ export function addDays(isoDate, days) {
 export const weekStart = (cycle, week) => addDays(cycle.startDate, (week - 1) * 7)
 // "9.11." or, in US format, "11/9"
 const dayMonth = (d) => (dateFormat() === 'mdy' ? `${d.getMonth() + 1}/${d.getDate()}` : `${d.getDate()}.${d.getMonth() + 1}.`)
+/** The whole cycle, first to last day: "16.11.26 – 17.1.27" */
+export const cycleRange = (cycle) => `${fmtDateShort(cycle.startDate)} – ${fmtDateShort(isoDay(addDays(cycle.startDate, WEEKS * 7 - 1)))}`
 /** "23.11. – 29.11." */
 export const weekRange = (cycle, week) =>
   `${dayMonth(weekStart(cycle, week))} – ${dayMonth(addDays(cycle.startDate, (week - 1) * 7 + 6))}`

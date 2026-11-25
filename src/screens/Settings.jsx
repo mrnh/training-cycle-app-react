@@ -5,7 +5,7 @@ import NewCycleDialog from '../components/NewCycleDialog'
 import useConfirm from '../components/useConfirm'
 import Chevron from '../components/Chevron'
 import Exercises from './Exercises'
-import { DATE_FORMATS, ROUNDINGS, ROUNDING_MODES, UNITS, dateFormat, fmtDate, rounding, roundingMode, exerciseName, fmt, goalWeight, heaviestWeight, mainLiftsError, todayIso, unit } from '../program'
+import { DATE_FORMATS, ROUNDINGS, ROUNDING_MODES, UNITS, dateFormat, rounding, roundingMode, exerciseName, fmt, cycleRange, goalWeight, heaviestWeight, mainLiftsError, todayIso, unit } from '../program'
 import { currentCycle, migrate, replaceState, update, updateCycle } from '../store'
 import { sampleState } from '../sampleData'
 import ScreenHeader from '../components/ScreenHeader'
@@ -366,13 +366,12 @@ export default function Settings({ state }) {
         <h2 className="nav-head">
           <button onClick={() => show('cycle')}>
             Current cycle
-            <Chevron />
+            <span className="nav-head-end">
+              <span className="muted small">{cycleRange(cycle)}</span>
+              <Chevron />
+            </span>
           </button>
         </h2>
-        <div className="row inline-field">
-          <h3>Start date</h3>
-          <span>{fmtDate(cycle.startDate)}</span>
-        </div>
         {/* Start = the 1RM the cycle is built on, Goal = the week-9 single */}
         <div className="lift-table">
           <div className="lift-row head">

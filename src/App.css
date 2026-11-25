@@ -120,6 +120,7 @@ button.nav-card:active { background: var(--border); }
   display: flex; justify-content: space-between; align-items: center; width: 100%;
   border: none; background: none; padding: 0; min-height: 0; font: inherit; color: inherit; text-align: left;
 }
+.nav-head-end { display: flex; align-items: center; gap: var(--space-2); font-weight: var(--weight-normal); }
 .nav-head button::after { content: ''; position: absolute; inset: 0; border-radius: var(--radius-lg); }
 .nav-section:has(.nav-head button:active) { background: var(--border); }
 /* Without the pens the sub-headings lose their height; keep the sections apart */
