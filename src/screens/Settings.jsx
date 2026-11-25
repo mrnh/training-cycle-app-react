@@ -51,7 +51,7 @@ export default function Settings({ state }) {
     })
     cancelRM()
   }
-  const [message, setMessage] = useState('')
+  const [notice, setNotice] = useState(null) // { text, detail, error } shown as a banner on Data & backup
   const fileRef = useRef(null)
   const [confirmDialog, confirm] = useConfirm()
 
@@ -62,7 +62,7 @@ export default function Settings({ state }) {
     a.download = `${todayIso().replaceAll('-', '')}_training-data.json` // 20261125_training-data.json
     a.click()
     URL.revokeObjectURL(a.href)
-    setMessage('Backup downloaded')
+    setNotice({ text: 'Backup downloaded' })
   }
 
   async function importData(e) {
@@ -81,9 +81,13 @@ export default function Settings({ state }) {
       })
       if (!ok) return
       replaceState(data)
-      setMessage('Backup restored')
+      const workouts = data.cycles.reduce((n, c) => n + Object.keys(c.finished).length, 0)
+      setNotice({
+        text: 'Backup restored',
+        detail: `${data.cycles.length} ${data.cycles.length === 1 ? 'cycle' : 'cycles'}, ${workouts} finished ${workouts === 1 ? 'workout' : 'workouts'}.`,
+      })
     } catch {
-      setMessage("That file isn't a training plan backup.")
+      setNotice({ text: "That file isn't a training plan backup.", error: true })
     }
   }
 
@@ -96,7 +100,7 @@ export default function Settings({ state }) {
     })
     if (!ok) return
     replaceState(sampleState({ unit: state.unit, dateFormat: state.dateFormat }))
-    setMessage('Sample data loaded')
+    setNotice({ text: 'Sample data loaded' })
   }
 
   async function resetAll() {
@@ -112,7 +116,7 @@ export default function Settings({ state }) {
 
   const show = (screen) => {
     setSubScreen(screen)
-    setMessage('')
+    setNotice(null)
     cancelRM()
     window.scrollTo(0, 0)
   }
@@ -168,6 +172,16 @@ export default function Settings({ state }) {
     return (
       <div className="screen">
         <ScreenHeader title="Data & backup" backLabel="Back to settings" onBack={() => show(null)} />
+        {/* Result of the last export, import or sample data, on top where it can't be missed */}
+        {notice && (
+          <div className={`notice ${notice.error ? 'is-error' : ''}`} role={notice.error ? 'alert' : 'status'}>
+            <span className="notice-icon" aria-hidden="true">{notice.error ? '!' : '✓'}</span>
+            <div>
+              <strong>{notice.text}</strong>
+              {notice.detail && <p className="small">{notice.detail}</p>}
+            </div>
+          </div>
+        )}
         <section className="card">
           <p className="muted small">Your data lives only on this device. Export a backup now and then.</p>
           {/* In the browser (not the installed app): on iPhone the home-screen app has its own,
@@ -185,7 +199,6 @@ export default function Settings({ state }) {
             <input ref={fileRef} type="file" hidden onChange={importData} />
           </div>
           <button onClick={loadSample}>Use sample data</button>
-          {message && <p className="small">{message}</p>}
         </section>
         <section className="card">
           <h2>Reset</h2>

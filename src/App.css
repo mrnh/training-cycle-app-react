@@ -60,6 +60,29 @@ button.icon-btn {
 .subhead { margin-top: var(--space-2); }
 .subhead h3 { margin: 0; }
 .card > .list { padding: 0; }
+.notice {
+  display: flex;
+  gap: var(--space-3);
+  align-items: flex-start;
+  background: var(--success-soft);
+  border: 1px solid var(--success);
+  border-radius: var(--radius-md);
+  padding: var(--space-3);
+}
+.notice p { margin: 0; }
+.notice-icon {
+  flex: none;
+  width: 24px;
+  height: 24px;
+  border-radius: var(--radius-full);
+  background: var(--success);
+  color: var(--on-success);
+  display: grid;
+  place-items: center;
+  font-weight: var(--weight-bold);
+}
+.notice.is-error { background: var(--warning-soft); border-color: var(--danger); }
+.notice.is-error .notice-icon { background: var(--danger); color: #fff; }
 .warning {
   background: var(--warning-soft);
   color: var(--warning);
