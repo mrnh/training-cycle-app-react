@@ -125,7 +125,7 @@ export default function Settings({ state }) {
   if (subScreen === 'appearance')
     return (
       <div className="screen">
-        <ScreenHeader title="Appearance" backLabel="Back to settings" onBack={() => show(null)} />
+        <ScreenHeader title="Appearance & behavior" backLabel="Back to settings" onBack={() => show(null)} />
         <section className="card">
           <div className="pref">
             <div className="row unit-row">
@@ -165,6 +165,23 @@ export default function Settings({ state }) {
                 : `${ACCENTS.find((x) => x.id === accent).label}. Kept on this device only.`}
             </p>
           </div>
+        {'wakeLock' in navigator && (
+          <div className="pref">
+            <div className="row unit-row">
+              <h3>Keep screen on</h3>
+              <Segmented
+                label="Keep screen on during a session"
+                options={[
+                  { id: false, label: 'Off' },
+                  { id: true, label: 'On' },
+                ]}
+                value={state.keepAwake !== false}
+                onChange={(on) => update((d) => void (d.keepAwake = on))}
+              />
+            </div>
+            <p className="muted small">Prevents screen lock during a session.</p>
+          </div>
+        )}
         </section>
       </div>
     )
@@ -315,7 +332,7 @@ export default function Settings({ state }) {
 
       <NavCard title="Data & backup" onClick={() => show('data')} />
 
-      <NavCard title="Appearance" onClick={() => show('appearance')} />
+      <NavCard title="Appearance & behavior" onClick={() => show('appearance')} />
 
       {/* One block per preference (control and its note), divided by lines */}
       <section className="card">
@@ -363,23 +380,6 @@ export default function Settings({ state }) {
             />
           </div>
         </div>
-        {'wakeLock' in navigator && (
-          <div className="pref">
-            <div className="row unit-row">
-              <h3>Keep screen on</h3>
-              <Segmented
-                label="Keep screen on during a session"
-                options={[
-                  { id: false, label: 'Off' },
-                  { id: true, label: 'On' },
-                ]}
-                value={state.keepAwake !== false}
-                onChange={(on) => update((d) => void (d.keepAwake = on))}
-              />
-            </div>
-            <p className="muted small">Prevents screen lock during a session.</p>
-          </div>
-        )}
       </section>
 
       {confirmDialog}
