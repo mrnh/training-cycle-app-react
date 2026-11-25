@@ -9,6 +9,27 @@ The current version is shown at the bottom of **Settings**.
 
 ---
 
+## 0.22.0 — 2026-11-25 · Appearance
+
+| Appearance | Dark mode, blue accent | Settings |
+|---|---|---|
+| ![Appearance with mode and accent color](docs/screenshots/v0.22.0/appearance.jpg) | ![Session in dark mode with the blue accent](docs/screenshots/v0.22.0/dark-blue.jpg) | ![Settings with the Appearance card](docs/screenshots/v0.22.0/settings.jpg) |
+
+### Added
+- **Appearance** in Settings (a card like Exercise catalog and Data & backup) with two choices:
+  - **Mode**: Auto, Light or Dark. Auto follows the device, also while the app is open.
+  - **Accent color**: purple (the default), blue, teal, pink or graphite. Green and red are
+    left out because they mean done and danger.
+- Both are kept on the device they are set on, so importing a backup never changes them.
+
+### Changed
+- Dark colors are now applied by the app and no longer only by the system setting; native controls
+  such as the date picker and dropdowns follow dark mode too.
+- Filled buttons use dark text on the lighter dark-mode accents (blue, teal, graphite) for
+  readable contrast.
+
+---
+
 ## 0.21.0 — 2026-11-25 · Any order, new icon
 
 | Skipping ahead | Changing the date | New icon |
