@@ -42,7 +42,7 @@ export default function Settings({ state }) {
     const blob = new Blob([JSON.stringify(state, null, 2)], { type: 'application/json' })
     const a = document.createElement('a')
     a.href = URL.createObjectURL(blob)
-    a.download = `training-plan-${todayIso()}.json`
+    a.download = `${todayIso().replaceAll('-', '')}_training-data.json` // 20261125_training-data.json
     a.click()
     URL.revokeObjectURL(a.href)
     setMessage('Backup downloaded')
@@ -118,7 +118,8 @@ export default function Settings({ state }) {
           <div className="button-row">
             <button onClick={exportData}>Export backup</button>
             <button onClick={() => fileRef.current.click()}>Import backup</button>
-            <input ref={fileRef} type="file" accept="application/json,.json" hidden onChange={importData} />
+            {/* No file type filter: only the content counts, whatever the file is called */}
+            <input ref={fileRef} type="file" hidden onChange={importData} />
           </div>
           <button onClick={loadSample}>Use sample data</button>
           {message && <p className="small">{message}</p>}
