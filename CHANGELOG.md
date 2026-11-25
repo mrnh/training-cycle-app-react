@@ -9,6 +9,32 @@ The current version is shown at the bottom of **Settings**.
 
 ---
 
+## 0.21.0 — 2026-11-25 · Any order, new icon
+
+| Skipping ahead | Changing the date | New icon |
+|---|---|---|
+| ![Session with the unfinished-workouts warning](docs/screenshots/v0.21.0/skip-ahead.jpg) | ![Date card while editing a finished workout](docs/screenshots/v0.21.0/edit-date.jpg) | <img src="docs/screenshots/v0.21.0/app-icon.png" alt="The new app icon" width="160"> |
+
+### Added
+- **Sessions in any order**: every session that isn't finished has the usual **Start session**
+  button, so you can skip ahead. A yellow warning, "There are unfinished previous workouts",
+  shows when earlier sessions are neither finished nor the open one. Only one session is open at
+  a time: starting another finishes the open one, as before.
+- **Change the date** of a finished workout: **Edit** has a Date card at the top (any day up to
+  today).
+
+### Changed
+- A finished workout shows its date as the subtitle of the title bar; the green "Finished" banner
+  is gone, and **Edit** stays at the top right.
+- **Cycle complete** (new 1RMs, Start next cycle) appears once all three week-9 sessions are
+  finished, since earlier sessions can now be skipped.
+- New **app icon**: a black barbell on white, without the reload circle; the browser favicon has a
+  thin black outline.
+- Backups are named like `20261125_training-data.json`. Importing only looks at the content, so any
+  file can be picked, whatever it is called.
+
+---
+
 ## 0.20.0 — 2026-11-24 · Correct finished workouts
 
 | Editing a workout | After the correction |
