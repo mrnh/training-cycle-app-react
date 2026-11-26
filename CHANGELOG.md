@@ -9,6 +9,24 @@ The current version is shown at the bottom of **Settings**.
 
 ---
 
+## 0.26.0 — 2026-11-26 · Design your own app icon
+
+| Custom icon, to start | Squat on teal | Flexed arm on pink |
+|---|---|---|
+| ![The Custom tile before anything is picked](docs/screenshots/v0.26.0/custom-icon-start.jpg) | ![Custom icon with the squat symbol](docs/screenshots/v0.26.0/custom-icon-squat.jpg) | ![Custom icon with the flexed arm symbol](docs/screenshots/v0.26.0/custom-icon-arm.jpg) |
+
+### Added
+- **Custom app icon**: a third icon next to Light and Dark. Pick a background color, a symbol and a
+  symbol color, and the tile previews the result. Until something is picked, it shows rainbow
+  stripes with a plus.
+- **12 symbols** to choose from: barbell, dumbbell, kettlebell, medal, lightning bolt, flame, trophy,
+  stopwatch, a squatting lifter, mountain, target and a flexed arm.
+- The custom icon is offered to iPhones as the home-screen icon. Android installs keep the light icon.
+
+### Changed
+- The App icon card is separate from the other settings and shows the icons as pictures. Its hint
+  reminds you to back up your data before removing and reinstalling the app.
+
 ## 0.25.1 — 2026-11-26 · Clearer app icon hint
 
 ![App icon hint with a reminder to back up first](docs/screenshots/v0.25.1/app-icon-hint.jpg)
