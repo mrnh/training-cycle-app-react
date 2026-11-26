@@ -1,8 +1,7 @@
 # Training Cycle App
 
 A mobile-first React app for a 9-week strength cycle with three sessions a week, based on the
-Russian Masters Squat Routine adapted for up to three main lifts (squat, bench press and deadlift
-by default).
+Russian Masters Program (3 main lifts), with squat, bench press and deadlift by default.
 
 - **Overview:** all 27 sessions at a glance, with progress
 - **Session:** start a session (in any order; a warning shows when earlier ones are unfinished),

@@ -32,7 +32,7 @@ function defineProgram({ id, name, defaultLifts, weeks }) {
 }
 
 /*
- * Russian Masters Squat Routine, adapted for up to three main lifts. Each session has one
+ * Russian Masters Program (3 main lifts). Each session has one
  * main-lift slot on variant 2 (builds volume, then intensity) and another on variant 1 (the same
  * every week), plus an accessory group. Slots 0, 1, 2 are squat, bench and deadlift by default.
  */
@@ -56,7 +56,7 @@ const ROTATION = [
 
 export const RUSSIAN_MASTERS = defineProgram({
   id: 'russian-masters',
-  name: 'Russian Masters Squat Routine',
+  name: 'Russian Masters Program (3 main lifts)',
   defaultLifts: ['squat', 'bench', 'deadlift'],
   weeks: V2.map((v2, w) =>
     ROTATION.map((r) => ({

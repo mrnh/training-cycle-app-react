@@ -698,8 +698,8 @@ of filling in a row per set.
 
 ## 0.1.0 — 2026-11-19 · First version
 
-The first usable version: a 9-week cycle of the Russian Masters Squat Routine, adapted for squat,
-bench press and deadlift, with three sessions a week.
+The first usable version: a 9-week cycle of the Russian Masters Program (3 main lifts), with squat,
+bench press and deadlift and three sessions a week.
 
 | Plan | Session | Secondary exercises | Exercises | Settings |
 |---|---|---|---|---|
