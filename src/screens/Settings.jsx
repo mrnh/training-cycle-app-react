@@ -5,7 +5,7 @@ import NewCycleDialog from '../components/NewCycleDialog'
 import useConfirm from '../components/useConfirm'
 import Chevron from '../components/Chevron'
 import Exercises from './Exercises'
-import { DATE_FORMATS, ROUNDINGS, ROUNDING_MODES, UNITS, dateFormat, rounding, roundingMode, exerciseName, fmt, cycleRange, goalWeight, heaviestWeight, mainLiftsError, todayIso, unit } from '../program'
+import { DATE_FORMATS, ROUNDINGS, ROUNDING_MODES, UNITS, dateFormat, rounding, roundingMode, exerciseName, fmt, cycleRange, goalWeight, heaviestWeight, mainLiftsError, programOf, todayIso, unit } from '../program'
 import { currentCycle, migrate, replaceState, update, updateCycle } from '../store'
 import { sampleState } from '../sampleData'
 import ScreenHeader from '../components/ScreenHeader'
@@ -18,6 +18,9 @@ const installed = window.matchMedia?.('(display-mode: standalone)').matches || n
 export default function Settings({ state }) {
   const cycle = currentCycle(state)
   const lifts = cycle.primaries.filter(Boolean) // empty slots left out
+  const program = programOf(cycle)
+  const counts = program.weeks.map((w) => w.length)
+  const perWeek = Math.min(...counts) === Math.max(...counts) ? `${counts[0]}` : `${Math.min(...counts)}–${Math.max(...counts)}`
   const [draft, setDraft] = useState(null) // [{ id, rm }] per main-lift slot while editing; null = not editing
   const [rmError, setRmError] = useState('')
   const [newCycleOpen, setNewCycleOpen] = useState(false)
@@ -461,6 +464,12 @@ export default function Settings({ state }) {
             </span>
           </button>
         </h2>
+        {/* Which program the cycle follows, and its shape */}
+        <p className="cycle-program muted small">
+          {program.name}
+          <br />
+          {program.weekCount} weeks · {perWeek} {perWeek === '1' ? 'session' : 'sessions'} a week
+        </p>
         {/* Start = the 1RM the cycle is built on, Goal = the week-9 single */}
         <div className="lift-table">
           <div className="lift-row head">

@@ -320,7 +320,8 @@ button.new-cycle { margin-top: var(--space-2); }
   border-bottom: 1px solid var(--border); font-size: var(--text-sm);
 }
 .group-summary li:last-child { border-bottom: none; }
-/* Settings, Current cycle: main lifts with start and goal weight */
+/* Settings, Current cycle: program line, then main lifts with start and goal weight */
+.cycle-program { margin: var(--space-1) 0 0; }
 .lift-table { display: flex; flex-direction: column; font-size: var(--text-sm); margin-top: var(--space-3); }
 .lift-row {
   display: grid;
