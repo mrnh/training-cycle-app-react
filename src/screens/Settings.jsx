@@ -9,7 +9,7 @@ import { DATE_FORMATS, ROUNDINGS, ROUNDING_MODES, UNITS, dateFormat, rounding, r
 import { currentCycle, migrate, replaceState, update, updateCycle } from '../store'
 import { sampleState } from '../sampleData'
 import ScreenHeader from '../components/ScreenHeader'
-import { ACCENTS, THEMES, getAccent, getCustomAccent, getTheme, setAccent, setCustomAccent, setTheme } from '../theme'
+import { ACCENTS, ICONS, THEMES, getAccent, getAppIcon, setAppIcon, getCustomAccent, getTheme, setAccent, setCustomAccent, setTheme } from '../theme'
 
 // Running as an installed home-screen app (not in a browser tab)
 const installed = window.matchMedia?.('(display-mode: standalone)').matches || navigator.standalone === true
@@ -24,6 +24,11 @@ export default function Settings({ state }) {
   const changeTheme = (t) => {
     setTheme(t)
     setThemeState(t)
+  }
+  const [appIcon, setAppIconState] = useState(getAppIcon)
+  const changeAppIcon = (i) => {
+    setAppIcon(i)
+    setAppIconState(i)
   }
   const [accent, setAccentState] = useState(getAccent)
   const [custom, setCustomState] = useState(getCustomAccent) // the picked colour, or null
@@ -215,6 +220,15 @@ export default function Settings({ state }) {
               {accent === 'custom'
                 ? 'Custom. Adjusted a little to stay readable. Kept on this device only.'
                 : `${ACCENTS.find((x) => x.id === accent).label}. Kept on this device only.`}
+            </p>
+          </div>
+          <div className="pref">
+            <div className="row unit-row">
+              <h3>App icon</h3>
+              <Segmented label="App icon" options={ICONS} value={appIcon} onChange={changeAppIcon} />
+            </div>
+            <p className="muted small">
+              Light is a black barbell on white, Dark a white barbell on black. To change the icon on your home screen, remove the app and install it again. Kept on this device only.
             </p>
           </div>
         {'wakeLock' in navigator && (

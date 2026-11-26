@@ -58,6 +58,42 @@ export function getAccent() {
   }
 }
 
+// App icon: the home-screen icon is fixed when the app is installed, so the choice only changes what
+// the browser offers for the next install (apple-touch-icon for iOS, a second manifest for Android).
+export const ICONS = [
+  { id: 'light', label: 'Light' },
+  { id: 'dark', label: 'Dark' },
+]
+const ICON_KEY = 'app-icon'
+
+export function getAppIcon() {
+  try {
+    return localStorage.getItem(ICON_KEY) === 'dark' ? 'dark' : 'light'
+  } catch {
+    return 'light'
+  }
+}
+
+function applyIcon() {
+  const dark = getAppIcon() === 'dark'
+  const link = (rel) => document.querySelector(`link[rel="${rel}"]`)
+  // Files sit next to the page; keep the folder of the current href
+  const swap = (el, file) => el?.setAttribute('href', el.getAttribute('href').replace(/[^/]*$/, file))
+  swap(link('apple-touch-icon'), dark ? 'apple-touch-icon-dark.png' : 'apple-touch-icon.png')
+  swap(link('manifest'), dark ? 'manifest-dark.webmanifest' : 'manifest.webmanifest')
+  swap(link('icon'), dark ? 'favicon-dark.svg' : 'favicon.svg')
+}
+
+export function setAppIcon(icon) {
+  try {
+    if (icon === 'dark') localStorage.setItem(ICON_KEY, 'dark')
+    else localStorage.removeItem(ICON_KEY)
+  } catch {
+    // Storage blocked: the icon applies until the app is closed
+  }
+  applyIcon()
+}
+
 function apply(theme) {
   const resolved = resolve(theme)
   document.documentElement.dataset.theme = resolved
@@ -72,6 +108,7 @@ function apply(theme) {
 /** Apply the saved theme and follow the device while it is Auto. Call once at startup. */
 export function startTheme() {
   apply(getTheme())
+  applyIcon()
   window.matchMedia?.('(prefers-color-scheme: dark)').addEventListener?.('change', () => apply(getTheme()))
 }
 
