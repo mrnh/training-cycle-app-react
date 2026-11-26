@@ -9,6 +9,17 @@ The current version is shown at the bottom of **Settings**.
 
 ---
 
+## 0.25.0 — 2026-11-26 · Choose your app icon
+
+| Light icon | Dark icon |
+|---|---|
+| ![App icon picker with the light icon selected](docs/screenshots/v0.25.0/app-icon-light.jpg) | ![App icon picker with the dark icon selected](docs/screenshots/v0.25.0/app-icon-dark.jpg) |
+
+### Added
+- **App icon**: Appearance & behavior has a new card to choose between the existing icon (black
+  barbell on white) and a new one (white barbell on black), shown as pictures. The home-screen icon
+  is fixed when the app is installed, so remove the app and install it again for a change to show.
+
 ## 0.24.0 — 2026-11-25 · Cancel session, tidier Settings
 
 | Session | Cancel dialog | Settings |
