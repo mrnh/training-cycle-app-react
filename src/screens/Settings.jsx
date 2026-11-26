@@ -5,7 +5,7 @@ import NewCycleDialog from '../components/NewCycleDialog'
 import useConfirm from '../components/useConfirm'
 import Chevron from '../components/Chevron'
 import Exercises from './Exercises'
-import { DATE_FORMATS, ROUNDINGS, ROUNDING_MODES, UNITS, dateFormat, rounding, roundingMode, exerciseName, fmt, cycleRange, goalWeight, heaviestWeight, mainLiftsError, programOf, todayIso, unit } from '../program'
+import { DATE_FORMATS, ROUNDINGS, ROUNDING_MODES, UNITS, dateFormat, rounding, roundingMode, exerciseName, fmt, cycleEnd, cycleRange, cycleStarted, fmtDate, goalWeight, heaviestWeight, mainLiftsError, programOf, todayIso, unit } from '../program'
 import { currentCycle, migrate, replaceState, update, updateCycle } from '../store'
 import { sampleState } from '../sampleData'
 import ScreenHeader from '../components/ScreenHeader'
@@ -385,15 +385,28 @@ export default function Settings({ state }) {
         <ScreenHeader title="Current cycle" backLabel="Back to settings" onBack={() => show(null)} />
         <section className="card">
           <div className="row inline-field">
-            <h3>
-              <label htmlFor="start-date">Start date</label>
-            </h3>
-            <input
-              id="start-date"
-              type="date"
-              value={cycle.startDate}
-              onChange={(e) => e.target.value && updateCycle((c) => void (c.startDate = e.target.value))}
-            />
+            <h3>Program</h3>
+            <span className="small">{program.name}</span>
+          </div>
+
+          <div className="row inline-field">
+            <h3>{cycleStarted(cycle) ? 'Start date' : <label htmlFor="start-date">Start date</label>}</h3>
+            {cycleStarted(cycle) ? (
+              <span>{fmtDate(cycle.startDate)}</span>
+            ) : (
+              <input
+                id="start-date"
+                type="date"
+                value={cycle.startDate}
+                onChange={(e) => e.target.value && updateCycle((c) => void (c.startDate = e.target.value))}
+              />
+            )}
+          </div>
+          {cycleStarted(cycle) && <p className="muted small">Fixed once the first session is started.</p>}
+
+          <div className="row inline-field">
+            <h3>End date</h3>
+            <span>{fmtDate(cycleEnd(cycle))}</span>
           </div>
 
           <div className="row subhead">
