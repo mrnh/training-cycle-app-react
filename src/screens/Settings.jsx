@@ -222,15 +222,6 @@ export default function Settings({ state }) {
                 : `${ACCENTS.find((x) => x.id === accent).label}. Kept on this device only.`}
             </p>
           </div>
-          <div className="pref">
-            <div className="row unit-row">
-              <h3>App icon</h3>
-              <Segmented label="App icon" options={ICONS} value={appIcon} onChange={changeAppIcon} />
-            </div>
-            <p className="muted small">
-              Light is a black barbell on white, Dark a white barbell on black. To change the icon on your home screen, remove the app and install it again. Kept on this device only.
-            </p>
-          </div>
         {'wakeLock' in navigator && (
           <div className="pref">
             <div className="row unit-row">
@@ -248,6 +239,17 @@ export default function Settings({ state }) {
             <p className="muted small">Prevents screen lock during a session.</p>
           </div>
         )}
+        </section>
+        <section className="card">
+          <div className="pref">
+            <div className="row unit-row">
+              <h3>App icon</h3>
+              <Segmented label="App icon" options={ICONS} value={appIcon} onChange={changeAppIcon} />
+            </div>
+            <p className="muted small">
+              Light is a black barbell on white, Dark a white barbell on black. To change the icon on your home screen, remove the app and install it again. Kept on this device only.
+            </p>
+          </div>
         </section>
       </div>
     )
