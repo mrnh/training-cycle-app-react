@@ -7,6 +7,26 @@ const rr = (x, y, w, h, r) =>
   `H${x + r}A${r} ${r} 0 0 1 ${x} ${y + h - r}V${y + r}A${r} ${r} 0 0 1 ${x + r} ${y}Z`
 const circle = (cx, cy, r) => `M${cx - r} ${cy}a${r} ${r} 0 1 0 ${2 * r} 0a${r} ${r} 0 1 0 ${-2 * r} 0Z`
 
+// A straight bar from (x1, y1) to (x2, y2), w wide. All shapes here wind the same way, so overlaps stay filled.
+const seg = (x1, y1, x2, y2, w) => {
+  const l = Math.hypot(x2 - x1, y2 - y1)
+  const nx = (-(y2 - y1) / l) * (w / 2)
+  const ny = ((x2 - x1) / l) * (w / 2)
+  const p = (x, y) => `${(x).toFixed(1)} ${(y).toFixed(1)}`
+  return `M${p(x1 + nx, y1 + ny)}L${p(x2 + nx, y2 + ny)}L${p(x2 - nx, y2 - ny)}L${p(x1 - nx, y1 - ny)}Z`
+}
+
+// A lifter seen from the front, pressing a barbell overhead
+const lifter =
+  seg(66, 112, 446, 112, 14) + // bar
+  seg(98, 64, 98, 160, 26) + seg(128, 80, 128, 144, 16) + // plates, left
+  seg(414, 64, 414, 160, 26) + seg(384, 80, 384, 144, 16) + // plates, right
+  circle(256, 172, 30) + // head
+  seg(188, 112, 222, 232, 22) + seg(324, 112, 290, 232, 22) + // arms
+  'M214 222L228 344L284 344L298 222Z' + // torso
+  seg(240, 336, 196, 440, 36) + seg(272, 336, 316, 440, 36) + // legs
+  circle(190, 440, 20) + circle(322, 440, 20) // feet
+
 // The original icon's barbell, enlarged 1.6 times around the centre
 const big = ([x, y, w, h, r]) => rr(256 + (x - 256) * 1.6, 256 + (y - 256) * 1.6, w * 1.6, h * 1.6, r * 1.6)
 const barbell = [
@@ -61,11 +81,7 @@ export const SYMBOLS = [
     d: circle(256, 292, 148) + circle(256, 292, 118) + rr(256 - 30, 76, 60, 32, 8) + rr(256 - 12, 104, 24, 36, 4) + rr(244, 196, 24, 100, 10),
     evenodd: true,
   },
-  {
-    id: 'heart',
-    label: 'Heart',
-    d: 'M256 428C112 326 90 232 124 178C158 126 232 128 256 190C280 128 354 126 388 178C422 232 400 326 256 428Z',
-  },
+  { id: 'lifter', label: 'Lifter', d: lifter },
   { id: 'mountain', label: 'Mountain', d: 'M64 384L200 148L262 254L312 180L448 384Z' },
   {
     id: 'target',
