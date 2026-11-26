@@ -9,6 +9,13 @@ The current version is shown at the bottom of **Settings**.
 
 ---
 
+## 0.25.1 — 2026-11-26 · Clearer app icon hint
+
+![App icon hint with a reminder to back up first](docs/screenshots/v0.25.1/app-icon-hint.jpg)
+
+### Changed
+- The app icon hint reminds you to back up your data before removing and reinstalling the app.
+
 ## 0.25.0 — 2026-11-26 · Choose your app icon
 
 | Light icon | Dark icon |
