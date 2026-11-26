@@ -112,16 +112,44 @@ export function getIconColor() {
   }
 }
 
+const SYMBOL_COLOR_KEY = 'app-icon-symbol-color' // symbol colour of the custom icon; none = black or white by contrast
+
+/** The symbol colour picked for the custom icon as #rrggbb, or null while it follows the background. */
+export function getIconSymbolColor() {
+  try {
+    const c = localStorage.getItem(SYMBOL_COLOR_KEY)
+    return HEX.test(c) ? c.toLowerCase() : null
+  } catch {
+    return null
+  }
+}
+
+/** Symbol colour of the custom icon (picking one also selects the custom icon). */
+export function setIconSymbolColor(hex) {
+  try {
+    localStorage.setItem(SYMBOL_COLOR_KEY, hex.toLowerCase())
+    localStorage.setItem(ICON_KEY, 'custom')
+  } catch {
+    // Storage blocked: the colour applies until the app is closed
+  }
+  applyIcon()
+}
+
+/** The symbol colour in effect: the picked one, or black or white, whichever reads better on the background. */
+export function symbolColorFor(background, picked = getIconSymbolColor()) {
+  if (picked) return picked
+  const [r, g, b] = [1, 3, 5].map((i) => parseInt(background.slice(i, i + 2), 16))
+  return 0.299 * r + 0.587 * g + 0.114 * b > 150 ? '#000000' : '#ffffff'
+}
+
 /** The custom icon as a PNG data URL (null where canvas is unavailable): the symbol on a full-bleed colour. */
-export function customIconUrl(color, symbol, size) {
+export function customIconUrl(color, symbol, size, symbolColor = getIconSymbolColor()) {
   const g = document.createElement('canvas').getContext?.('2d')
   if (!g) return null
   g.canvas.width = g.canvas.height = size
   g.fillStyle = color
   g.fillRect(0, 0, size, size)
-  // Black or white symbol, whichever reads better on the colour
-  const [r, gr, b] = [1, 3, 5].map((i) => parseInt(color.slice(i, i + 2), 16))
-  g.fillStyle = 0.299 * r + 0.587 * gr + 0.114 * b > 150 ? '#000' : '#fff'
+  g.fillStyle = symbolColorFor(color, symbolColor)
   g.scale(size / 512, size / 512)
   const sym = symbolById(symbol)
   g.fill(new Path2D(sym.d), sym.evenodd ? 'evenodd' : 'nonzero')
