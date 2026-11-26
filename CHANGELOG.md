@@ -9,6 +9,25 @@ The current version is shown at the bottom of **Settings**.
 
 ---
 
+## 0.27.0 — 2026-11-26 · Program on the cycle screens
+
+| Settings | Current cycle |
+|---|---|
+| ![Settings with the program and a compact lift table](docs/screenshots/v0.27.0/settings-program.jpg) | ![Current cycle screen with program name and dates](docs/screenshots/v0.27.0/current-cycle.jpg) |
+
+### Added
+- **Program on the cycle screens**: Settings shows the program (Russian Masters Program, 3 main
+  lifts) with its length, and the Current cycle screen opens with the program name and the cycle's
+  start and end date.
+
+### Changed
+- **Start date is fixed** once the first session is started. Before that, it can still be moved
+  on the Current cycle screen.
+- **Compacter Current cycle card** on Settings: no table headers, and an arrow shows each lift's
+  way from start to goal.
+- **Under the hood**: the training plan is now data, so the app can support other programs later.
+  Nothing changes in how the current program works.
+
 ## 0.26.0 — 2026-11-26 · Design your own app icon
 
 | Custom icon, to start | Squat on teal | Flexed arm on pink |
