@@ -142,6 +142,40 @@ export function symbolColorFor(background, picked = getIconSymbolColor()) {
   return 0.299 * r + 0.587 * g + 0.114 * b > 150 ? '#000000' : '#ffffff'
 }
 
+/** Whether anything of the custom icon was picked yet; until then the Custom tile shows an invitation to design one. */
+export function isIconCustomised() {
+  try {
+    return [ICON_COLOR_KEY, ICON_SYMBOL_KEY, SYMBOL_COLOR_KEY].some((k) => localStorage.getItem(k) !== null)
+  } catch {
+    return false
+  }
+}
+
+/** The initial look of the Custom tile: diagonal rainbow stripes with a semi-transparent plus (PNG data URL). */
+export function placeholderIconUrl(size) {
+  const g = document.createElement('canvas').getContext?.('2d')
+  if (!g) return null
+  g.canvas.width = g.canvas.height = size
+  const bands = 7
+  const w = (size * 1.5) / bands
+  g.translate(size / 2, size / 2)
+  g.rotate(-Math.PI / 4)
+  for (let i = 0; i < bands; i++) {
+    g.fillStyle = `hsl(${Math.round((i * 360) / bands)} 60% 66%)`
+    g.fillRect(-size * 0.75 + i * w, -size, w + 1, size * 2)
+  }
+  g.rotate(Math.PI / 4)
+  g.fillStyle = 'rgb(255 255 255 / 0.75)'
+  const k = size / 512
+  for (const [x, y, bw, bh] of [[146, 234, 220, 44], [234, 146, 44, 220]]) {
+    g.beginPath()
+    if (g.roundRect) g.roundRect((x - 256) * k, (y - 256) * k, bw * k, bh * k, 12 * k)
+    else g.rect((x - 256) * k, (y - 256) * k, bw * k, bh * k)
+    g.fill()
+  }
+  return g.canvas.toDataURL('image/png')
+}
+
 /** The custom icon as a PNG data URL (null where canvas is unavailable): the symbol on a full-bleed colour. */
 export function customIconUrl(color, symbol, size, symbolColor = getIconSymbolColor()) {
   const g = document.createElement('canvas').getContext?.('2d')
@@ -157,7 +191,8 @@ export function customIconUrl(color, symbol, size, symbolColor = getIconSymbolCo
 }
 
 function applyIcon() {
-  const icon = getAppIcon()
+  // Custom before anything is picked has no icon of its own yet: the light one stays
+  const icon = getAppIcon() === 'custom' && !isIconCustomised() ? 'light' : getAppIcon()
   const suffix = icon === 'dark' ? '-dark' : ''
   // The page's own hrefs are remembered, since a custom icon replaces them with a data URL
   const set = (rel, file, custom, type) => {

@@ -10,7 +10,7 @@ import { currentCycle, migrate, replaceState, update, updateCycle } from '../sto
 import { sampleState } from '../sampleData'
 import ScreenHeader from '../components/ScreenHeader'
 import { SYMBOLS } from '../iconSymbols'
-import { ACCENTS, ICONS, THEMES, customIconUrl, getAccent, getAppIcon, getIconColor, getIconSymbol, getIconSymbolColor, setIconSymbolColor, symbolColorFor, setAppIcon, setIconColor, setIconSymbol, getCustomAccent, getTheme, setAccent, setCustomAccent, setTheme } from '../theme'
+import { ACCENTS, ICONS, THEMES, customIconUrl, isIconCustomised, placeholderIconUrl, getAccent, getAppIcon, getIconColor, getIconSymbol, getIconSymbolColor, setIconSymbolColor, symbolColorFor, setAppIcon, setIconColor, setIconSymbol, getCustomAccent, getTheme, setAccent, setCustomAccent, setTheme } from '../theme'
 
 // Running as an installed home-screen app (not in a browser tab)
 const installed = window.matchMedia?.('(display-mode: standalone)').matches || navigator.standalone === true
@@ -34,18 +34,22 @@ export default function Settings({ state }) {
   const pickIconSymbol = (id) => {
     setIconSymbol(id)
     setIconSymbolState(id)
+    setCustomised(true)
     setAppIconState('custom')
   }
   const pickSymbolColor = (c) => {
     setIconSymbolColor(c)
     setSymbolColorState(c)
+    setCustomised(true)
     setAppIconState('custom')
   }
   const pickIconColor = (c) => {
     setIconColor(c)
     setIconColorState(c)
+    setCustomised(true)
     setAppIconState('custom')
   }
+  const [customised, setCustomised] = useState(isIconCustomised) // anything of the custom icon picked yet
   const [iconColor, setIconColorState] = useState(getIconColor)
   const [iconSymbol, setIconSymbolState] = useState(getIconSymbol)
   const [symbolColor, setSymbolColorState] = useState(getIconSymbolColor) // picked colour, or null = by contrast
@@ -266,7 +270,7 @@ export default function Settings({ state }) {
               {ICONS.map((x) => (
                 <button key={x.id} className="icon-choice" role="radio" aria-checked={appIcon === x.id} onClick={() => changeAppIcon(x.id)}>
                   <img
-                    src={(x.id === 'custom' && customIconUrl(iconColor, iconSymbol, 128, symbolColor)) || `${import.meta.env.BASE_URL}${x.id === 'dark' ? 'icon-dark.svg' : 'icon.svg'}`}
+                    src={(x.id === 'custom' && (customised ? customIconUrl(iconColor, iconSymbol, 128, symbolColor) : placeholderIconUrl(128))) || `${import.meta.env.BASE_URL}${x.id === 'dark' ? 'icon-dark.svg' : 'icon.svg'}`}
                     alt=""
                     width="64"
                     height="64"
