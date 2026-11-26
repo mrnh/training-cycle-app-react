@@ -60,36 +60,102 @@ export function getAccent() {
 
 // App icon: the home-screen icon is fixed when the app is installed, so the choice only changes what
 // the browser offers for the next install (apple-touch-icon for iOS, a second manifest for Android).
+// 'custom' is the barbell in a colour the user picks, drawn here as a PNG and handed to iOS as a data
+// URL; Android installs keep the light icon, since its icons come from the manifest file.
 export const ICONS = [
   { id: 'light', label: 'Light' },
   { id: 'dark', label: 'Dark' },
+  { id: 'custom', label: 'Custom' },
 ]
 const ICON_KEY = 'app-icon'
+const ICON_COLOR_KEY = 'app-icon-color' // background of the custom icon as #rrggbb
+export const DEFAULT_ICON_COLOR = '#6e56cf'
 
 export function getAppIcon() {
   try {
-    return localStorage.getItem(ICON_KEY) === 'dark' ? 'dark' : 'light'
+    const i = localStorage.getItem(ICON_KEY)
+    return ICONS.some((x) => x.id === i) ? i : 'light'
   } catch {
     return 'light'
   }
 }
 
+export function getIconColor() {
+  try {
+    const c = localStorage.getItem(ICON_COLOR_KEY)
+    return HEX.test(c) ? c.toLowerCase() : DEFAULT_ICON_COLOR
+  } catch {
+    return DEFAULT_ICON_COLOR
+  }
+}
+
+// The one symbol for now: the barbell of icon.svg (x, y, width, height, radius in its 512 box)
+const BARBELL = [
+  [130, 247, 252, 18, 6],
+  [160, 194, 28, 124, 8],
+  [324, 194, 28, 124, 8],
+  [138, 214, 18, 84, 6],
+  [356, 214, 18, 84, 6],
+]
+
+/** The custom icon as a PNG data URL (null where canvas is unavailable): the symbol on a full-bleed colour. */
+export function customIconUrl(color, size) {
+  const g = document.createElement('canvas').getContext?.('2d')
+  if (!g) return null
+  g.canvas.width = g.canvas.height = size
+  g.fillStyle = color
+  g.fillRect(0, 0, size, size)
+  // Black or white symbol, whichever reads better on the colour
+  const [r, gr, b] = [1, 3, 5].map((i) => parseInt(color.slice(i, i + 2), 16))
+  g.fillStyle = 0.299 * r + 0.587 * gr + 0.114 * b > 150 ? '#000' : '#fff'
+  const k = (size / 512) * 1.6
+  g.translate(size / 2, size / 2)
+  g.scale(k, k)
+  g.translate(-256, -256)
+  for (const [x, y, w, h, rad] of BARBELL) {
+    g.beginPath()
+    if (g.roundRect) g.roundRect(x, y, w, h, rad)
+    else g.rect(x, y, w, h)
+    g.fill()
+  }
+  return g.canvas.toDataURL('image/png')
+}
+
 function applyIcon() {
-  const dark = getAppIcon() === 'dark'
-  const link = (rel) => document.querySelector(`link[rel="${rel}"]`)
-  // Files sit next to the page; keep the folder of the current href
-  const swap = (el, file) => el?.setAttribute('href', el.getAttribute('href').replace(/[^/]*$/, file))
-  swap(link('apple-touch-icon'), dark ? 'apple-touch-icon-dark.png' : 'apple-touch-icon.png')
-  swap(link('manifest'), dark ? 'manifest-dark.webmanifest' : 'manifest.webmanifest')
-  swap(link('icon'), dark ? 'favicon-dark.svg' : 'favicon.svg')
+  const icon = getAppIcon()
+  const suffix = icon === 'dark' ? '-dark' : ''
+  // The page's own hrefs are remembered, since a custom icon replaces them with a data URL
+  const set = (rel, file, custom, type) => {
+    const el = document.querySelector(`link[rel="${rel}"]`)
+    if (!el) return
+    el.dataset.base ??= el.getAttribute('href')
+    const href = custom ?? el.dataset.base.replace(/[^/]*$/, file)
+    el.setAttribute('href', href)
+    if (type) el.setAttribute('type', custom ? 'image/png' : type)
+  }
+  const png = icon === 'custom' ? customIconUrl(getIconColor(), 180) : null
+  set('apple-touch-icon', `apple-touch-icon${suffix}.png`, png)
+  set('manifest', `manifest${suffix}.webmanifest`)
+  set('icon', `favicon${suffix}.svg`, png, 'image/svg+xml')
 }
 
 export function setAppIcon(icon) {
   try {
-    if (icon === 'dark') localStorage.setItem(ICON_KEY, 'dark')
-    else localStorage.removeItem(ICON_KEY)
+    if (icon === 'light') localStorage.removeItem(ICON_KEY)
+    else localStorage.setItem(ICON_KEY, icon)
   } catch {
     // Storage blocked: the icon applies until the app is closed
+  }
+  applyIcon()
+}
+
+/** Background colour of the custom icon (picking one also selects the custom icon). */
+export function setIconColor(hex) {
+  try {
+    localStorage.setItem(ICON_COLOR_KEY, hex.toLowerCase())
+    localStorage.setItem(ICON_KEY, 'custom')
+  } catch {
+    // Storage blocked: the colour applies until the app is closed
   }
   applyIcon()
 }
