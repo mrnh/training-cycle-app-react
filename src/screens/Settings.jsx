@@ -384,30 +384,23 @@ export default function Settings({ state }) {
       <div className="screen">
         <ScreenHeader title="Current cycle" backLabel="Back to settings" onBack={() => show(null)} />
         <section className="card">
-          <div className="row inline-field">
-            <h3>Program</h3>
-            <span className="small">{program.name}</span>
-          </div>
+          <h3>{program.name}</h3>
+          <p className="muted small cycle-dates">{fmtDate(cycle.startDate)} – {fmtDate(cycleEnd(cycle))}</p>
 
-          <div className="row inline-field">
-            <h3>{cycleStarted(cycle) ? 'Start date' : <label htmlFor="start-date">Start date</label>}</h3>
-            {cycleStarted(cycle) ? (
-              <span>{fmtDate(cycle.startDate)}</span>
-            ) : (
+          {/* Until the first session is started, the start date can still be moved */}
+          {!cycleStarted(cycle) && (
+            <div className="row inline-field">
+              <h3>
+                <label htmlFor="start-date">Start date</label>
+              </h3>
               <input
                 id="start-date"
                 type="date"
                 value={cycle.startDate}
                 onChange={(e) => e.target.value && updateCycle((c) => void (c.startDate = e.target.value))}
               />
-            )}
-          </div>
-          {cycleStarted(cycle) && <p className="muted small">Fixed once the first session is started.</p>}
-
-          <div className="row inline-field">
-            <h3>End date</h3>
-            <span>{fmtDate(cycleEnd(cycle))}</span>
-          </div>
+            </div>
+          )}
 
           <div className="row subhead">
             <h3>
