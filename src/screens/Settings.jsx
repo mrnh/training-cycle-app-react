@@ -470,18 +470,14 @@ export default function Settings({ state }) {
           <br />
           {program.weekCount} weeks · {perWeek} {perWeek === '1' ? 'session' : 'sessions'} a week
         </p>
-        {/* Start = the 1RM the cycle is built on, Goal = the week-9 single */}
+        {/* Start = the 1RM the cycle is built on, → Goal = the week-9 single */}
         <div className="lift-table">
-          <div className="lift-row head">
-            <span />
-            <span>Start</span>
-            <span>Goal</span>
-          </div>
           {lifts.map((id) => (
             <div className="lift-row" key={id}>
               <span>{exerciseName(state, id)}</span>
-              <span>{fmt(cycle.oneRM[id])} {unit()}</span>
-              <strong>{fmt(goalWeight(cycle, id))} {unit()}</strong>
+              <span><span className="sr-only">Start </span>{fmt(cycle.oneRM[id])} {unit()}</span>
+              <span className="muted" aria-hidden="true">→</span>
+              <strong><span className="sr-only">Goal </span>{fmt(goalWeight(cycle, id))} {unit()}</strong>
             </div>
           ))}
         </div>

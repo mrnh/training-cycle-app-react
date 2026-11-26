@@ -325,7 +325,7 @@ button.new-cycle { margin-top: var(--space-2); }
 .lift-table { display: flex; flex-direction: column; font-size: var(--text-sm); margin-top: var(--space-3); }
 .lift-row {
   display: grid;
-  grid-template-columns: 1fr 5rem 5rem;
+  grid-template-columns: 1fr 4.5rem 1.25rem 4.5rem;
   gap: var(--space-2);
   align-items: center;
   padding: var(--space-2) 0;
@@ -333,7 +333,7 @@ button.new-cycle { margin-top: var(--space-2); }
 }
 .lift-row:last-child { border-bottom: none; }
 .lift-row > :not(:first-child) { text-align: right; font-variant-numeric: tabular-nums; }
-.lift-row.head { padding: 0 0 var(--space-1); border-bottom: none; font-size: var(--text-xs); color: var(--muted); }
+.lift-row > :nth-child(3) { text-align: center; }
 .group-summary li span:last-child { text-align: right; flex-shrink: 0; }
 .group-list { list-style: none; margin: 0; padding: 0; }
 .group-list li { min-height: var(--tap); background: var(--card); gap: var(--space-1); }
