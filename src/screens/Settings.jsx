@@ -242,12 +242,17 @@ export default function Settings({ state }) {
         </section>
         <section className="card">
           <div className="pref">
-            <div className="row unit-row">
-              <h3>App icon</h3>
-              <Segmented label="App icon" options={ICONS} value={appIcon} onChange={changeAppIcon} />
+            <h3>App icon</h3>
+            <div className="icon-choices" role="radiogroup" aria-label="App icon">
+              {ICONS.map((x) => (
+                <button key={x.id} className="icon-choice" role="radio" aria-checked={appIcon === x.id} onClick={() => changeAppIcon(x.id)}>
+                  <img src={`${import.meta.env.BASE_URL}${x.id === 'dark' ? 'icon-dark.svg' : 'icon.svg'}`} alt="" width="64" height="64" />
+                  <span>{x.label}</span>
+                </button>
+              ))}
             </div>
             <p className="muted small">
-              Light is a black barbell on white, Dark a white barbell on black. To change the icon on your home screen, remove the app and install it again. Kept on this device only.
+              To change the icon on your home screen, remove the app and install it again. Kept on this device only.
             </p>
           </div>
         </section>
