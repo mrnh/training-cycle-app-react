@@ -16,20 +16,21 @@ const seg = (x1, y1, x2, y2, w) => {
   return `M${p(x1 + nx, y1 + ny)}L${p(x2 + nx, y2 + ny)}L${p(x2 - nx, y2 - ny)}L${p(x1 - nx, y1 - ny)}Z`
 }
 
-// A lifter squatting with the barbell across the shoulders, seen from the front
+// A lifter squatting with the barbell across the shoulders, seen from the front. The torso ends in a
+// flat line level with the underside of the thighs, so there is no gap between the legs.
 const lifter =
   seg(62, 164, 450, 164, 14) + // bar
   seg(94, 116, 94, 212, 26) + seg(124, 132, 124, 196, 16) + // plates, left
   seg(418, 116, 418, 212, 26) + seg(388, 132, 388, 196, 16) + // plates, right
   circle(256, 106, 28) + // head
-  'M214 176L230 318L282 318L298 176Z' + // torso
+  'M214 176L224 328L288 328L298 176Z' + // torso down to the hips
   seg(216, 186, 176, 238, 22) + seg(176, 238, 160, 170, 20) + // left arm up to the bar
   seg(296, 186, 336, 238, 22) + seg(336, 238, 352, 170, 20) + // right arm
-  seg(240, 314, 176, 358, 38) + seg(272, 314, 336, 358, 38) + // thighs, knees wide
-  seg(176, 358, 200, 428, 34) + seg(336, 358, 312, 428, 34) + // shins
-  circle(176, 358, 19) + circle(336, 358, 19) + // knees
+  seg(236, 310, 168, 332, 36) + seg(276, 310, 344, 332, 36) + // thighs, knees wide
+  seg(168, 332, 192, 426, 34) + seg(344, 332, 320, 426, 34) + // shins
+  circle(168, 332, 18) + circle(344, 332, 18) + // knees
   circle(176, 238, 11) + circle(336, 238, 11) + circle(160, 170, 10) + circle(352, 170, 10) + // elbows, hands
-  circle(200, 430, 19) + circle(312, 430, 19) // feet
+  circle(192, 428, 19) + circle(320, 428, 19) // feet
 
 // The original icon's barbell, enlarged 1.6 times around the centre
 const big = ([x, y, w, h, r]) => rr(256 + (x - 256) * 1.6, 256 + (y - 256) * 1.6, w * 1.6, h * 1.6, r * 1.6)
@@ -91,12 +92,8 @@ export const SYMBOLS = [
     id: 'arm',
     label: 'Flexed arm',
     d:
-      circle(148, 128, 64) + // fist
-      seg(150, 170, 160, 330, 80) + // forearm
-      circle(160, 366, 56) + // elbow
-      seg(160, 366, 420, 366, 112) + // upper arm
-      circle(324, 258, 102) + // biceps
-      circle(412, 356, 66), // shoulder
+      'M444 420L156 420C112 420 84 392 88 352L116 212C96 174 92 124 116 94C142 62 202 66 222 100' +
+      'C240 132 232 178 204 214L206 262C246 196 330 154 388 190C432 218 444 270 444 330Z',
   },
 ]
 
