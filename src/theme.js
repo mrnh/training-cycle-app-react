@@ -1,3 +1,5 @@
+import { DEFAULT_SYMBOL, SYMBOLS } from './iconSymbols'
+
 // Light or dark look and accent colour. Auto follows the device, or it is set by hand. The choice is kept on this
 // device only (localStorage, like the History sort order), so a backup doesn't carry them to
 // another device. The page always carries the resolved theme as <html data-theme="light|dark">; the dark
@@ -70,6 +72,27 @@ export const ICONS = [
 const ICON_KEY = 'app-icon'
 const ICON_COLOR_KEY = 'app-icon-color' // background of the custom icon as #rrggbb
 export const DEFAULT_ICON_COLOR = '#6e56cf'
+const ICON_SYMBOL_KEY = 'app-icon-symbol'
+const symbolById = (id) => SYMBOLS.find((x) => x.id === id) ?? SYMBOLS[0]
+
+export function getIconSymbol() {
+  try {
+    return symbolById(localStorage.getItem(ICON_SYMBOL_KEY)).id
+  } catch {
+    return DEFAULT_SYMBOL
+  }
+}
+
+/** Symbol of the custom icon (picking one also selects the custom icon). */
+export function setIconSymbol(id) {
+  try {
+    localStorage.setItem(ICON_SYMBOL_KEY, id)
+    localStorage.setItem(ICON_KEY, 'custom')
+  } catch {
+    // Storage blocked: the symbol applies until the app is closed
+  }
+  applyIcon()
+}
 
 export function getAppIcon() {
   try {
@@ -89,17 +112,8 @@ export function getIconColor() {
   }
 }
 
-// The one symbol for now: the barbell of icon.svg (x, y, width, height, radius in its 512 box)
-const BARBELL = [
-  [130, 247, 252, 18, 6],
-  [160, 194, 28, 124, 8],
-  [324, 194, 28, 124, 8],
-  [138, 214, 18, 84, 6],
-  [356, 214, 18, 84, 6],
-]
-
 /** The custom icon as a PNG data URL (null where canvas is unavailable): the symbol on a full-bleed colour. */
-export function customIconUrl(color, size) {
+export function customIconUrl(color, symbol, size) {
   const g = document.createElement('canvas').getContext?.('2d')
   if (!g) return null
   g.canvas.width = g.canvas.height = size
@@ -108,16 +122,9 @@ export function customIconUrl(color, size) {
   // Black or white symbol, whichever reads better on the colour
   const [r, gr, b] = [1, 3, 5].map((i) => parseInt(color.slice(i, i + 2), 16))
   g.fillStyle = 0.299 * r + 0.587 * gr + 0.114 * b > 150 ? '#000' : '#fff'
-  const k = (size / 512) * 1.6
-  g.translate(size / 2, size / 2)
-  g.scale(k, k)
-  g.translate(-256, -256)
-  for (const [x, y, w, h, rad] of BARBELL) {
-    g.beginPath()
-    if (g.roundRect) g.roundRect(x, y, w, h, rad)
-    else g.rect(x, y, w, h)
-    g.fill()
-  }
+  g.scale(size / 512, size / 512)
+  const sym = symbolById(symbol)
+  g.fill(new Path2D(sym.d), sym.evenodd ? 'evenodd' : 'nonzero')
   return g.canvas.toDataURL('image/png')
 }
 
@@ -133,7 +140,7 @@ function applyIcon() {
     el.setAttribute('href', href)
     if (type) el.setAttribute('type', custom ? 'image/png' : type)
   }
-  const png = icon === 'custom' ? customIconUrl(getIconColor(), 180) : null
+  const png = icon === 'custom' ? customIconUrl(getIconColor(), getIconSymbol(), 180) : null
   set('apple-touch-icon', `apple-touch-icon${suffix}.png`, png)
   set('manifest', `manifest${suffix}.webmanifest`)
   set('icon', `favicon${suffix}.svg`, png, 'image/svg+xml')

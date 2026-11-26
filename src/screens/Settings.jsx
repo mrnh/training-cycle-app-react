@@ -9,7 +9,8 @@ import { DATE_FORMATS, ROUNDINGS, ROUNDING_MODES, UNITS, dateFormat, rounding, r
 import { currentCycle, migrate, replaceState, update, updateCycle } from '../store'
 import { sampleState } from '../sampleData'
 import ScreenHeader from '../components/ScreenHeader'
-import { ACCENTS, ICONS, THEMES, customIconUrl, getAccent, getAppIcon, getIconColor, setAppIcon, setIconColor, getCustomAccent, getTheme, setAccent, setCustomAccent, setTheme } from '../theme'
+import { SYMBOLS } from '../iconSymbols'
+import { ACCENTS, ICONS, THEMES, customIconUrl, getAccent, getAppIcon, getIconColor, getIconSymbol, setAppIcon, setIconColor, setIconSymbol, getCustomAccent, getTheme, setAccent, setCustomAccent, setTheme } from '../theme'
 
 // Running as an installed home-screen app (not in a browser tab)
 const installed = window.matchMedia?.('(display-mode: standalone)').matches || navigator.standalone === true
@@ -30,12 +31,18 @@ export default function Settings({ state }) {
     setAppIcon(i)
     setAppIconState(i)
   }
+  const pickIconSymbol = (id) => {
+    setIconSymbol(id)
+    setIconSymbolState(id)
+    setAppIconState('custom')
+  }
   const pickIconColor = (c) => {
     setIconColor(c)
     setIconColorState(c)
     setAppIconState('custom')
   }
   const [iconColor, setIconColorState] = useState(getIconColor)
+  const [iconSymbol, setIconSymbolState] = useState(getIconSymbol)
   const [accent, setAccentState] = useState(getAccent)
   const [custom, setCustomState] = useState(getCustomAccent) // the picked colour, or null
   const changeAccent = (a) => {
@@ -253,7 +260,7 @@ export default function Settings({ state }) {
               {ICONS.map((x) => (
                 <button key={x.id} className="icon-choice" role="radio" aria-checked={appIcon === x.id} onClick={() => changeAppIcon(x.id)}>
                   <img
-                    src={(x.id === 'custom' && customIconUrl(iconColor, 128)) || `${import.meta.env.BASE_URL}${x.id === 'dark' ? 'icon-dark.svg' : 'icon.svg'}`}
+                    src={(x.id === 'custom' && customIconUrl(iconColor, iconSymbol, 128)) || `${import.meta.env.BASE_URL}${x.id === 'dark' ? 'icon-dark.svg' : 'icon.svg'}`}
                     alt=""
                     width="64"
                     height="64"
@@ -270,21 +277,22 @@ export default function Settings({ state }) {
                     <input type="color" aria-label="Icon color" value={iconColor} onChange={(e) => pickIconColor(e.target.value)} />
                   </label>
                 </div>
-                <div className="row unit-row">
-                  <h3>Symbol</h3>
-                  <div className="icon-choices" role="radiogroup" aria-label="Icon symbol">
-                    <button className="symbol-choice" role="radio" aria-checked="true" aria-label="Barbell">
+                <h3>Symbol</h3>
+                <div className="symbol-grid" role="radiogroup" aria-label="Icon symbol">
+                  {SYMBOLS.map((x) => (
+                    <button
+                      key={x.id}
+                      className="symbol-choice"
+                      role="radio"
+                      aria-checked={iconSymbol === x.id}
+                      aria-label={x.label}
+                      onClick={() => pickIconSymbol(x.id)}
+                    >
                       <svg viewBox="0 0 512 512" width="28" height="28" aria-hidden="true" fill="currentColor">
-                        <g transform="translate(256 256) scale(1.6) translate(-256 -256)">
-                          <rect x="130" y="247" width="252" height="18" rx="6" />
-                          <rect x="160" y="194" width="28" height="124" rx="8" />
-                          <rect x="324" y="194" width="28" height="124" rx="8" />
-                          <rect x="138" y="214" width="18" height="84" rx="6" />
-                          <rect x="356" y="214" width="18" height="84" rx="6" />
-                        </g>
+                        <path d={x.d} fillRule={x.evenodd ? 'evenodd' : 'nonzero'} />
                       </svg>
                     </button>
-                  </div>
+                  ))}
                 </div>
               </div>
             )}
