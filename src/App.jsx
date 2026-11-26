@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import './App.css'
 import UpdatePrompt from './components/UpdatePrompt'
 import useEdgeSwipeBack from './useEdgeSwipeBack'
-import { ALL_SESSIONS, activeSession, nextSession } from './program'
+import { activeSession, nextSession, sessionsOf } from './program'
 import History from './screens/History'
 import Plan from './screens/Plan'
 import Session from './screens/Session'
@@ -73,7 +73,7 @@ export default function App() {
 
   const cycle = currentCycle(state)
   // The open session, else the next one to start
-  const upcoming = () => (activeSession(cycle) ?? nextSession(cycle))?.key ?? ALL_SESSIONS.at(-1).key
+  const upcoming = () => (activeSession(cycle) ?? nextSession(cycle))?.key ?? sessionsOf(cycle).at(-1).key
   // Pinned when the tab opens, so ticking the last set doesn't jump to the next session.
   const sessionKey = selected ?? upcoming()
   const openSession = (key) => {

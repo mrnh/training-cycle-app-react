@@ -1,5 +1,5 @@
 import {
-  ALL_SESSIONS, DEFAULT_CATALOG, DEFAULT_PRESCRIPTION, DEFAULT_PRIMARIES, GROUPS, finishSession, newId, secondaryKey, sessionProgress, setDateFormat, setRounding, setRoundingMode, setUnit,
+  DEFAULT_CATALOG, DEFAULT_PRESCRIPTION, DEFAULT_PRIMARIES, DEFAULT_PROGRAM, GROUPS, finishSession, newId, secondaryKey, sessionProgress, sessionsOf, setDateFormat, setRounding, setRoundingMode, setUnit,
 } from './program'
 import { useSyncExternalStore } from 'react'
 import { get, set, del } from 'idb-keyval'
@@ -63,11 +63,12 @@ export const currentCycle = (s) => s.cycles[s.cycles.length - 1]
 /** Mutate the current cycle. */
 export const updateCycle = (mutate) => update((d) => mutate(currentCycle(d), d))
 
-export function newCycle(startDate, oneRM, primaries = DEFAULT_PRIMARIES) {
+export function newCycle(startDate, oneRM, primaries = DEFAULT_PROGRAM.defaultLifts, program = DEFAULT_PROGRAM.id) {
   return {
     id: newId(),
+    program, // id of the program the cycle follows (programs.js)
     startDate,
-    primaries: [...primaries], // catalog ids of the three main-lift slots; null = empty slot
+    primaries: [...primaries], // catalog ids of the program's main-lift slots; null = empty slot
     oneRM, // catalog id -> kg, fixed for the cycle
     logs: {}, // setKey -> { w, r, done }
     notes: {}, // sessionKey, sessionKey:liftId or sessionKey:+exerciseId -> text
@@ -80,12 +81,12 @@ export function newCycle(startDate, oneRM, primaries = DEFAULT_PRIMARIES) {
   }
 }
 
-export function initialState(startDate, oneRM, primaries = DEFAULT_PRIMARIES) {
+export function initialState(startDate, oneRM, primaries = DEFAULT_PROGRAM.defaultLifts, program = DEFAULT_PROGRAM.id) {
   return {
     version: DATA_VERSION,
     catalog: DEFAULT_CATALOG.map((e) => ({ ...e })), // [{ id, name }]
     groups: Object.fromEntries(GROUPS.map((g) => [g, []])), // group -> ordered [{ id, sets, reps, weight, rest }]
-    cycles: [newCycle(startDate, oneRM, primaries)],
+    cycles: [newCycle(startDate, oneRM, primaries, program)],
   }
 }
 
@@ -129,7 +130,7 @@ export function migrate(data) {
     next.version = 3
     for (const c of next.cycles) {
       c.finished = {}
-      for (const plan of ALL_SESSIONS) {
+      for (const plan of sessionsOf(c)) {
         if (sessionProgress(c, plan).complete) finishSession(next, c, plan, null)
       }
     }

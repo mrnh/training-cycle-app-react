@@ -7,8 +7,8 @@ import RestTimer from '../components/RestTimer'
 import SetsCard from '../components/SetsCard'
 import useConfirm from '../components/useConfirm'
 import {
-  ALL_SESSIONS, activeSession, cancelSession, isExtra, removeExtra, restOf, sessionEntry, sessionName, clockTime, draftSecondaries, exerciseHistory, exerciseName, finishSession, finishedDate,
-  liftOf, mainLifts, parseKey, secondaryKey, sessionPlan, setKey, setsSummary, startSession, targetWeight, unfinishedBefore,
+  activeSession, cancelSession, isExtra, removeExtra, restOf, sessionEntry, sessionName, clockTime, draftSecondaries, exerciseHistory, exerciseName, finishSession, finishedDate,
+  liftOf, mainLifts, parseKey, secondaryKey, sessionPlan, sessionsOf, setKey, setsSummary, startSession, targetWeight, unfinishedBefore,
   todayIso, untickedSets, weekRange,
 } from '../program'
 import { currentCycle, update, updateCycle } from '../store'
@@ -26,7 +26,7 @@ const setNote = (key, text) =>
 export default function Session({ state, sessionKey, onBack }) {
   const cycle = currentCycle(state)
   const { week, session } = parseKey(sessionKey)
-  const plan = sessionPlan(week, session)
+  const plan = sessionPlan(cycle, week, session)
   const record = cycle.finished[plan.key]
   const active = activeSession(cycle)
   const isOpen = active?.key === plan.key
@@ -179,7 +179,7 @@ function PrimaryBlock({ state, cycle, plan, p, open }) {
 /** Accessory work: prescribed by the group (or when added), with last time for reference. */
 function SecondaryBlock({ state, cycle, plan, id, open }) {
   const cycleIdx = state.cycles.length - 1
-  const order = ALL_SESSIONS.findIndex((s) => s.key === plan.key)
+  const order = sessionsOf(cycle).findIndex((s) => s.key === plan.key)
   const last = exerciseHistory(state, id, 'secondary')
     .filter((h) => h.cycle < cycleIdx || (h.cycle === cycleIdx && h.order < order))
     .at(-1)

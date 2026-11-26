@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import MainLiftFields from '../components/MainLiftFields'
-import { DEFAULT_CATALOG, DEFAULT_PRIMARIES, mainLiftsError, todayIso } from '../program'
+import { DEFAULT_CATALOG, DEFAULT_PRIMARIES, DEFAULT_PROGRAM, mainLiftsError, todayIso } from '../program'
 import { initialState, replaceState } from '../store'
 
 export default function Setup() {
@@ -20,7 +20,7 @@ export default function Setup() {
   return (
     <form className="screen setup" onSubmit={start}>
       <h1>New training cycle</h1>
-      <p className="muted">9 weeks, 3 sessions a week. Your 1RMs stay fixed for the whole cycle and are re-tested in week 9.</p>
+      <p className="muted">{DEFAULT_PROGRAM.weekCount} weeks, {DEFAULT_PROGRAM.weeks[0].length} sessions a week. Your 1RMs stay fixed for the whole cycle and are re-tested in week {DEFAULT_PROGRAM.weekCount}.</p>
 
       <label className="field">
         <span>Start date</span>

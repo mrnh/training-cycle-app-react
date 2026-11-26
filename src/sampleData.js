@@ -1,5 +1,5 @@
 import { DATA_VERSION } from './store'
-import { DEFAULT_CATALOG, isoDay, newId } from './program'
+import { DEFAULT_CATALOG, DEFAULT_PROGRAM, isoDay, newId } from './program'
 
 /*
  * Sample data for trying the app out (Settings → Use sample data): a cycle in its second week
@@ -41,6 +41,7 @@ export function sampleState(keep = {}, now = new Date()) {
     cycles: [
       {
         id: newId(),
+        program: DEFAULT_PROGRAM.id,
         startDate: day(0),
         primaries: ['squat', 'bench', 'deadlift'],
         oneRM: { squat: 140, bench: 100, deadlift: 180 },

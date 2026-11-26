@@ -1,4 +1,5 @@
-// Russian Masters Squat Routine, adapted for up to three main lifts.
+import { DEFAULT_PROGRAM, PROGRAMS, sessionKey } from './programs'
+
 // Every exercise lives in the catalog; the main lifts of a cycle are ordinary entries.
 export const DEFAULT_CATALOG = [
   { id: 'squat', name: 'Squat' },
@@ -15,36 +16,17 @@ export const DEFAULT_CATALOG = [
   { id: 'tuck-ups', name: 'Tuck-Ups' },
   { id: 'v-ups', name: 'V-Ups' },
 ]
-// The three main-lift slots of a cycle point at catalog exercises (stored per cycle).
-export const DEFAULT_PRIMARIES = ['squat', 'bench', 'deadlift']
-export const exerciseName = (state, id) => state.catalog.find((e) => e.id === id)?.name ?? 'Deleted exercise'
-
-export const WEEKS = 9
-export const SESSIONS_PER_WEEK = 3
 export const GROUPS = ['A', 'B', 'C']
 
-// Variant 1 is the same every week; variant 2 builds volume, then intensity.
-export const V1 = { sets: 6, reps: 2, pct: 80 }
-export const V2 = [
-  { sets: 6, reps: 3, pct: 80 },
-  { sets: 6, reps: 4, pct: 80 },
-  { sets: 6, reps: 5, pct: 80 },
-  { sets: 6, reps: 6, pct: 80 },
-  { sets: 5, reps: 5, pct: 85 },
-  { sets: 4, reps: 4, pct: 90 },
-  { sets: 3, reps: 3, pct: 95 },
-  { sets: 2, reps: 2, pct: 100 },
-  { sets: 1, reps: 1, pct: 105 }, // re-test
-]
-
-// Each session: one main-lift slot on variant 2, another on variant 1, plus an accessory group.
-// Slots 0, 1, 2 are squat, bench and deadlift by default (see cycle.primaries). A slot can be
-// empty (null): its sets are left out of every session.
-export const ROTATION = [
-  { v2: 0, v1: 2, group: 'A' },
-  { v2: 1, v1: 0, group: 'B' },
-  { v2: 2, v1: 1, group: 'C' },
-]
+// The plan itself (weeks, sessions, sets and percentages) is data in programs.js. Each cycle
+// names its program (cycle.program); cycles stored before programs existed have none and ran
+// the default one.
+export { DEFAULT_PROGRAM, PROGRAMS, sessionKey }
+export const programOf = (cycle) => PROGRAMS.find((p) => p.id === cycle.program) ?? DEFAULT_PROGRAM
+export const sessionsOf = (cycle) => programOf(cycle).sessions
+// The main-lift slots a new cycle of the default program starts with (stored per cycle)
+export const DEFAULT_PRIMARIES = DEFAULT_PROGRAM.defaultLifts
+export const exerciseName = (state, id) => state.catalog.find((e) => e.id === id)?.name ?? 'Deleted exercise'
 
 export const round1 = (x) => Math.round(x * 10) / 10
 export const fmt = (x) => (x == null || x === '' ? '–' : String(round1(x)))
@@ -82,7 +64,6 @@ export const setRoundingMode = (m) => void (currentRoundingMode = m === 'regular
 export const roundToStep = (x, step = currentRounding, mode = currentRoundingMode) =>
   round1((mode === 'up' ? Math.ceil(x / step - 1e-9) : Math.round(x / step)) * step)
 
-export const sessionKey = (week, session) => `w${week}s${session}`
 /** How sessions are named everywhere: "Session 1.2" = week 1, session 2. */
 export const sessionName = ({ week, session }) => `Session ${week}.${session}`
 export function parseKey(key) {
@@ -94,30 +75,26 @@ export const setKey = (sKey, exId, i) => `${sKey}:${exId}:${i}`
 // exercise in the same session without their sets mixing.
 export const secondaryKey = (exId) => `+${exId}`
 
-export function sessionPlan(week, session) {
-  const r = ROTATION[session - 1]
-  return {
-    week,
-    session,
-    key: sessionKey(week, session),
-    group: r.group,
-    primaries: [
-      { slot: r.v2, variant: 2, ...V2[week - 1], retest: week === WEEKS },
-      { slot: r.v1, variant: 1, ...V1, retest: false },
-    ],
-  }
-}
-
-export const ALL_SESSIONS = Array.from({ length: WEEKS * SESSIONS_PER_WEEK }, (_, i) =>
-  sessionPlan(Math.floor(i / SESSIONS_PER_WEEK) + 1, (i % SESSIONS_PER_WEEK) + 1),
-)
+/** The plan of a session of the cycle's program, by week and session number (both from 1). */
+export const sessionPlan = (cycle, week, session) => programOf(cycle).weeks[week - 1][session - 1]
 
 /** Catalog id of the exercise in a planned main-lift slot for this cycle; null = empty slot. */
 export const liftOf = (cycle, p) => cycle.primaries[p.slot] ?? null
 /** The planned main lifts of a session whose slot has an exercise in this cycle. */
 export const mainLifts = (cycle, plan) => plan.primaries.filter((p) => liftOf(cycle, p))
-/** The cycle's goal for a main lift: the week-9 single (1×1 at 105%), rounded like every planned weight. */
-export const goalWeight = (cycle, id) => roundToStep((cycle.oneRM[id] * V2[WEEKS - 1].pct) / 100)
+/** The session of the cycle's program with the re-test of a main-lift slot, and that planned set. */
+function retestOf(cycle, slot) {
+  for (const plan of sessionsOf(cycle)) {
+    const p = plan.primaries.find((x) => x.slot === slot && x.retest)
+    if (p) return { plan, p }
+  }
+  return null
+}
+/** The cycle's goal for a main lift: its re-test (week 9: the single at 105%), rounded like every planned weight. */
+export function goalWeight(cycle, id) {
+  const r = retestOf(cycle, cycle.primaries.indexOf(id))
+  return r ? roundToStep((cycle.oneRM[id] * r.p.pct) / 100) : null
+}
 export const targetWeight = (cycle, p) => roundToStep((cycle.oneRM[liftOf(cycle, p)] * p.pct) / 100)
 /** Main-lift slots being edited ([{ id, rm }], id '' = empty): at least one lift, and a 1RM for each picked lift. */
 export function mainLiftsError(rows) {
@@ -179,18 +156,18 @@ export function sessionProgress(cycle, plan) {
   return { done, total, complete: done === total }
 }
 
-export const nextSession = (cycle) => ALL_SESSIONS.find((p) => !isFinished(cycle, p)) ?? null
+export const nextSession = (cycle) => sessionsOf(cycle).find((p) => !isFinished(cycle, p)) ?? null
 
 /**
  * One session is open at a time (cycle.active = { key, startedAt }). Only an open session can
  * be logged; the others are previews. Any unfinished session can be started, in any order;
  * starting one finishes the open session as it is.
  */
-export const activeSession = (cycle) => (cycle.active ? ALL_SESSIONS.find((p) => p.key === cycle.active.key) : null)
+export const activeSession = (cycle) => (cycle.active ? sessionsOf(cycle).find((p) => p.key === cycle.active.key) : null)
 
 /** Sessions before this one that are neither finished nor the open one, i.e. skipped so far. */
 export const unfinishedBefore = (cycle, plan) =>
-  ALL_SESSIONS.slice(0, ALL_SESSIONS.findIndex((p) => p.key === plan.key)).filter((p) => !isFinished(cycle, p) && p.key !== cycle.active?.key)
+  sessionsOf(cycle).slice(0, sessionsOf(cycle).findIndex((p) => p.key === plan.key)).filter((p) => !isFinished(cycle, p) && p.key !== cycle.active?.key)
 
 /** Start a session (mutates). An open session is finished as it is first. */
 export function startSession(state, cycle, plan, now = new Date()) {
@@ -308,8 +285,7 @@ export function retestResults(cycle) {
   const out = {}
   cycle.primaries.forEach((id, slot) => {
     if (!id) return
-    const s = ROTATION.findIndex((r) => r.v2 === slot) + 1
-    const rec = cycle.finished[sessionKey(WEEKS, s)]
+    const rec = cycle.finished[retestOf(cycle, slot)?.plan.key]
     const e = rec?.entries.find((x) => x.kind === 'main' && x.retest && x.exerciseId === id)
     if (!e) out[id] = null
     else if ('result' in e) out[id] = e.result
@@ -318,9 +294,8 @@ export function retestResults(cycle) {
   return out
 }
 
-/** The cycle is complete once all three week-9 sessions (one re-test each) are finished. */
-export const cycleComplete = (cycle) =>
-  Array.from({ length: SESSIONS_PER_WEEK }, (_, i) => sessionKey(WEEKS, i + 1)).every((k) => !!cycle.finished[k])
+/** The cycle is complete once every session of its last week (the re-tests) is finished. */
+export const cycleComplete = (cycle) => programOf(cycle).weeks.at(-1).every((plan) => isFinished(cycle, plan))
 
 export function addDays(isoDate, days) {
   const d = new Date(isoDate + 'T00:00:00')
@@ -331,7 +306,7 @@ export const weekStart = (cycle, week) => addDays(cycle.startDate, (week - 1) * 
 // "9.11." or, in US format, "11/9"
 const dayMonth = (d) => (dateFormat() === 'mdy' ? `${d.getMonth() + 1}/${d.getDate()}` : `${d.getDate()}.${d.getMonth() + 1}.`)
 /** The whole cycle, first to last day: "16.11.26 – 17.1.27" */
-export const cycleRange = (cycle) => `${fmtDateShort(cycle.startDate)} – ${fmtDateShort(isoDay(addDays(cycle.startDate, WEEKS * 7 - 1)))}`
+export const cycleRange = (cycle) => `${fmtDateShort(cycle.startDate)} – ${fmtDateShort(isoDay(addDays(cycle.startDate, programOf(cycle).weekCount * 7 - 1)))}`
 /** "23.11. – 29.11." */
 export const weekRange = (cycle, week) =>
   `${dayMonth(weekStart(cycle, week))} – ${dayMonth(addDays(cycle.startDate, (week - 1) * 7 + 6))}`
@@ -353,7 +328,7 @@ export const clockTime = (iso) => new Date(iso).toLocaleTimeString(undefined, { 
 export function exerciseHistory(state, exId, kind) {
   const out = []
   state.cycles.forEach((cycle, ci) => {
-    ALL_SESSIONS.forEach((plan, si) => {
+    sessionsOf(cycle).forEach((plan, si) => {
       const rec = cycle.finished[plan.key]
       if (!rec) return
       for (const e of rec.entries) {
@@ -443,7 +418,7 @@ export const fmtDateShort = (iso) => fmtDate(iso).replace(/(\d{2})(\d{2})$/, '$2
 export function finishedWorkouts(state) {
   const out = []
   state.cycles.forEach((cycle, ci) => {
-    for (const plan of ALL_SESSIONS) if (cycle.finished[plan.key]) out.push({ cycle: ci, plan, record: cycle.finished[plan.key] })
+    for (const plan of sessionsOf(cycle)) if (cycle.finished[plan.key]) out.push({ cycle: ci, plan, record: cycle.finished[plan.key] })
   })
   return out.reverse()
 }

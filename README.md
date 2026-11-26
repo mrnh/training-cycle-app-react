@@ -63,7 +63,10 @@ npm install
 npm run dev
 ```
 
-Program rules live in `src/program.js`, storage in `src/store.js`, screens in `src/screens/`.
+The training program (weeks, sessions, sets and percentages) is plain data in `src/programs.js`;
+the rules that work on it live in `src/program.js`, storage in `src/store.js`, screens in
+`src/screens/`. Each cycle stores the id of its program (`cycle.program`; cycles from before that
+field existed use the default program).
 
 ## License
 
