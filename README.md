@@ -43,6 +43,12 @@ Move your data once: in Safari, Settings → *Export backup*; in the installed a
 
 See the [changelog](CHANGELOG.md) for how the app has developed, with screenshots of each version.
 
+## Versions
+
+Every push to `main` bumps the patch version (`npm version patch --no-git-tag-version`: 0.27.1,
+0.27.2, ...) in `package.json`, without a changelog entry; the app then offers a plain "New version
+available". A release below bumps the minor version and starts again at .0.
+
 ## Releasing a new version
 
 1. Bump `version` in `package.json` (`npm version minor --no-git-tag-version` or `patch`).
