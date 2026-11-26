@@ -252,7 +252,7 @@ export default function Settings({ state }) {
               ))}
             </div>
             <p className="muted small">
-              To change the icon on your home screen, remove the app and install it again. Kept on this device only.
+              To change the icon on your home screen, remove the app (don't forget to backup your data!) and install it again.
             </p>
           </div>
         </section>
