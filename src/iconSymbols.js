@@ -16,16 +16,20 @@ const seg = (x1, y1, x2, y2, w) => {
   return `M${p(x1 + nx, y1 + ny)}L${p(x2 + nx, y2 + ny)}L${p(x2 - nx, y2 - ny)}L${p(x1 - nx, y1 - ny)}Z`
 }
 
-// A lifter seen from the front, pressing a barbell overhead
+// A lifter squatting with the barbell across the shoulders, seen from the front
 const lifter =
-  seg(66, 112, 446, 112, 14) + // bar
-  seg(98, 64, 98, 160, 26) + seg(128, 80, 128, 144, 16) + // plates, left
-  seg(414, 64, 414, 160, 26) + seg(384, 80, 384, 144, 16) + // plates, right
-  circle(256, 172, 30) + // head
-  seg(188, 112, 222, 232, 22) + seg(324, 112, 290, 232, 22) + // arms
-  'M214 222L228 344L284 344L298 222Z' + // torso
-  seg(240, 336, 196, 440, 36) + seg(272, 336, 316, 440, 36) + // legs
-  circle(190, 440, 20) + circle(322, 440, 20) // feet
+  seg(62, 164, 450, 164, 14) + // bar
+  seg(94, 116, 94, 212, 26) + seg(124, 132, 124, 196, 16) + // plates, left
+  seg(418, 116, 418, 212, 26) + seg(388, 132, 388, 196, 16) + // plates, right
+  circle(256, 106, 28) + // head
+  'M214 176L230 318L282 318L298 176Z' + // torso
+  seg(216, 186, 176, 238, 22) + seg(176, 238, 160, 170, 20) + // left arm up to the bar
+  seg(296, 186, 336, 238, 22) + seg(336, 238, 352, 170, 20) + // right arm
+  seg(240, 314, 176, 358, 38) + seg(272, 314, 336, 358, 38) + // thighs, knees wide
+  seg(176, 358, 200, 428, 34) + seg(336, 358, 312, 428, 34) + // shins
+  circle(176, 358, 19) + circle(336, 358, 19) + // knees
+  circle(176, 238, 11) + circle(336, 238, 11) + circle(160, 170, 10) + circle(352, 170, 10) + // elbows, hands
+  circle(200, 430, 19) + circle(312, 430, 19) // feet
 
 // The original icon's barbell, enlarged 1.6 times around the centre
 const big = ([x, y, w, h, r]) => rr(256 + (x - 256) * 1.6, 256 + (y - 256) * 1.6, w * 1.6, h * 1.6, r * 1.6)
@@ -36,12 +40,6 @@ const barbell = [
   [138, 214, 18, 84, 6],
   [356, 214, 18, 84, 6],
 ].map(big).join('')
-
-const star = Array.from({ length: 10 }, (_, i) => {
-  const a = ((-90 + 36 * i) * Math.PI) / 180
-  const r = i % 2 ? 66 : 160
-  return `${i ? 'L' : 'M'}${(256 + r * Math.cos(a)).toFixed(1)} ${(272 + r * Math.sin(a)).toFixed(1)}`
-}).join('') + 'Z'
 
 export const SYMBOLS = [
   { id: 'barbell', label: 'Barbell', d: barbell },
@@ -81,7 +79,7 @@ export const SYMBOLS = [
     d: circle(256, 292, 148) + circle(256, 292, 118) + rr(256 - 30, 76, 60, 32, 8) + rr(256 - 12, 104, 24, 36, 4) + rr(244, 196, 24, 100, 10),
     evenodd: true,
   },
-  { id: 'lifter', label: 'Lifter', d: lifter },
+  { id: 'lifter', label: 'Squat', d: lifter },
   { id: 'mountain', label: 'Mountain', d: 'M64 384L200 148L262 254L312 180L448 384Z' },
   {
     id: 'target',
@@ -89,7 +87,17 @@ export const SYMBOLS = [
     d: [160, 128, 96, 64, 32].map((r) => circle(256, 256, r)).join(''),
     evenodd: true,
   },
-  { id: 'star', label: 'Star', d: star },
+  {
+    id: 'arm',
+    label: 'Flexed arm',
+    d:
+      circle(148, 128, 64) + // fist
+      seg(150, 170, 160, 330, 80) + // forearm
+      circle(160, 366, 56) + // elbow
+      seg(160, 366, 420, 366, 112) + // upper arm
+      circle(324, 258, 102) + // biceps
+      circle(412, 356, 66), // shoulder
+  },
 ]
 
 export const DEFAULT_SYMBOL = SYMBOLS[0].id
