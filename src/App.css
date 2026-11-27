@@ -322,7 +322,11 @@ button.new-cycle.danger { border-color: var(--danger); }
 .group-summary li:last-child { border-bottom: none; }
 /* Settings, Current cycle: program line, then main lifts with start and goal weight */
 .cycle-program { margin: var(--space-1) 0 0; }
-.cycle-dates { margin: var(--space-1) 0 var(--space-3); }
+.cycle-dates { display: flex; align-items: center; justify-content: space-between; gap: var(--space-3); margin: var(--space-1) 0 var(--space-3); }
+.cycle-dates p { margin: 0; }
+.cycle-progress { display: flex; align-items: center; gap: var(--space-2); flex: 0 1 140px; }
+.cycle-progress .bar { flex: 1; }
+.cycle-progress span { font-variant-numeric: tabular-nums; white-space: nowrap; }
 .lift-table { display: flex; flex-direction: column; font-size: var(--text-sm); margin-top: var(--space-3); }
 .lift-row {
   display: grid;

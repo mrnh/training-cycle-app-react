@@ -5,7 +5,7 @@ import NewCycleDialog from '../components/NewCycleDialog'
 import useConfirm from '../components/useConfirm'
 import Chevron from '../components/Chevron'
 import Exercises from './Exercises'
-import { DATE_FORMATS, ROUNDINGS, ROUNDING_MODES, UNITS, dateFormat, rounding, roundingMode, exerciseName, fmt, abortCycle, cycleAborted, cycleEnd, cycleRange, cycleStarted, fmtDate, goalWeight, heaviestWeight, mainLiftsError, programOf, todayIso, unit, activeSession, sessionName } from '../program'
+import { DATE_FORMATS, ROUNDINGS, ROUNDING_MODES, UNITS, dateFormat, rounding, roundingMode, exerciseName, fmt, abortCycle, cycleAborted, cycleEnd, cycleRange, cycleStarted, fmtDate, goalWeight, heaviestWeight, mainLiftsError, isFinished, programOf, todayIso, unit, activeSession, sessionName } from '../program'
 import { currentCycle, migrate, replaceState, update, updateCycle } from '../store'
 import { sampleState } from '../sampleData'
 import ScreenHeader from '../components/ScreenHeader'
@@ -19,6 +19,7 @@ export default function Settings({ state }) {
   const cycle = currentCycle(state)
   const lifts = cycle.primaries.filter(Boolean) // empty slots left out
   const program = programOf(cycle)
+  const doneCount = program.sessions.filter((p) => isFinished(cycle, p)).length
   const counts = program.weeks.map((w) => w.length)
   const perWeek = Math.min(...counts) === Math.max(...counts) ? `${counts[0]}` : `${Math.min(...counts)}–${Math.max(...counts)}`
   const [draft, setDraft] = useState(null) // [{ id, rm }] per main-lift slot while editing; null = not editing
@@ -400,10 +401,19 @@ export default function Settings({ state }) {
         <ScreenHeader title="Current cycle" backLabel="Back to settings" onBack={() => show(null)} />
         <section className="card">
           <h3>{program.name}</h3>
-          <p className="muted small cycle-dates">
-            {fmtDate(cycle.startDate)} – {fmtDate(cycleEnd(cycle))}
-            {cycleAborted(cycle) && <><br />Aborted on {fmtDate(cycle.abortedAt)}</>}
-          </p>
+          <div className="cycle-dates">
+            <p className="muted small">
+              {fmtDate(cycle.startDate)} – {fmtDate(cycleEnd(cycle))}
+              {cycleAborted(cycle) && <><br />Aborted on {fmtDate(cycle.abortedAt)}</>}
+            </p>
+            {/* Finished sessions of the cycle, as on Overview */}
+            <div className="cycle-progress muted small">
+              <div className="bar" role="progressbar" aria-label="Sessions done" aria-valuenow={doneCount} aria-valuemax={program.sessions.length}>
+                <div style={{ width: `${(doneCount / program.sessions.length) * 100}%` }} />
+              </div>
+              <span>{doneCount}/{program.sessions.length}</span>
+            </div>
+          </div>
 
           {/* Until the first session is started, the start date can still be moved */}
           {!cycleStarted(cycle) && (
