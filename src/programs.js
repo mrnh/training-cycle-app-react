@@ -5,7 +5,7 @@
  *
  * Definition (see defineProgram):
  *   id            stored on every cycle ("cycle.program")
- *   name          shown to the user
+ *   (its name is a text: programs.<id>.name in the language file)
  *   defaultLifts  catalog ids of the main-lift slots a new cycle starts with; the number of
  *                 slots is the program's choice. A slot can be left empty by the user: its sets
  *                 are then left out of every session.
@@ -18,7 +18,7 @@
  */
 export const sessionKey = (week, session) => `w${week}s${session}`
 
-function defineProgram({ id, name, defaultLifts, weeks }) {
+function defineProgram({ id, defaultLifts, weeks }) {
   const plans = weeks.map((sessions, w) =>
     sessions.map((s, i) => ({
       week: w + 1,
@@ -28,7 +28,7 @@ function defineProgram({ id, name, defaultLifts, weeks }) {
       primaries: s.lifts.map((l) => ({ retest: false, ...l })),
     })),
   )
-  return { id, name, defaultLifts, weeks: plans, weekCount: plans.length, sessions: plans.flat() }
+  return { id, defaultLifts, weeks: plans, weekCount: plans.length, sessions: plans.flat() }
 }
 
 /*
@@ -56,7 +56,6 @@ const ROTATION = [
 
 export const RUSSIAN_MASTERS = defineProgram({
   id: 'russian-masters',
-  name: 'Russian Masters Program (3 main lifts)',
   defaultLifts: ['squat', 'bench', 'deadlift'],
   weeks: V2.map((v2, w) =>
     ROTATION.map((r) => ({

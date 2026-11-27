@@ -5,12 +5,13 @@ import NewCycleDialog from '../components/NewCycleDialog'
 import useConfirm from '../components/useConfirm'
 import Chevron from '../components/Chevron'
 import Exercises from './Exercises'
-import { DATE_FORMATS, ROUNDINGS, ROUNDING_MODES, UNITS, dateFormat, rounding, roundingMode, exerciseName, fmt, abortCycle, cycleAborted, cycleEnd, cycleRange, cycleStarted, fmtDate, goalWeight, heaviestWeight, mainLiftsError, isFinished, programOf, todayIso, unit, activeSession, sessionName } from '../program'
+import { DATE_FORMATS, ROUNDINGS, ROUNDING_MODES, UNITS, dateFormat, rounding, roundingMode, exerciseName, fmt, programName, abortCycle, cycleAborted, cycleEnd, cycleRange, cycleStarted, fmtDate, goalWeight, heaviestWeight, mainLiftsError, isFinished, programOf, todayIso, unit, activeSession, sessionName } from '../program'
 import { currentCycle, migrate, replaceState, update, updateCycle } from '../store'
 import { sampleState } from '../sampleData'
 import ScreenHeader from '../components/ScreenHeader'
 import { SYMBOLS } from '../iconSymbols'
 import { ACCENTS, ICONS, THEMES, customIconUrl, isIconCustomised, placeholderIconUrl, getAccent, getAppIcon, getIconColor, getIconSymbol, getIconSymbolColor, setIconSymbolColor, symbolColorFor, setAppIcon, setIconColor, setIconSymbol, getCustomAccent, getTheme, setAccent, setCustomAccent, setTheme } from '../theme'
+import { t } from '../i18n'
 
 // Running as an installed home-screen app (not in a browser tab)
 const installed = window.matchMedia?.('(display-mode: standalone)').matches || navigator.standalone === true
@@ -26,9 +27,9 @@ export default function Settings({ state }) {
   const [rmError, setRmError] = useState('')
   const [newCycleOpen, setNewCycleOpen] = useState(false)
   const [theme, setThemeState] = useState(getTheme)
-  const changeTheme = (t) => {
-    setTheme(t)
-    setThemeState(t)
+  const changeTheme = (mode) => {
+    setTheme(mode)
+    setThemeState(mode)
   }
   const [appIcon, setAppIconState] = useState(getAppIcon)
   const changeAppIcon = (i) => {
@@ -94,7 +95,7 @@ export default function Settings({ state }) {
     a.download = `${todayIso().replaceAll('-', '')}_training-data.json` // 20261125_training-data.json
     a.click()
     URL.revokeObjectURL(a.href)
-    setNotice({ text: 'Backup downloaded' })
+    setNotice({ text: t('settings.backupDownloaded') })
   }
 
   async function importData(e) {
@@ -106,40 +107,40 @@ export default function Settings({ state }) {
       const data = migrate(JSON.parse(await file.text()))
       if (!data) throw new Error('not a backup')
       const ok = await confirm({
-        title: 'Restore this backup?',
-        message: 'All current data on this device is replaced by the backup.',
-        confirmLabel: 'Restore',
+        title: t('settings.restoreTitle'),
+        message: t('settings.restoreMessage'),
+        confirmLabel: t('settings.restore'),
         danger: true,
       })
       if (!ok) return
       replaceState(data)
       const workouts = data.cycles.reduce((n, c) => n + Object.keys(c.finished).length, 0)
       setNotice({
-        text: 'Backup restored',
-        detail: `${data.cycles.length} ${data.cycles.length === 1 ? 'cycle' : 'cycles'}, ${workouts} finished ${workouts === 1 ? 'workout' : 'workouts'}.`,
+        text: t('settings.restored'),
+        detail: t('settings.restoredDetail', { cycles: t('settings.cyclesCount', { count: data.cycles.length }), workouts: t('settings.workoutsCount', { count: workouts }) }),
       })
     } catch {
-      setNotice({ text: "That file isn't a training plan backup.", error: true })
+      setNotice({ text: t('settings.notBackup'), error: true })
     }
   }
 
   async function loadSample() {
     const ok = await confirm({
-      title: 'Use sample data?',
-      message: 'All current data on this device is replaced by sample data. Export a backup first if you want to keep yours.',
-      confirmLabel: 'Use sample data',
+      title: t('settings.sampleTitle'),
+      message: t('settings.sampleMessage'),
+      confirmLabel: t('settings.sampleConfirm'),
       danger: true,
     })
     if (!ok) return
     replaceState(sampleState({ unit: state.unit, dateFormat: state.dateFormat }))
-    setNotice({ text: 'Sample data loaded' })
+    setNotice({ text: t('settings.sampleLoaded') })
   }
 
   async function resetAll() {
     const ok = await confirm({
-      title: 'Delete all data?',
-      message: 'Everything on this device is deleted: cycles, history, exercises and preferences. Export a backup first if you want to keep it.',
-      confirmLabel: 'Delete all data',
+      title: t('settings.deleteTitle'),
+      message: t('settings.deleteMessage'),
+      confirmLabel: t('settings.deleteConfirm'),
       danger: true,
     })
     if (!ok) return
@@ -157,46 +158,46 @@ export default function Settings({ state }) {
   if (subScreen === 'preferences')
     return (
       <div className="screen">
-        <ScreenHeader title="Preferences" backLabel="Back to settings" onBack={() => show(null)} />
+        <ScreenHeader title={t('settings.preferences')} backLabel={t('settings.back')} onBack={() => show(null)} />
         {/* One block per preference (control and its note), divided by lines */}
         <section className="card">
           <div className="pref">
             <div className="row unit-row">
-              <h3>Units</h3>
+              <h3>{t('settings.units')}</h3>
               <Segmented
-                label="Weight unit"
+                label={t('settings.weightUnit')}
                 options={UNITS.map((u) => ({ id: u, label: u }))}
                 value={unit()}
                 onChange={(u) => update((d) => void (d.unit = u))}
               />
             </div>
-            <p className="muted small">Affects just the label. Numbers are not converted.</p>
+            <p className="muted small">{t('settings.unitHint')}</p>
           </div>
           <div className="pref">
             <div className="row unit-row">
-              <h3>Rounding</h3>
+              <h3>{t('settings.rounding')}</h3>
               <Segmented
-                label="Rounding direction"
-                options={ROUNDING_MODES}
+                label={t('settings.roundingDirection')}
+                options={ROUNDING_MODES.map((m) => ({ id: m.id, label: t(`rounding.${m.id}`) }))}
                 value={roundingMode()}
                 onChange={(m) => update((d) => void (d.roundingMode = m))}
               />
             </div>
             <div className="row unit-row end">
               <Segmented
-                label="Rounding of planned weights"
+                label={t('settings.roundingPlanned')}
                 options={ROUNDINGS.map((r) => ({ id: r, label: `${r === 0.1 ? '.1' : r} ${unit()}` }))}
                 value={rounding()}
                 onChange={(r) => update((d) => void (d.rounding = r))}
               />
             </div>
-            <p className="muted small">Applies to main lifts only.</p>
+            <p className="muted small">{t('settings.roundingHint')}</p>
           </div>
           <div className="pref">
             <div className="row unit-row">
-              <h3>Date format</h3>
+              <h3>{t('settings.dateFormat')}</h3>
               <Segmented
-                label="Date format"
+                label={t('settings.dateFormat')}
                 options={DATE_FORMATS}
                 value={dateFormat()}
                 onChange={(f) => update((d) => void (d.dateFormat = f))}
@@ -209,25 +210,25 @@ export default function Settings({ state }) {
   if (subScreen === 'appearance')
     return (
       <div className="screen">
-        <ScreenHeader title="Appearance & behavior" backLabel="Back to settings" onBack={() => show(null)} />
+        <ScreenHeader title={t('settings.appearance')} backLabel={t('settings.back')} onBack={() => show(null)} />
         <section className="card">
           <div className="pref">
             <div className="row unit-row">
-              <h3>Mode</h3>
-              <Segmented label="Mode" options={THEMES} value={theme} onChange={changeTheme} />
+              <h3>{t('settings.mode')}</h3>
+              <Segmented label={t('settings.mode')} options={THEMES.map((x) => ({ id: x.id, label: t(`settings.theme.${x.id}`) }))} value={theme} onChange={changeTheme} />
             </div>
-            <p className="muted small">Auto follows your device. Kept on this device only.</p>
+            <p className="muted small">{t('settings.modeHint')}</p>
           </div>
           <div className="pref">
-            <h3>Accent color</h3>
-            <div className="swatches" role="radiogroup" aria-label="Accent color">
+            <h3>{t('settings.accentColor')}</h3>
+            <div className="swatches" role="radiogroup" aria-label={t('settings.accentColor')}>
               {ACCENTS.map((x) => (
                 <button
                   key={x.id}
                   className="swatch"
                   role="radio"
                   aria-checked={accent === x.id}
-                  aria-label={x.label}
+                  aria-label={t(`settings.accent.${x.id}`)}
                   data-accent={x.id}
                   onClick={() => changeAccent(x.id)}
                 />
@@ -236,7 +237,7 @@ export default function Settings({ state }) {
               <label className="swatch" data-accent="custom" style={custom ? { "--custom": custom } : undefined} data-checked={accent === 'custom'} data-picked={custom ? '' : undefined}>
                 <input
                   type="color"
-                  aria-label={accent === 'custom' ? 'Custom color, selected' : 'Custom color'}
+                  aria-label={accent === 'custom' ? t('settings.customColorSelected') : t('settings.customColor')}
                   value={custom ?? '#6e56cf'}
                   onClick={() => custom && changeAccent('custom')}
                   onChange={(e) => pickCustom(e.target.value)}
@@ -245,32 +246,32 @@ export default function Settings({ state }) {
             </div>
             <p className="muted small">
               {accent === 'custom'
-                ? 'Custom. Adjusted a little to stay readable. Kept on this device only.'
-                : `${ACCENTS.find((x) => x.id === accent).label}. Kept on this device only.`}
+                ? t('settings.accentCustomHint')
+                : t('settings.accentHint', { name: t(`settings.accent.${accent}`) })}
             </p>
           </div>
         {'wakeLock' in navigator && (
           <div className="pref">
             <div className="row unit-row">
-              <h3>Keep screen on</h3>
+              <h3>{t('settings.keepScreen')}</h3>
               <Segmented
-                label="Keep screen on during a session"
+                label={t('settings.keepScreenAria')}
                 options={[
-                  { id: false, label: 'Off' },
-                  { id: true, label: 'On' },
+                  { id: false, label: t('settings.off') },
+                  { id: true, label: t('settings.on') },
                 ]}
                 value={state.keepAwake !== false}
                 onChange={(on) => update((d) => void (d.keepAwake = on))}
               />
             </div>
-            <p className="muted small">Prevents screen lock during a session.</p>
+            <p className="muted small">{t('settings.keepScreenHint')}</p>
           </div>
         )}
         </section>
         <section className="card">
           <div className="pref">
-            <h3>App icon</h3>
-            <div className="icon-choices" role="radiogroup" aria-label="App icon">
+            <h3>{t('settings.appIcon')}</h3>
+            <div className="icon-choices" role="radiogroup" aria-label={t('settings.appIcon')}>
               {ICONS.map((x) => (
                 <button key={x.id} className="icon-choice" role="radio" aria-checked={appIcon === x.id} onClick={() => changeAppIcon(x.id)}>
                   <img
@@ -279,27 +280,27 @@ export default function Settings({ state }) {
                     width="64"
                     height="64"
                   />
-                  <span>{x.label}</span>
+                  <span>{t(`settings.icon.${x.id}`)}</span>
                 </button>
               ))}
             </div>
             {appIcon === 'custom' && (
               <div className="icon-custom">
                 <div className="row unit-row">
-                  <h3>Background color</h3>
+                  <h3>{t('settings.backgroundColor')}</h3>
                   <label className="color-dot" style={{ '--dot': iconColor }}>
-                    <input type="color" aria-label="Icon color" value={iconColor} onChange={(e) => pickIconColor(e.target.value)} />
+                    <input type="color" aria-label={t('settings.iconColorAria')} value={iconColor} onChange={(e) => pickIconColor(e.target.value)} />
                   </label>
                 </div>
-                <h3>Symbol</h3>
-                <div className="symbol-grid" role="radiogroup" aria-label="Icon symbol">
+                <h3>{t('settings.symbolHeading')}</h3>
+                <div className="symbol-grid" role="radiogroup" aria-label={t('settings.symbolGroup')}>
                   {SYMBOLS.map((x) => (
                     <button
                       key={x.id}
                       className="symbol-choice"
                       role="radio"
                       aria-checked={iconSymbol === x.id}
-                      aria-label={x.label}
+                      aria-label={t(`settings.symbol.${x.id}`)}
                       onClick={() => pickIconSymbol(x.id)}
                     >
                       <svg viewBox="0 0 512 512" width="28" height="28" aria-hidden="true" fill="currentColor">
@@ -309,11 +310,11 @@ export default function Settings({ state }) {
                   ))}
                 </div>
                 <div className="row unit-row">
-                  <h3>Symbol color</h3>
+                  <h3>{t('settings.symbolColor')}</h3>
                   <label className="color-dot" style={{ '--dot': symbolColorFor(iconColor, symbolColor) }}>
                     <input
                       type="color"
-                      aria-label="Symbol color"
+                      aria-label={t('settings.symbolColor')}
                       value={symbolColorFor(iconColor, symbolColor)}
                       onChange={(e) => pickSymbolColor(e.target.value)}
                     />
@@ -322,7 +323,7 @@ export default function Settings({ state }) {
               </div>
             )}
             <p className="muted small">
-              To change the icon on your home screen, remove the app (don't forget to backup your data!) and install it again.
+              {t('settings.iconHint')}
             </p>
           </div>
         </section>
@@ -331,7 +332,7 @@ export default function Settings({ state }) {
   if (subScreen === 'data')
     return (
       <div className="screen">
-        <ScreenHeader title="Data & backup" backLabel="Back to settings" onBack={() => show(null)} />
+        <ScreenHeader title={t('settings.data')} backLabel={t('settings.back')} onBack={() => show(null)} />
         {/* Result of the last export, import or sample data, on top where it can't be missed */}
         {notice && (
           <div className={`notice ${notice.error ? 'is-error' : ''}`} role={notice.error ? 'alert' : 'status'}>
@@ -343,26 +344,25 @@ export default function Settings({ state }) {
           </div>
         )}
         <section className="card">
-          <p className="muted small">Your data lives only on this device. Export a backup now and then.</p>
+          <p className="muted small">{t('settings.dataIntro')}</p>
           {/* In the browser (not the installed app): on iPhone the home-screen app has its own,
               empty storage, so the data has to be carried over once */}
           {!installed && (
             <p className="muted small">
-              Adding the app to your home screen? On iPhone it starts empty: export a backup here, then import it in the
-              installed app.
+              {t('settings.iphoneHint')}
             </p>
           )}
           <div className="button-row">
-            <button onClick={exportData}>Export backup</button>
-            <button onClick={() => fileRef.current.click()}>Import backup</button>
+            <button onClick={exportData}>{t('settings.export')}</button>
+            <button onClick={() => fileRef.current.click()}>{t('settings.import')}</button>
             {/* No file type filter: only the content counts, whatever the file is called */}
             <input ref={fileRef} type="file" hidden onChange={importData} />
           </div>
-          <button onClick={loadSample}>Use sample data</button>
+          <button onClick={loadSample}>{t('settings.useSample')}</button>
         </section>
         <section className="card">
-          <h2>Reset</h2>
-          <button className="danger" onClick={resetAll}>Delete all data</button>
+          <h2>{t('settings.reset')}</h2>
+          <button className="danger" onClick={resetAll}>{t('settings.deleteAll')}</button>
         </section>
         {confirmDialog}
       </div>
@@ -374,9 +374,9 @@ export default function Settings({ state }) {
       {lifts.map((id) => (
         <div className="lift-row" key={id}>
           <span>{exerciseName(state, id)}</span>
-          <span><span className="sr-only">Start </span>{fmt(cycle.oneRM[id])} {unit()}</span>
+          <span><span className="sr-only">{t('cycle.start')} </span>{fmt(cycle.oneRM[id])} {unit()}</span>
           <span className="muted" aria-hidden="true">→</span>
-          <strong><span className="sr-only">Goal </span>{fmt(goalWeight(cycle, id))} {unit()}</strong>
+          <strong><span className="sr-only">{t('cycle.goal')} </span>{fmt(goalWeight(cycle, id))} {unit()}</strong>
         </div>
       ))}
     </div>
@@ -385,11 +385,9 @@ export default function Settings({ state }) {
   async function abort() {
     const open = activeSession(cycle)
     const ok = await confirm({
-      title: 'Abort this cycle?',
-      message: `The cycle ends here and can't be continued. Everything you finished stays in your history and exercise records.${
-        open ? ` ${sessionName(open)} is still open and is saved as it is.` : ''
-      } Then you can start a new cycle.`,
-      confirmLabel: 'Abort cycle',
+      title: t('cycle.abortTitle'),
+      message: open ? t('cycle.abortMessageOpen', { session: sessionName(open) }) : t('cycle.abortMessage'),
+      confirmLabel: t('cycle.abort'),
       danger: true,
     })
     if (ok) update((d) => abortCycle(d, currentCycle(d)))
@@ -398,17 +396,17 @@ export default function Settings({ state }) {
   if (subScreen === 'cycle')
     return (
       <div className="screen">
-        <ScreenHeader title="Current cycle" backLabel="Back to settings" onBack={() => show(null)} />
+        <ScreenHeader title={t('cycle.title')} backLabel={t('settings.back')} onBack={() => show(null)} />
         <section className="card">
-          <h3>{program.name}</h3>
+          <h3>{programName(program)}</h3>
           <div className="cycle-dates">
             <p className="muted small">
               {fmtDate(cycle.startDate)} – {fmtDate(cycleEnd(cycle))}
-              {cycleAborted(cycle) && <><br />Aborted on {fmtDate(cycle.abortedAt)}</>}
+              {cycleAborted(cycle) && <><br />{t('cycle.aborted', { date: fmtDate(cycle.abortedAt) })}</>}
             </p>
             {/* Finished sessions of the cycle, as on Overview */}
             <div className="cycle-progress muted small">
-              <div className="bar" role="progressbar" aria-label="Sessions done" aria-valuenow={doneCount} aria-valuemax={program.sessions.length}>
+              <div className="bar" role="progressbar" aria-label={t('cycle.sessionsDone')} aria-valuenow={doneCount} aria-valuemax={program.sessions.length}>
                 <div style={{ width: `${(doneCount / program.sessions.length) * 100}%` }} />
               </div>
               <span>{doneCount}/{program.sessions.length}</span>
@@ -419,7 +417,7 @@ export default function Settings({ state }) {
           {!cycleStarted(cycle) && (
             <div className="row inline-field">
               <h3>
-                <label htmlFor="start-date">Start date</label>
+                <label htmlFor="start-date">{t('cycle.startDate')}</label>
               </h3>
               <input
                 id="start-date"
@@ -433,11 +431,11 @@ export default function Settings({ state }) {
           {/* Main lifts and 1RMs are fixed once the cycle has started: then just the table, no heading or pen */}
           {!cycleStarted(cycle) && (
             <div className="row subhead">
-              <h3>Main lifts</h3>
+              <h3>{t('cycle.mainLifts')}</h3>
               {!draft && (
                 <button
                   className="sec-pen"
-                  aria-label="Edit main lifts"
+                  aria-label={t('cycle.editMainLifts')}
                   onClick={() => setDraft(cycle.primaries.map((id) => ({ id: id ?? '', rm: id ? (cycle.oneRM[id] ?? null) : null })))}
                 >
                   ✎
@@ -448,10 +446,7 @@ export default function Settings({ state }) {
 
           {draft ? (
             <>
-              <p className="warning small">
-                Main lifts and 1RMs are fixed for the whole cycle. Saving a change recalculates every weight in sessions
-                you haven't finished yet. Finished sessions keep what you did.
-              </p>
+              <p className="warning small">{t('cycle.liftsWarning')}</p>
               <MainLiftFields
                 rows={draft}
                 catalog={state.catalog}
@@ -461,11 +456,11 @@ export default function Settings({ state }) {
                   setDraft(rows)
                 }}
               />
-              <p className="muted small">Picking another exercise fills in the heaviest weight from its history.</p>
+              <p className="muted small">{t('cycle.prefillHint')}</p>
               {rmError && <p className="error">{rmError}</p>}
               <div className="button-row end">
-                <button onClick={cancelRM}>Cancel</button>
-                <button className="primary" onClick={saveRM}>Save</button>
+                <button onClick={cancelRM}>{t('common.cancel')}</button>
+                <button className="primary" onClick={saveRM}>{t('common.save')}</button>
               </div>
             </>
           ) : (
@@ -477,11 +472,11 @@ export default function Settings({ state }) {
           {!draft &&
             (cycleAborted(cycle) ? (
               <button className="new-cycle" onClick={() => setNewCycleOpen(true)}>
-                Start a new cycle
+                {t('cycle.startNew')}
               </button>
             ) : (
               <button className="new-cycle danger" onClick={abort}>
-                Abort cycle
+                {t('cycle.abort')}
               </button>
             ))}
           {newCycleOpen && <NewCycleDialog state={state} onClose={() => setNewCycleOpen(false)} />}
@@ -492,13 +487,13 @@ export default function Settings({ state }) {
 
   return (
     <div className="screen">
-      <h1>Settings</h1>
+      <h1>{t('settings.title')}</h1>
 
       {/* Read-only overview; tapping anywhere on the card opens the Current cycle screen to edit it */}
       <section className="card nav-section">
         <h2 className="nav-head">
           <button onClick={() => show('cycle')}>
-            Current cycle
+            {t('cycle.title')}
             <span className="nav-head-end">
               <span className="muted small">{cycleRange(cycle)}</span>
               <Chevron />
@@ -507,25 +502,25 @@ export default function Settings({ state }) {
         </h2>
         {/* Which program the cycle follows, and its shape */}
         <p className="cycle-program muted small">
-          {program.name}
+          {programName(program)}
           <br />
-          {program.weekCount} weeks · {perWeek} {perWeek === '1' ? 'session' : 'sessions'} a week
-          {cycleAborted(cycle) && <><br />Aborted on {fmtDate(cycle.abortedAt)}</>}
+          {t('cycle.weeks', { count: program.weekCount })} · {t('cycle.perWeek', { count: Math.max(...counts), value: perWeek })}
+          {cycleAborted(cycle) && <><br />{t('cycle.aborted', { date: fmtDate(cycle.abortedAt) })}</>}
         </p>
         {/* Start = the 1RM the cycle is built on, → Goal = the week-9 single */}
         {liftTable}
       </section>
 
-      <NavCard title="Exercise catalog" onClick={() => show('exercises')} />
+      <NavCard title={t('settings.catalog')} onClick={() => show('exercises')} />
 
-      <NavCard title="Data & backup" onClick={() => show('data')} />
+      <NavCard title={t('settings.data')} onClick={() => show('data')} />
 
-      <NavCard title="Appearance & behavior" onClick={() => show('appearance')} />
+      <NavCard title={t('settings.appearance')} onClick={() => show('appearance')} />
 
-      <NavCard title="Preferences" onClick={() => show('preferences')} />
+      <NavCard title={t('settings.preferences')} onClick={() => show('preferences')} />
 
       {confirmDialog}
-      <p className="muted small center">Version {__APP_VERSION__}</p>
+      <p className="muted small center">{t('settings.version', { version: __APP_VERSION__ })}</p>
     </div>
   )
 }

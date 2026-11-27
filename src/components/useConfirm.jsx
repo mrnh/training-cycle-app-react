@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import Sheet from './Sheet'
+import { t } from '../i18n'
 
 /**
  * In-app replacement for the browser's confirm(), which some browsers and embedded views block
@@ -20,8 +21,8 @@ export default function useConfirm() {
       <h2>{ask.title}</h2>
       {ask.message && <p className="small">{ask.message}</p>}
       <div className="button-row end">
-        <button type="button" onClick={() => answer(false)}>{ask.cancelLabel ?? 'Cancel'}</button>
-        <button type="submit" className={ask.danger ? 'danger' : 'primary'}>{ask.confirmLabel ?? 'OK'}</button>
+        <button type="button" onClick={() => answer(false)}>{ask.cancelLabel ?? t('common.cancel')}</button>
+        <button type="submit" className={ask.danger ? 'danger' : 'primary'}>{ask.confirmLabel ?? t('common.ok')}</button>
       </div>
     </Sheet>
   )

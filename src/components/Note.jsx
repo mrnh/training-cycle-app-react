@@ -1,7 +1,8 @@
 import { useState } from 'react'
+import { t } from '../i18n'
 
 /** Comment field that stays collapsed until used. */
-export default function Note({ value, onChange, label = 'Comment' }) {
+export default function Note({ value, onChange, label = t('common.comment') }) {
   const [open, setOpen] = useState(false)
   if (!open && !value) {
     return (

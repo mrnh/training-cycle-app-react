@@ -6,6 +6,7 @@ import { update } from '../store'
 import NumInput from './NumInput'
 import Sheet from './Sheet'
 import ScreenHeader from './ScreenHeader'
+import { t } from '../i18n'
 
 /**
  * Part of the Current cycle card in Settings: what each group (A/B/C) adds to its sessions, one
@@ -15,25 +16,25 @@ export default function GroupsSummary({ state, onEdit }) {
   return (
     <>
       <div className="row subhead">
-        <h3>Accessory work</h3>
+        <h3>{t('groups.accessoryWork')}</h3>
         {onEdit && (
-          <button className="sec-pen" aria-label="Edit accessory work" onClick={onEdit}>
+          <button className="sec-pen" aria-label={t('groups.editAccessory')} onClick={onEdit}>
             ✎
           </button>
         )}
       </div>
       {GROUPS.map((g, i) => (
         <div key={g} className="group-summary">
-          <h4>Group {g} · session {i + 1}</h4>
+          <h4>{t('groups.groupSession', { group: g, n: i + 1 })}</h4>
           {state.groups[g].length === 0 ? (
-            <p className="muted small">No exercises yet</p>
+            <p className="muted small">{t('groups.noExercises')}</p>
           ) : (
             <ul>
               {state.groups[g].map((x) => (
                 <li key={x.id}>
                   <span>{exerciseName(state, x.id)}</span>
                   <span className="muted">
-                    {prescriptionText(x)} · rest {minSec(x.rest)}
+                    {t('groups.line', { prescription: prescriptionText(x), rest: minSec(x.rest) })}
                   </span>
                 </li>
               ))}
@@ -49,11 +50,10 @@ export default function GroupsSummary({ state, onEdit }) {
 export function GroupsEditor({ state, onBack }) {
   return (
     <div className="screen">
-      <ScreenHeader title="Accessory work" backLabel="Back to current cycle" onBack={onBack} />
+      <ScreenHeader title={t('groups.accessoryWork')} backLabel={t('groups.backToCycle')} onBack={onBack} />
       <section className="card">
         <p className="muted small">
-          Each session adds one group. Pick exercises from your catalog (Settings → Exercise catalog) and tap one to set its sets,
-          reps, weight and rest.
+          {t('groups.intro')}
         </p>
         {GROUPS.map((g, i) => (
           <Group key={g} state={state} group={g} session={i + 1} />
@@ -90,14 +90,14 @@ function Group({ state, group, session }) {
 
   return (
     <div className="group">
-      <h3>Group {group} · session {session}</h3>
-      {entries.length === 0 && <p className="muted small">No exercises yet</p>}
+      <h3>{t('groups.groupSession', { group, n: session })}</h3>
+      {entries.length === 0 && <p className="muted small">{t('groups.noExercises')}</p>}
       <ul className="group-list" ref={listRef}>
         {entries.map((x, i) => (
           <li key={x.id} className="row" style={rowStyle(i)}>
             <button
               className="drag-handle"
-              aria-label={`Move ${exerciseName(state, x.id)}: drag, or use the arrow keys`}
+              aria-label={t('groups.move', { name: exerciseName(state, x.id) })}
               {...handleProps(i)}
             >
               <GripIcon />
@@ -105,27 +105,27 @@ function Group({ state, group, session }) {
             <button className="group-entry" onClick={() => setEditing(x.id)}>
               <span>{exerciseName(state, x.id)}</span>
               <span className="muted small">
-                {prescriptionText(x)} · rest {minSec(x.rest)}
+                {t('groups.line', { prescription: prescriptionText(x), rest: minSec(x.rest) })}
               </span>
             </button>
-            <button className="icon-btn" aria-label={`Remove ${exerciseName(state, x.id)} from group ${group}`} onClick={() => remove(x.id)}>
+            <button className="icon-btn" aria-label={t('groups.removeFrom', { name: exerciseName(state, x.id), group })} onClick={() => remove(x.id)}>
               ×
             </button>
           </li>
         ))}
       </ul>
       <form className="add-row" onSubmit={add}>
-        <select value={pick} onChange={(e) => setPick(e.target.value)} aria-label={`Exercise to add to group ${group}`}>
-          <option value="">{available.length ? 'Choose an exercise…' : 'All exercises added'}</option>
+        <select value={pick} onChange={(e) => setPick(e.target.value)} aria-label={t('groups.addTo', { group })}>
+          <option value="">{available.length ? t('groups.choose') : t('groups.allAdded')}</option>
           {available.map((e) => (
             <option key={e.id} value={e.id}>{e.name}</option>
           ))}
         </select>
-        <button type="submit" disabled={!pick}>Add</button>
+        <button type="submit" disabled={!pick}>{t('common.add')}</button>
       </form>
       {current && (
         <PrescriptionDialog
-          title={`${exerciseName(state, current.id)} · group ${group}`}
+          title={t('groups.dialogTitle', { name: exerciseName(state, current.id), group })}
           value={current}
           onSave={(v) => save(current.id, v)}
           onClose={() => setEditing(null)}
@@ -195,7 +195,7 @@ function GripIcon() {
  * With `choices` ([{ id, name }]) it also picks the exercise (adding one during a workout);
  * `onSave` then gets the id too.
  */
-export function PrescriptionDialog({ title, value = DEFAULT_PRESCRIPTION, choices, saveLabel = 'Save', onSave, onClose }) {
+export function PrescriptionDialog({ title, value = DEFAULT_PRESCRIPTION, choices, saveLabel = t('common.save'), onSave, onClose }) {
   const [exercise, setExercise] = useState('')
   const [error, setError] = useState('')
   const [sets, setSets] = useState(value.sets)
@@ -204,7 +204,7 @@ export function PrescriptionDialog({ title, value = DEFAULT_PRESCRIPTION, choice
   const [rest, setRest] = useState(value.rest)
 
   function save() {
-    if (choices && !exercise) return setError('Choose an exercise.')
+    if (choices && !exercise) return setError(t('prescription.chooseError'))
     onSave({ ...(choices && { id: exercise }), sets, reps, weight: weight ?? 0, rest })
     onClose()
   }
@@ -215,34 +215,34 @@ export function PrescriptionDialog({ title, value = DEFAULT_PRESCRIPTION, choice
       {choices && (
         <select
           value={exercise}
-          aria-label="Exercise"
+          aria-label={t('prescription.exercise')}
           onChange={(e) => {
             setError('')
             setExercise(e.target.value)
           }}
         >
-          <option value="">Choose an exercise…</option>
+          <option value="">{t('groups.choose')}</option>
           {choices.map((c) => (
             <option key={c.id} value={c.id}>{c.name}</option>
           ))}
         </select>
       )}
-      <Stepper label="Sets" value={sets} text={sets} min={1} max={MAX_SETS} step={1} onChange={setSets} />
-      <Stepper label="Reps" value={reps} text={reps} min={1} max={50} step={1} onChange={setReps} />
+      <Stepper label={t('prescription.sets')} value={sets} text={sets} min={1} max={MAX_SETS} step={1} onChange={setSets} />
+      <Stepper label={t('prescription.reps')} value={reps} text={reps} min={1} max={50} step={1} onChange={setReps} />
       <label className="stepper-row">
-        <span>Weight</span>
+        <span>{t('prescription.weight')}</span>
         <span className="weight-input">
-          <NumInput value={weight} label={`Weight in ${unit()}`} onChange={setWeight} />
+          <NumInput value={weight} label={t('prescription.weightIn', { unit: unit() })} onChange={setWeight} />
           {unit()}
         </span>
       </label>
-      <Stepper label="Rest" value={rest} text={minSec(rest)} min={REST_MIN} max={REST_MAX} step={REST_STEP} onChange={setRest} />
+      <Stepper label={t('prescription.rest')} value={rest} text={minSec(rest)} min={REST_MIN} max={REST_MAX} step={REST_STEP} onChange={setRest} />
       <p className="muted small">
-        {sets}×{reps} @ {fmt(weight ?? 0)} {unit()}. Weight 0 means bodyweight.
+        {t('prescription.summary', { sets, reps, weight: fmt(weight ?? 0), unit: unit() })}
       </p>
       {error && <p className="error">{error}</p>}
       <div className="button-row end">
-        <button type="button" onClick={onClose}>Cancel</button>
+        <button type="button" onClick={onClose}>{t('common.cancel')}</button>
         <button type="submit" className="primary">{saveLabel}</button>
       </div>
     </Sheet>
@@ -254,9 +254,9 @@ function Stepper({ label, value, text, min, max, step, onChange }) {
     <div className="stepper-row">
       <span>{label}</span>
       <span className="stepper">
-        <button type="button" className="small-btn" aria-label={`${label} down`} disabled={value <= min} onClick={() => onChange(value - step)}>−</button>
+        <button type="button" className="small-btn" aria-label={t('prescription.down', { label })} disabled={value <= min} onClick={() => onChange(value - step)}>−</button>
         <strong aria-live="polite">{text}</strong>
-        <button type="button" className="small-btn" aria-label={`${label} up`} disabled={value >= max} onClick={() => onChange(value + step)}>+</button>
+        <button type="button" className="small-btn" aria-label={t('prescription.up', { label })} disabled={value >= max} onClick={() => onChange(value + step)}>+</button>
       </span>
     </div>
   )

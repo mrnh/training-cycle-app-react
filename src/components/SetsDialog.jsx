@@ -2,6 +2,7 @@ import { useState } from 'react'
 import NumInput from './NumInput'
 import Sheet from './Sheet'
 import { MAX_SETS, unit } from '../program'
+import { t } from '../i18n'
 
 /**
  * Edit weight and reps of all sets of a secondary exercise at once, and add or remove sets.
@@ -23,35 +24,35 @@ export default function SetsDialog({ title, planned, rows, hints, onSave, onRemo
   return (
     <Sheet onClose={onClose} onSubmit={save}>
       <h2>{title}</h2>
-      {planned && <p className="muted small">Planned: {planned}</p>}
+      {planned && <p className="muted small">{t('sets.planned', { text: planned })}</p>}
       <div className="sets-edit">
-        <span className="set-head">Set</span>
+        <span className="set-head">{t('sets.set')}</span>
         <span className="set-head">{unit()}</span>
-        <span className="set-head">Reps</span>
+        <span className="set-head">{t('sets.reps')}</span>
         {draft.map((x, i) => (
           <div key={i} className="sets-edit-row">
             <span className="set-no">{i + 1}</span>
-            <NumInput value={x.w} placeholder={hint(i).w} label={`Set ${i + 1} weight`} onChange={(w) => setRow(i, { w })} />
-            <NumInput value={x.r} placeholder={hint(i).r} label={`Set ${i + 1} reps`} onChange={(r) => setRow(i, { r })} />
+            <NumInput value={x.w} placeholder={hint(i).w} label={t('sets.weightOf', { n: i + 1 })} onChange={(w) => setRow(i, { w })} />
+            <NumInput value={x.r} placeholder={hint(i).r} label={t('sets.repsOf', { n: i + 1 })} onChange={(r) => setRow(i, { r })} />
           </div>
         ))}
       </div>
       <div className="row">
         <button type="button" className="small-btn" disabled={draft.length <= 1} onClick={() => setDraft(draft.slice(0, -1))}>
-          − Remove set
+          {t('sets.removeSet')}
         </button>
         <button type="button" className="small-btn" disabled={draft.length >= MAX_SETS} onClick={() => setDraft([...draft, { w: null, r: null }])}>
-          + Add set
+          {t('sets.addSet')}
         </button>
       </div>
       <div className="button-row end">
         {onRemove && (
           <button type="button" className="remove-exercise" onClick={onRemove}>
-            Remove exercise
+            {t('common.removeExercise')}
           </button>
         )}
-        <button type="button" onClick={onClose}>Cancel</button>
-        <button type="submit" className="primary">Save</button>
+        <button type="button" onClick={onClose}>{t('common.cancel')}</button>
+        <button type="submit" className="primary">{t('common.save')}</button>
       </div>
     </Sheet>
   )

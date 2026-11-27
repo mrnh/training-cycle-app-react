@@ -5,9 +5,10 @@ import useConfirm from '../components/useConfirm'
 import { GROUPS, bestByReps, exerciseHistory, fmt, fmtDate, fmtDateShort, sessionName, setsSummary } from '../program'
 import { update } from '../store'
 import ScreenHeader from '../components/ScreenHeader'
+import { t } from '../i18n'
 
 /** One exercise: name and best weights, every finished session it was done in (newest first), delete. */
-export default function ExerciseHistory({ state, ex, onBack, backLabel = 'Back' }) {
+export default function ExerciseHistory({ state, ex, onBack, backLabel = t('common.back') }) {
   const groups = GROUPS.filter((g) => state.groups[g].some((e) => e.id === ex.id))
   const mainLift = state.cycles.some((c) => c.primaries.includes(ex.id))
   // Main-lift and accessory entries together; only ticked sets count
@@ -21,9 +22,9 @@ export default function ExerciseHistory({ state, ex, onBack, backLabel = 'Back' 
   const [confirmDialog, confirm] = useConfirm()
   async function remove() {
     const ok = await confirm({
-      title: `Delete ${ex.name}?`,
-      message: 'It disappears from your exercise catalog. Sessions you already finished keep their record of it.',
-      confirmLabel: 'Delete',
+      title: t('exerciseHistory.deleteTitle', { name: ex.name }),
+      message: t('exerciseHistory.deleteMessage'),
+      confirmLabel: t('exerciseHistory.delete'),
       danger: true,
     })
     if (!ok) return
@@ -35,20 +36,20 @@ export default function ExerciseHistory({ state, ex, onBack, backLabel = 'Back' 
 
   return (
     <div className="screen">
-      <ScreenHeader title="Exercise history" backLabel={backLabel} onBack={onBack} />
+      <ScreenHeader title={t('exerciseHistory.title')} backLabel={backLabel} onBack={onBack} />
 
       <section className="card">
         <div className="sec-head">
           <h2>{ex.name}</h2>
-          <button className="sec-pen" aria-label={`Rename ${ex.name}`} onClick={() => setRenaming(true)}>
+          <button className="sec-pen" aria-label={t('exerciseHistory.rename', { name: ex.name })} onClick={() => setRenaming(true)}>
             ✎
           </button>
         </div>
-        <h3>Personal bests</h3>
+        <h3>{t('exerciseHistory.personalBests')}</h3>
         {/* Heaviest ticked set for exactly that many reps, and when; empty = never done */}
         <table className="rm-table">
           <thead>
-            <tr>{best.map((_, i) => <th key={i}>{i + 1} RM</th>)}</tr>
+            <tr>{best.map((_, i) => <th key={i}>{t('exerciseHistory.rm', { n: i + 1 })}</th>)}</tr>
           </thead>
           <tbody>
             <tr>
@@ -68,7 +69,7 @@ export default function ExerciseHistory({ state, ex, onBack, backLabel = 'Back' 
       </section>
 
       <section className="card">
-        <h2>History</h2>
+        <h2>{t('exerciseHistory.history')}</h2>
         {history.length ? (
           <ul className="history">
             {history.map((h) => (
@@ -76,7 +77,7 @@ export default function ExerciseHistory({ state, ex, onBack, backLabel = 'Back' 
                 <span className="date">{when(h)}</span>
                 <span>{setsSummary(h.sets)}</span>
                 {h.note ? (
-                  <button className="comment-btn" aria-label={`Comment from ${when(h)}`} onClick={() => setComment(h)}>
+                  <button className="comment-btn" aria-label={t('exerciseHistory.commentFrom', { when: when(h) })} onClick={() => setComment(h)}>
                     <CommentIcon filled />
                   </button>
                 ) : (
@@ -86,21 +87,21 @@ export default function ExerciseHistory({ state, ex, onBack, backLabel = 'Back' 
             ))}
           </ul>
         ) : (
-          <p className="muted small">Not done in a finished session yet.</p>
+          <p className="muted small">{t('exerciseHistory.empty')}</p>
         )}
       </section>
 
       <section className="card">
         {/* Deleting is blocked while the exercise is in use */}
         {mainLift ? (
-          <p className="muted small">This is a main lift, so it can't be deleted.</p>
+          <p className="muted small">{t('exerciseHistory.isMain')}</p>
         ) : groups.length ? (
           <p className="muted small">
-            Used in group {groups.join(', ')}. Remove it there (Settings) before deleting.
+            {t('exerciseHistory.usedIn', { groups: groups.join(', ') })}
           </p>
         ) : null}
         <button className="danger" onClick={remove} disabled={mainLift || groups.length > 0}>
-          Delete exercise
+          {t('exerciseHistory.deleteExercise')}
         </button>
       </section>
 
@@ -109,7 +110,7 @@ export default function ExerciseHistory({ state, ex, onBack, backLabel = 'Back' 
 
       {comment && (
         <CommentView
-          title={`${when(comment)} · ${sessionName(comment)}`}
+          title={t('exerciseHistory.commentTitle', { when: when(comment), session: sessionName(comment) })}
           text={comment.note}
           onClose={() => setComment(null)}
         />
@@ -123,12 +124,12 @@ function CommentView({ title, text, onClose }) {
   return (
     <Sheet onClose={onClose} onSubmit={onClose}>
       <div>
-        <h2>Comment</h2>
+        <h2>{t('exerciseHistory.comment')}</h2>
         <p className="muted small">{title}</p>
       </div>
       <p className="comment-text">{text}</p>
       <div className="button-row end">
-        <button type="submit" className="primary">Close</button>
+        <button type="submit" className="primary">{t('exerciseHistory.close')}</button>
       </div>
     </Sheet>
   )
@@ -143,14 +144,14 @@ function NameDialog({ name, onSave, onClose }) {
   }
   return (
     <Sheet onClose={onClose} onSubmit={save} focusInput>
-      <h2>Rename exercise</h2>
+      <h2>{t('exerciseHistory.renameTitle')}</h2>
       <label className="field">
-        <span>Name</span>
+        <span>{t('exerciseHistory.nameLabel')}</span>
         <input value={draft} onChange={(e) => setDraft(e.target.value)} />
       </label>
       <div className="button-row end">
-        <button type="button" onClick={onClose}>Cancel</button>
-        <button type="submit" className="primary" disabled={!draft.trim()}>Save</button>
+        <button type="button" onClick={onClose}>{t('common.cancel')}</button>
+        <button type="submit" className="primary" disabled={!draft.trim()}>{t('common.save')}</button>
       </div>
     </Sheet>
   )

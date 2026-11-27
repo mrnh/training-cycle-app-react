@@ -43,24 +43,21 @@ const barbell = [
 ].map(big).join('')
 
 export const SYMBOLS = [
-  { id: 'barbell', label: 'Barbell', d: barbell },
-  { id: 'dumbbell', label: 'Dumbbell', d: rr(176, 240, 160, 32, 8) + rr(116, 184, 60, 144, 16) + rr(336, 184, 60, 144, 16) },
+  { id: 'barbell', d: barbell },
+  { id: 'dumbbell', d: rr(176, 240, 160, 32, 8) + rr(116, 184, 60, 144, 16) + rr(336, 184, 60, 144, 16) },
   {
     id: 'kettlebell',
-    label: 'Kettlebell',
     d: circle(256, 322, 104) + 'M172 230L216 230C208 124 304 124 296 230L340 230C366 60 146 60 172 230Z',
   },
   {
     id: 'medal',
-    label: 'Medal',
     d:
       'M168 76H228L250 232H196ZM344 76H284L262 232H316Z' + circle(256, 336, 100) + circle(256, 336, 70) + circle(256, 336, 36),
     evenodd: true,
   },
-  { id: 'bolt', label: 'Lightning bolt', d: 'M296 80L170 290H244L220 432L350 216H274Z' },
+  { id: 'bolt', d: 'M296 80L170 290H244L220 432L350 216H274Z' },
   {
     id: 'flame',
-    label: 'Flame',
     d:
       'M256 76C292 150 384 190 374 304C366 384 314 436 256 436C198 436 146 384 138 304C132 244 176 212 196 156C212 198 234 208 244 198C262 166 250 120 256 76Z' +
       'M256 404C226 404 204 376 212 344C218 320 244 304 256 270C270 304 298 320 300 350C302 380 284 404 256 404Z',
@@ -68,7 +65,6 @@ export const SYMBOLS = [
   },
   {
     id: 'trophy',
-    label: 'Trophy',
     d:
       'M158 96H354V210C354 272 312 312 276 320V360H332V420H180V360H236V320C200 312 158 272 158 210Z' +
       'M158 128V160H140V168C140 192 152 208 172 216L164 246C134 238 108 212 108 168V128Z' +
@@ -76,21 +72,18 @@ export const SYMBOLS = [
   },
   {
     id: 'stopwatch',
-    label: 'Stopwatch',
     d: circle(256, 292, 148) + circle(256, 292, 118) + rr(256 - 30, 76, 60, 32, 8) + rr(256 - 12, 104, 24, 36, 4) + rr(244, 196, 24, 100, 10),
     evenodd: true,
   },
-  { id: 'lifter', label: 'Squat', d: lifter },
-  { id: 'mountain', label: 'Mountain', d: 'M64 384L200 148L262 254L312 180L448 384Z' },
+  { id: 'lifter', d: lifter },
+  { id: 'mountain', d: 'M64 384L200 148L262 254L312 180L448 384Z' },
   {
     id: 'target',
-    label: 'Target',
     d: [160, 128, 96, 64, 32].map((r) => circle(256, 256, r)).join(''),
     evenodd: true,
   },
   {
     id: 'arm',
-    label: 'Flexed arm',
     d:
       'M444 420L156 420C112 420 84 392 88 352L116 212C96 174 92 124 116 94C142 62 202 66 222 100' +
       'C240 132 232 178 204 214L206 262C246 196 330 154 388 190C432 218 444 270 444 330Z',

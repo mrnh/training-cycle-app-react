@@ -13,6 +13,7 @@ import {
 } from '../program'
 import { currentCycle, update, updateCycle } from '../store'
 import ScreenHeader from '../components/ScreenHeader'
+import { t } from '../i18n'
 
 const setLog = (key, patch) =>
   updateCycle((c) => {
@@ -45,10 +46,10 @@ export default function Session({ state, sessionKey, onBack }) {
   const [confirmDialog, confirm] = useConfirm()
   const cancel = async () => {
     const ok = await confirm({
-      title: 'Cancel this session?',
-      message: 'Everything logged in it is discarded and nothing is saved to History. The session stays unstarted.',
-      confirmLabel: 'Cancel session',
-      cancelLabel: 'Keep session',
+      title: t('session.cancelTitle'),
+      message: t('session.cancelMessage'),
+      confirmLabel: t('session.cancelConfirm'),
+      cancelLabel: t('session.cancelKeep'),
       danger: true,
     })
     if (ok) update((d) => cancelSession(currentCycle(d), plan))
@@ -59,18 +60,18 @@ export default function Session({ state, sessionKey, onBack }) {
   return (
     <div className="screen">
       {/* Back to the screen this session was opened from (none when opened from the tab bar) */}
-      <ScreenHeader title={sessionName(plan)} subtitle={record ? finishedDate(record) : `${weekRange(cycle, week)} · Group ${plan.group}`} onBack={onBack} />
+      <ScreenHeader title={sessionName(plan)} subtitle={record ? finishedDate(record) : t('session.subtitle', { weeks: weekRange(cycle, week), group: plan.group })} onBack={onBack} />
 
       {record ? (
         <FinishedWorkout state={state} cycleIndex={state.cycles.length - 1} planKey={plan.key} />
       ) : (
         <>
-          {isOpen && <p className="in-progress small">● In progress since {clockTime(cycle.active.startedAt)}</p>}
+          {isOpen && <p className="in-progress small">{t('session.inProgressSince', { time: clockTime(cycle.active.startedAt) })}</p>}
           {canStart && (
             <div className="card start-card">
-              {skipped && <p className="warning small">There are unfinished previous workouts.</p>}
-              {active && <p className="small">{sessionName(active)} is still open. Starting this session finishes it.</p>}
-              <button className="primary" onClick={onStart}>Start session</button>
+              {skipped && <p className="warning small">{t('session.unfinishedBefore')}</p>}
+              {active && <p className="small">{t('session.openWarning', { session: sessionName(active) })}</p>}
+              <button className="primary" onClick={onStart}>{t('session.start')}</button>
             </div>
           )}
           <Draft state={state} cycle={cycle} plan={plan} open={isOpen} onFinish={() => setDialog('finish')} onCancel={cancel} />
@@ -82,9 +83,9 @@ export default function Session({ state, sessionKey, onBack }) {
       )}
       {dialog === 'start' && (
         <FinishDialog
-          heading="Start this session?"
-          message={`${sessionName(active)} is still open. Starting ${sessionName(plan)} finishes it as it is and saves it permanently.`}
-          confirmLabel="Finish it and start"
+          heading={t('session.startHeading')}
+          message={t('session.startMessage', { open: sessionName(active), next: sessionName(plan) })}
+          confirmLabel={t('session.startConfirm')}
           unticked={unticked(active)}
           onConfirm={start}
           onClose={() => setDialog(null)}
@@ -120,19 +121,19 @@ function Draft({ state, cycle, plan, open, onFinish, onCancel }) {
           <SecondaryBlock key={id} state={state} cycle={cycle} plan={plan} id={id} open={open} />
         ))}
         {secondaries.length === 0 && (
-          <p className="muted small center">No accessory work in group {plan.group} yet. Add it in Settings.</p>
+          <p className="muted small center">{t('session.noAccessory', { group: plan.group })}</p>
         )}
       </fieldset>
 
         {/* Outside the (disabled) fieldset: exercises can be added before the session is started too */}
         <button className="add-exercise" onClick={() => setAdding(true)}>
-          + Add exercise
+          {t('session.addExercise')}
         </button>
         {adding && (
           <PrescriptionDialog
-            title="Add exercise"
+            title={t('session.addExerciseTitle')}
             choices={choices}
-            saveLabel="Add"
+            saveLabel={t('common.add')}
             onSave={addExtra}
             onClose={() => setAdding(false)}
           />
@@ -141,16 +142,16 @@ function Draft({ state, cycle, plan, open, onFinish, onCancel }) {
         {open && (
           <fieldset className="draft">
             <section className="card">
-              <h2>Session note</h2>
-              <Note label="Add a session note" value={cycle.notes[plan.key]} onChange={(t) => setNote(plan.key, t)} />
+              <h2>{t('session.sessionNote')}</h2>
+              <Note label={t('session.addSessionNote')} value={cycle.notes[plan.key]} onChange={(text) => setNote(plan.key, text)} />
             </section>
 
             <div className="finish-row">
               <button className="small-btn" onClick={onCancel}>
-                Cancel session
+                {t('session.cancel')}
               </button>
               <button className="primary finish" onClick={onFinish}>
-                Finish session
+                {t('session.finish.button')}
               </button>
             </div>
           </fieldset>
@@ -171,7 +172,7 @@ function PrimaryBlock({ state, cycle, plan, p, open }) {
       pres={{ sets: p.sets, reps: p.reps, weight: targetWeight(cycle, p) }}
       open={open}
       highlight={p.retest}
-      hint={p.retest && 'Tick the single you actually lifted. Its weight becomes your 1RM for the next cycle.'}
+      hint={p.retest && t('session.retestHint')}
     />
   )
 }
@@ -189,9 +190,9 @@ function SecondaryBlock({ state, cycle, plan, id, open }) {
   const [confirmDialog, confirm] = useConfirm()
   const remove = async () => {
     const ok = await confirm({
-      title: `Remove ${name}?`,
-      message: 'It was added for this session only. Sets logged for it are dropped.',
-      confirmLabel: 'Remove',
+      title: t('session.removeTitle', { name }),
+      message: t('session.removeMessage'),
+      confirmLabel: t('common.remove'),
       danger: true,
     })
     if (ok) updateCycle((c) => removeExtra(c, plan, id))
@@ -205,7 +206,7 @@ function SecondaryBlock({ state, cycle, plan, id, open }) {
         name={name}
         pres={pres}
         last={last}
-        lastLine={last ? `Last time (${sessionName(last)}): ${setsSummary(last.sets)}` : 'First time, no history yet'}
+        lastLine={last ? t('session.lastTime', { session: sessionName(last), summary: setsSummary(last.sets) }) : t('session.firstTime')}
         open={open}
         onRemove={isExtra(cycle, plan, id) ? remove : undefined}
       />
@@ -249,7 +250,7 @@ function ExerciseCard({ cycle, plan, entry, name, pres, last, lastLine, open, hi
       editable={open || !!onRemove}
       locked={!open}
       comment={cycle.notes[countKey]}
-      onComment={(t) => setNote(countKey, t)}
+      onComment={(text) => setNote(countKey, text)}
       rest={rest}
       onRest={(v) =>
         updateCycle((c) => {

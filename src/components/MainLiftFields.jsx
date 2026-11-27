@@ -1,5 +1,6 @@
 import NumInput from './NumInput'
 import { unit } from '../program'
+import { t } from '../i18n'
 
 /**
  * The three main-lift slots, each an exercise from the catalog and its 1RM. `rows` is
@@ -16,7 +17,7 @@ export default function MainLiftFields({ rows, catalog, onChange, prefill = () =
       {rows.map((r, i) => (
         <div className="main-lift-row" key={i}>
           <select
-            aria-label={`Main lift ${i + 1}`}
+            aria-label={t('settings.mainLiftN', { n: i + 1 })}
             value={r.id}
             onChange={(e) => setRow(i, { id: e.target.value, rm: e.target.value ? prefill(e.target.value) : null })}
           >
@@ -30,8 +31,8 @@ export default function MainLiftFields({ rows, catalog, onChange, prefill = () =
           <span className="weight-input">
             <NumInput
               value={r.rm}
-              placeholder={r.id ? '1RM' : ''}
-              label={`1RM for main lift ${i + 1}`}
+              placeholder={r.id ? t('settings.rmPlaceholder') : ''}
+              label={t('settings.rmForLift', { n: i + 1 })}
               disabled={!r.id}
               onChange={(rm) => setRow(i, { rm })}
             />

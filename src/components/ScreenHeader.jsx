@@ -1,8 +1,9 @@
+import { t } from '../i18n'
 /**
  * Title bar of a screen below a tab: ‹ back (when `onBack` is given) on the left, the title (and
  * an optional subtitle) centred. The back button is marked `data-back` for the edge swipe.
  */
-export default function ScreenHeader({ title, subtitle, onBack, backLabel = 'Back' }) {
+export default function ScreenHeader({ title, subtitle, onBack, backLabel = t('common.back') }) {
   return (
     <header className="screen-head">
       {onBack ? (

@@ -1,4 +1,5 @@
 import { DEFAULT_PROGRAM, PROGRAMS, sessionKey } from './programs'
+import { t } from './i18n'
 
 // Every exercise lives in the catalog; the main lifts of a cycle are ordinary entries.
 export const DEFAULT_CATALOG = [
@@ -26,7 +27,9 @@ export const programOf = (cycle) => PROGRAMS.find((p) => p.id === cycle.program)
 export const sessionsOf = (cycle) => programOf(cycle).sessions
 // The main-lift slots a new cycle of the default program starts with (stored per cycle)
 export const DEFAULT_PRIMARIES = DEFAULT_PROGRAM.defaultLifts
-export const exerciseName = (state, id) => state.catalog.find((e) => e.id === id)?.name ?? 'Deleted exercise'
+/** Name of a program, from the language file. */
+export const programName = (program) => t(`programs.${program.id}.name`)
+export const exerciseName = (state, id) => state.catalog.find((e) => e.id === id)?.name ?? t('common.deletedExercise')
 
 export const round1 = (x) => Math.round(x * 10) / 10
 export const fmt = (x) => (x == null || x === '' ? '–' : String(round1(x)))
@@ -48,8 +51,8 @@ export const setDateFormat = (f) => void (currentDateFormat = f === 'mdy' ? 'mdy
 // to the nearest step ('regular') or always up ('up', default)
 export const ROUNDINGS = [0.1, 1, 2.5]
 export const ROUNDING_MODES = [
-  { id: 'regular', label: 'Regular' },
-  { id: 'up', label: 'Round up' },
+  { id: 'regular' },
+  { id: 'up' },
 ]
 let currentRounding = 1
 let currentRoundingMode = 'up'
@@ -65,7 +68,7 @@ export const roundToStep = (x, step = currentRounding, mode = currentRoundingMod
   round1((mode === 'up' ? Math.ceil(x / step - 1e-9) : Math.round(x / step)) * step)
 
 /** How sessions are named everywhere: "Session 1.2" = week 1, session 2. */
-export const sessionName = ({ week, session }) => `Session ${week}.${session}`
+export const sessionName = ({ week, session }) => t('format.sessionName', { week, session })
 export function parseKey(key) {
   const [, w, s] = key.match(/^w(\d+)s(\d+)$/)
   return { week: +w, session: +s }
@@ -99,8 +102,8 @@ export const targetWeight = (cycle, p) => roundToStep((cycle.oneRM[liftOf(cycle,
 /** Main-lift slots being edited ([{ id, rm }], id '' = empty): at least one lift, and a 1RM for each picked lift. */
 export function mainLiftsError(rows) {
   const picked = rows.filter((r) => r.id)
-  if (!picked.length) return 'Pick at least one main lift.'
-  if (picked.some((r) => !(r.rm > 0))) return 'Enter a 1RM for each main lift.'
+  if (!picked.length) return t('errors.pickMainLift')
+  if (picked.some((r) => !(r.rm > 0))) return t('errors.enterRm')
   return ''
 }
 
@@ -385,7 +388,7 @@ export function bestByReps(history, maxReps = 5) {
  * narrow spot under a set toggle). Without external weight (0 or empty) it's just the reps: "10 reps".
  */
 export const setText = (s, withUnit = true) =>
-  s.w ? `${s.r ?? '–'}@${fmt(s.w)}${withUnit ? unit() : ''}` : `${s.r ?? '–'} reps`
+  s.w ? `${s.r ?? '–'}@${fmt(s.w)}${withUnit ? unit() : ''}` : t('format.reps', { value: s.r ?? '–' })
 /**
  * Compact summary of done sets for "Last time". Consecutive sets with the same weight form a
  * group (order is kept, so 40, 45, 40 kg are three groups). A group with equal reps is "3×10",
@@ -411,7 +414,7 @@ export function setsSummary(sets) {
     return r.every((x) => x === r[0]) ? `${r.length}×${r[0]}` : r.join('-')
   }
   const bodyweightOnly = groups.length === 1 && groups[0].w === 0
-  if (bodyweightOnly) return `${repsText(groups[0].reps)} reps`
+  if (bodyweightOnly) return t('format.reps', { value: repsText(groups[0].reps) })
   return groups.map((g) => `${repsText(g.reps)} @ ${fmt(g.w)} ${unit()}`).join(', ')
 }
 

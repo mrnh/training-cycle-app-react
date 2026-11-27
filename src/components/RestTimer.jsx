@@ -3,6 +3,7 @@ import { minSec, restOf } from '../program'
 
 const EXTRA_REST = 15 // seconds the "+15s Rest" button gives
 import { updateCycle } from '../store'
+import { t } from '../i18n'
 
 /** Re-renders four times a second while `running`, so the bar moves. */
 function useNow(running) {
@@ -36,11 +37,11 @@ export default function RestTimer({ cycle, card, sets, defaultRest }) {
 
   // A paused timer stands still at the moment it was paused
   const until = paused ? Date.parse(cycle.timer.pausedAt) : now
-  const t = mine ? Math.max(0, (until - Date.parse(cycle.timer.startedAt)) / 1000) : null
-  const done = t != null && t >= total
-  const idx = t == null ? -1 : Math.min(sets - 1, Math.floor(t / rest))
-  const left = t == null ? 0 : Math.ceil(rest - (t - idx * rest)) // seconds left in the current set
-  const fill = (i) => (t == null ? 0 : done || i < idx ? 1 : i === idx ? (t - idx * rest) / rest : 0)
+  const elapsed = mine ? Math.max(0, (until - Date.parse(cycle.timer.startedAt)) / 1000) : null
+  const done = elapsed != null && elapsed >= total
+  const idx = elapsed == null ? -1 : Math.min(sets - 1, Math.floor(elapsed / rest))
+  const left = elapsed == null ? 0 : Math.ceil(rest - (elapsed - idx * rest)) // seconds left in the current set
+  const fill = (i) => (elapsed == null ? 0 : done || i < idx ? 1 : i === idx ? (elapsed - idx * rest) / rest : 0)
 
   // Starting a timer replaces any other one
   const start = () =>
@@ -70,8 +71,8 @@ export default function RestTimer({ cycle, card, sets, defaultRest }) {
 
   return (
     <>
-      <div className={`rest-bar ${done ? 'is-done' : ''}`} role="progressbar" aria-label="Rest timer"
-        aria-valuemin={0} aria-valuemax={total} aria-valuenow={t == null ? 0 : Math.min(total, Math.floor(t))}>
+      <div className={`rest-bar ${done ? 'is-done' : ''}`} role="progressbar" aria-label={t('timer.aria')}
+        aria-valuemin={0} aria-valuemax={total} aria-valuenow={elapsed == null ? 0 : Math.min(total, Math.floor(elapsed))}>
         {Array.from({ length: sets }, (_, i) => (
           // A segment whose rest is over turns green; the running one stays in the accent colour
           <span key={i} className={fill(i) === 1 ? 'is-full' : undefined}>
@@ -80,18 +81,18 @@ export default function RestTimer({ cycle, card, sets, defaultRest }) {
         ))}
       </div>
       <p className="rest-info muted small">
-        {t == null ? (
+        {elapsed == null ? (
           // Before the start only the total; the interval is shown by the clock on the right
           <>
             <span />
             <span>{minSec(total)}</span>
           </>
         ) : done ? (
-          <span className="rest-done">Done · {minSec(total)}</span>
+          <span className="rest-done">{t('timer.done', { time: minSec(total) })}</span>
         ) : (
           <>
             <span />
-            <span>{minSec(Math.ceil(total - t))} total</span>
+            <span>{t('timer.total', { time: minSec(Math.ceil(total - elapsed)) })}</span>
           </>
         )}
       </p>
@@ -99,22 +100,22 @@ export default function RestTimer({ cycle, card, sets, defaultRest }) {
         {/* Rest left for the current set, big enough to read from a distance. Its colour shows
             how much is left (green, yellow, orange, red); grey while paused */}
         {mine && !done && (
-          <span className={`rest-countdown ${paused ? 'is-paused' : restLevel(left)}`} aria-live="off" aria-label={paused ? 'paused' : undefined}>
+          <span className={`rest-countdown ${paused ? 'is-paused' : restLevel(left)}`} aria-live="off" aria-label={paused ? t('timer.paused') : undefined}>
             {minSec(left)}
           </span>
         )}
         <span className="timer-actions">
           {!mine ? (
-            <button className="small-btn timer-btn" onClick={start}>▶ Start</button>
+            <button className="small-btn timer-btn" onClick={start}>{t('timer.start')}</button>
           ) : done ? (
-            <button className="small-btn timer-btn" onClick={start}>↻ Restart</button>
+            <button className="small-btn timer-btn" onClick={start}>{t('timer.restart')}</button>
           ) : paused ? (
-            <button className="small-btn timer-btn" onClick={resume}>▶ Resume</button>
+            <button className="small-btn timer-btn" onClick={resume}>{t('timer.resume')}</button>
           ) : (
-            <button className="small-btn timer-btn" onClick={pause}>❚❚ Pause</button>
+            <button className="small-btn timer-btn" onClick={pause}>{t('timer.pause')}</button>
           )}
           {paused && (
-            <button className="icon-btn timer-reset" aria-label="Reset timer" onClick={reset}>
+            <button className="icon-btn timer-reset" aria-label={t('timer.reset')} onClick={reset}>
               <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M4 12a8 8 0 1 0 2.3-5.6" />
                 <path d="M4 4v4.5h4.5" />
@@ -125,7 +126,7 @@ export default function RestTimer({ cycle, card, sets, defaultRest }) {
         {/* While the timer runs: 15 s more rest (the interval itself is set in the card header) */}
         {mine && !paused && !done && (
           <button className="small-btn rest-extra" onClick={addRest}>
-            +{EXTRA_REST}s Rest
+            {t('timer.extra', { seconds: EXTRA_REST })}
           </button>
         )}
       </div>

@@ -5,6 +5,7 @@ import Planned from './Planned'
 import RestSetting from './RestSetting'
 import SetsDialog from './SetsDialog'
 import { meetsPlan, prescriptionText, setText } from '../program'
+import { t } from '../i18n'
 
 /**
  * One exercise card, the same for main lifts and accessory work, in an open session and when
@@ -37,12 +38,12 @@ export default function SetsCard({
             <RestSetting rest={rest} onSave={onRest} label={name} />
             <button
               className="icon-action"
-              aria-label={comment ? `${name} comment: ${comment}` : `Add a comment to ${name}`}
+              aria-label={comment ? t('sets.commentOf', { name, comment }) : t('sets.addCommentTo', { name })}
               onClick={() => setCommenting(true)}
             >
               <CommentIcon filled={!!comment} />
             </button>
-            <button className="sec-pen" aria-label={`Edit ${name} sets`} onClick={() => setEditing(true)}>
+            <button className="sec-pen" aria-label={t('sets.editSets', { name })} onClick={() => setEditing(true)}>
               ✎
             </button>
           </span>
@@ -69,7 +70,7 @@ export default function SetsCard({
               style={{ gridRow: line * 2 + 1, gridColumn: col }}
               aria-pressed={done}
               disabled={locked}
-              aria-label={`Set ${i + 1}, ${setText(shown(i))}${done ? (meetsPlan(shown(i), hints[i]) ? ', done' : ', done, below plan') : ''}`}
+              aria-label={t(done ? (meetsPlan(shown(i), hints[i]) ? 'sets.toggleDone' : 'sets.toggleBelow') : 'sets.toggle', { n: i + 1, text: setText(shown(i)) })}
               onClick={() => onToggle(i, shown(i))}
             >
               {i + 1}
@@ -84,11 +85,11 @@ export default function SetsCard({
         })}
       </div>
       {commenting && (
-        <CommentDialog title={`${name} · comment`} value={comment} onSave={onComment} onClose={() => setCommenting(false)} />
+        <CommentDialog title={t('sets.commentTitle', { name })} value={comment} onSave={onComment} onClose={() => setCommenting(false)} />
       )}
       {editing && (
         <SetsDialog
-          title={`${name} · sets`}
+          title={t('sets.setsTitle', { name })}
           planned={pres && prescriptionText(pres)}
           rows={sets.map((s) => ({ w: s.w ?? null, r: s.r ?? null }))}
           hints={hints}

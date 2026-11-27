@@ -7,6 +7,7 @@ import Chevron from '../components/Chevron'
 import ExerciseHistory from './ExerciseHistory'
 import Exercises from './Exercises'
 import ScreenHeader from '../components/ScreenHeader'
+import { t } from '../i18n'
 
 const RECENT = 4 // workouts on the History tab itself; "Show all" opens the full list
 
@@ -62,14 +63,14 @@ export default function History({ state }) {
   const ex = exercise && state.catalog.find((e) => e.id === exercise.id)
   if (ex)
     return (
-      <ExerciseHistory state={state} ex={ex} backLabel="Back to history" onBack={() => backTo(exercise.scrollY, () => setExercise(null))} />
+      <ExerciseHistory state={state} ex={ex} backLabel={t('history.backToHistory')} onBack={() => backTo(exercise.scrollY, () => setExercise(null))} />
     )
   if (allExercises)
     return (
       <Exercises
         state={state}
-        title="All exercises"
-        backLabel="Back to history"
+        title={t('exercises.all')}
+        backLabel={t('history.backToHistory')}
         canAdd={false}
         onBack={() => backTo(allExercises.scrollY, () => setAllExercises(null))}
       />
@@ -81,7 +82,7 @@ export default function History({ state }) {
         <ScreenHeader
           title={sessionName(detail.plan)}
           subtitle={finishedDate(state.cycles[detail.cycle].finished[detail.plan.key])}
-          backLabel={showAll ? 'Back to all workouts' : 'Back to history'}
+          backLabel={showAll ? t('history.backToAll') : t('history.backToHistory')}
           onBack={() => backTo(detail.scrollY, () => setDetail(null))}
         />
         <FinishedWorkout state={state} cycleIndex={detail.cycle} planKey={detail.plan.key} />
@@ -92,7 +93,7 @@ export default function History({ state }) {
   if (showAll) {
     return (
       <div className="screen">
-        <ScreenHeader title="All workouts" backLabel="Back to history" onBack={() => backTo(showAll.scrollY, () => setShowAll(null))} />
+        <ScreenHeader title={t('history.allWorkouts')} backLabel={t('history.backToHistory')} onBack={() => backTo(showAll.scrollY, () => setShowAll(null))} />
         <div className="card history-card">
           <WorkoutTable
             workouts={oldestFirst ? [...newestFirst].reverse() : newestFirst}
@@ -101,7 +102,7 @@ export default function History({ state }) {
             sort={
               <button
                 className="sort-btn"
-                aria-label={oldestFirst ? 'Oldest first. Show newest first' : 'Newest first. Show oldest first'}
+                aria-label={oldestFirst ? t('history.oldestFirst') : t('history.newestFirst')}
                 onClick={toggleOrder}
               >
                 <SortIcon oldestFirst={oldestFirst} />
@@ -115,9 +116,9 @@ export default function History({ state }) {
 
   return (
     <div className="screen">
-      <h1>Workout history</h1>
+      <h1>{t('history.title')}</h1>
       {newestFirst.length === 0 ? (
-        <p className="muted small center">No finished workouts yet.</p>
+        <p className="muted small center">{t('history.none')}</p>
       ) : (
         <div className="card history-card">
           <WorkoutTable workouts={newestFirst.slice(0, RECENT)} current={current} onOpen={open} />
@@ -128,7 +129,7 @@ export default function History({ state }) {
               window.scrollTo(0, 0)
             }}
           >
-            Show all
+            {t('history.showAll')}
           </button>
         </div>
       )}
@@ -176,8 +177,8 @@ function ExerciseCard({ state, onOpen, onShowAll }) {
     <>
       {/* Heading outside the card, like the screen title above; the pen picks the exercises */}
       <div className="sec-head screen-subtitle">
-        <h1>Exercise history</h1>
-        <button className="sec-pen" aria-label="Pick exercises" onClick={() => setEditing(true)}>
+        <h1>{t('history.exerciseHistory')}</h1>
+        <button className="sec-pen" aria-label={t('history.pick')} onClick={() => setEditing(true)}>
           ✎
         </button>
       </div>
@@ -186,10 +187,10 @@ function ExerciseCard({ state, onOpen, onShowAll }) {
         {picked.length ? (
           <div className="exercise-rows">{picked.map(row)}</div>
         ) : (
-          <p className="muted small">Tap ✎ to choose up to five exercises for quick access.</p>
+          <p className="muted small">{t('history.pickHint')}</p>
         )}
         <button className="link show-all" onClick={onShowAll}>
-          Show all
+          {t('history.showAll')}
         </button>
         {editing && <PickDialog state={state} mainIds={mainIds} picked={picked} onClose={() => setEditing(false)} />}
       </section>
@@ -209,13 +210,13 @@ function PickDialog({ state, mainIds, picked, onClose }) {
   return (
     <Sheet onClose={onClose} onSubmit={save}>
       <div>
-        <h2>Exercise history</h2>
-        <p className="muted small">Choose up to five exercises for quick access. They are shown below the main lifts.</p>
+        <h2>{t('history.exerciseHistory')}</h2>
+        <p className="muted small">{t('history.pickIntro')}</p>
       </div>
       {rows.map((r, i) => (
         <select
           key={i}
-          aria-label={`Exercise ${i + 1}`}
+          aria-label={t('history.exerciseN', { n: i + 1 })}
           value={r}
           onChange={(e) => setRows(rows.map((x, j) => (j === i ? e.target.value : x)))}
         >
@@ -228,8 +229,8 @@ function PickDialog({ state, mainIds, picked, onClose }) {
         </select>
       ))}
       <div className="button-row end">
-        <button type="button" onClick={onClose}>Cancel</button>
-        <button type="submit" className="primary">Save</button>
+        <button type="button" onClick={onClose}>{t('common.cancel')}</button>
+        <button type="submit" className="primary">{t('common.save')}</button>
       </div>
     </Sheet>
   )
@@ -241,12 +242,12 @@ function WorkoutTable({ workouts, current, onOpen, sort }) {
     <table className="history-table">
       <thead>
         <tr>
-          <th>Date</th>
-          <th>Session</th>
+          <th>{t('history.date')}</th>
+          <th>{t('history.session')}</th>
           <th>
-            <span className="sr-only">Done as prescribed</span>
+            <span className="sr-only">{t('history.donePrescribed')}</span>
           </th>
-          <th>Exercise</th>
+          <th>{t('history.exercise')}</th>
           <th className="sort">{sort}</th>
         </tr>
       </thead>
@@ -262,7 +263,7 @@ function WorkoutTable({ workouts, current, onOpen, sort }) {
             onClick={open}
             role="button"
             tabIndex={0}
-            aria-label={`Open session ${plan.week}.${plan.session}${cycle !== current ? `, cycle ${cycle + 1}` : ''}`}
+            aria-label={t(cycle !== current ? 'history.openSessionCycle' : 'history.openSession', { week: plan.week, session: plan.session, cycle: cycle + 1 })}
             onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && (e.preventDefault(), open())}
           >
             {rows.map((r, i) => (
@@ -278,7 +279,7 @@ function WorkoutTable({ workouts, current, onOpen, sort }) {
                   </>
                 )}
                 <td className="check">
-                  <span className={r.status} aria-label={STATUS_LABEL[r.status]}>
+                  <span className={r.status} aria-label={t(`history.status.${r.status}`)}>
                     {r.status === 'none' ? '✗' : '✓'}
                   </span>
                 </td>
@@ -300,7 +301,6 @@ function WorkoutTable({ workouts, current, onOpen, sort }) {
 
 // Check per row: green ✓ done as prescribed, orange-yellow ✓ done but not as prescribed,
 // red ✗ nothing done at all
-const STATUS_LABEL = { ok: 'done as prescribed', off: 'not as prescribed', none: 'not done' }
 
 /** The rows of one workout: main lifts, the accessory group, then exercises added during it. */
 function workoutRows(record) {
@@ -312,7 +312,7 @@ function workoutRows(record) {
   const row = (e, kind) => ({ key: `${kind}-${e.exerciseId}`, name: e.name, status: status([e]) })
   return [
     ...main.map((e) => row(e, 'm')),
-    ...(group.length ? [{ key: 'group', name: `Accessory work ${record.group}`, status: status(group) }] : []),
+    ...(group.length ? [{ key: 'group', name: t('history.accessoryGroup', { group: record.group }), status: status(group) }] : []),
     ...added.map((e) => row(e, 'a')),
   ]
 }

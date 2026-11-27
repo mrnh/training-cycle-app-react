@@ -6,9 +6,9 @@ import { DEFAULT_SYMBOL, SYMBOLS } from './iconSymbols'
 // colours are under `:root[data-theme='dark']` in index.css. index.html applies it before the
 // first paint (same logic as `resolve` below), so there is no flash of the wrong theme.
 export const THEMES = [
-  { id: 'auto', label: 'Auto' },
-  { id: 'light', label: 'Light' },
-  { id: 'dark', label: 'Dark' },
+  { id: 'auto' },
+  { id: 'light' },
+  { id: 'dark' },
 ]
 const KEY = 'theme'
 const ACCENT_KEY = 'accent' // a preset id, or 'custom'
@@ -30,11 +30,11 @@ const resolve = (theme) => (theme === 'dark' || (theme === 'auto' && systemDark(
 // Accent colours; the colours themselves are in index.css. The first is the default. The sixth
 // choice, 'custom', is any colour the user picks.
 export const ACCENTS = [
-  { id: 'purple', label: 'Purple' },
-  { id: 'blue', label: 'Blue' },
-  { id: 'teal', label: 'Teal' },
-  { id: 'pink', label: 'Pink' },
-  { id: 'graphite', label: 'Graphite' },
+  { id: 'purple' },
+  { id: 'blue' },
+  { id: 'teal' },
+  { id: 'pink' },
+  { id: 'graphite' },
 ]
 
 const HEX = /^#[0-9a-f]{6}$/i
@@ -65,9 +65,9 @@ export function getAccent() {
 // 'custom' is the barbell in a colour the user picks, drawn here as a PNG and handed to iOS as a data
 // URL; Android installs keep the light icon, since its icons come from the manifest file.
 export const ICONS = [
-  { id: 'light', label: 'Light' },
-  { id: 'dark', label: 'Dark' },
-  { id: 'custom', label: 'Custom' },
+  { id: 'light' },
+  { id: 'dark' },
+  { id: 'custom' },
 ]
 const ICON_KEY = 'app-icon'
 const ICON_COLOR_KEY = 'app-icon-color' // background of the custom icon as #rrggbb

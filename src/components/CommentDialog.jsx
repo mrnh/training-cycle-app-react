@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import Sheet from './Sheet'
+import { t } from '../i18n'
 
 /** Write or change the comment of an exercise card. Saving it empty removes the comment. */
 export default function CommentDialog({ title, value, onSave, onClose }) {
@@ -15,14 +16,14 @@ export default function CommentDialog({ title, value, onSave, onClose }) {
         className="note"
         rows={4}
         autoFocus
-        placeholder="Comment"
-        aria-label="Comment"
+        placeholder={t('common.comment')}
+        aria-label={t('common.comment')}
         value={draft}
         onChange={(e) => setDraft(e.target.value)}
       />
       <div className="button-row end">
-        <button type="button" onClick={onClose}>Cancel</button>
-        <button type="submit" className="primary">Save</button>
+        <button type="button" onClick={onClose}>{t('common.cancel')}</button>
+        <button type="submit" className="primary">{t('common.save')}</button>
       </div>
     </Sheet>
   )

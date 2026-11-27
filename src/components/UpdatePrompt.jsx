@@ -1,6 +1,7 @@
 import { Fragment, useEffect, useState } from 'react'
 import { useRegisterSW } from 'virtual:pwa-register/react'
 import Sheet from './Sheet'
+import { t } from '../i18n'
 
 // How often an open app looks for a new version (it also checks on every start)
 const CHECK_EVERY = 60 * 60 * 1000
@@ -49,23 +50,23 @@ export default function UpdatePrompt() {
     <>
       <div className="update-bar" role="status">
         <span className="update-text">
-          <span>{release ? `New version ${release.version}` : 'New version available'}</span>
-          {release === null && <span className="update-detail">Small improvements</span>}
+          <span>{release ? t('update.newVersion', { version: release.version }) : t('update.available')}</span>
+          {release === null && <span className="update-detail">{t('update.small')}</span>}
           {release && (
             <span className="update-detail">
               {release.title} ·{' '}
               <button className="link inline" onClick={() => setShowNotes(true)}>
-                What's new
+                {t('update.whatsNew')}
               </button>
             </span>
           )}
         </span>
         <span className="update-actions">
           <button className="small-btn" onClick={() => setNeedRefresh(false)}>
-            Later
+            {t('update.later')}
           </button>
           <button className="small-btn primary" onClick={() => updateServiceWorker()}>
-            Reload
+            {t('update.reload')}
           </button>
         </span>
       </div>
@@ -79,7 +80,7 @@ function WhatsNew({ release, onReload, onClose }) {
   return (
     <Sheet onClose={onClose} onSubmit={onReload}>
       <div>
-        <h2>What's new in {release.version}</h2>
+        <h2>{t('update.whatsNewIn', { version: release.version })}</h2>
         <p className="muted small">{release.title}</p>
       </div>
       {release.sections.map((s) => (
@@ -95,8 +96,8 @@ function WhatsNew({ release, onReload, onClose }) {
         </div>
       ))}
       <div className="button-row end">
-        <button type="button" onClick={onClose}>Later</button>
-        <button type="submit" className="primary">Reload</button>
+        <button type="button" onClick={onClose}>{t('update.later')}</button>
+        <button type="submit" className="primary">{t('update.reload')}</button>
       </div>
     </Sheet>
   )

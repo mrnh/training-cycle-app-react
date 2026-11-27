@@ -10,12 +10,13 @@ import Session from './screens/Session'
 import Settings from './screens/Settings'
 import Setup from './screens/Setup'
 import { currentCycle, useStore } from './store'
+import { t } from './i18n'
 
 const TABS = [
-  { id: 'overview', label: 'Overview', icon: '▦' },
-  { id: 'session', label: 'Session', icon: '◉' },
-  { id: 'history', label: 'History', icon: '☰' },
-  { id: 'settings', label: 'Settings', icon: '⚙' },
+  { id: 'overview', icon: '▦' },
+  { id: 'session', icon: '◉' },
+  { id: 'history', icon: '☰' },
+  { id: 'settings', icon: '⚙' },
 ]
 
 /**
@@ -63,7 +64,7 @@ export default function App() {
   // tab starts over.
   const [backStack, setBackStack] = useState([])
 
-  if (state === undefined) return <div className="screen muted center">Loading…</div>
+  if (state === undefined) return <div className="screen muted center">{t('common.loading')}</div>
   if (state === null)
     return (
       <>
@@ -116,10 +117,10 @@ export default function App() {
       </main>
       <UpdatePrompt />
       <nav className="tabbar">
-        {TABS.map((t) => (
-          <button key={t.id} className={tab === t.id ? 'active' : ''} onClick={() => switchTab(t.id)} aria-current={tab === t.id ? 'page' : undefined}>
-            <span aria-hidden="true">{t.icon}</span>
-            {t.label}
+        {TABS.map((tb) => (
+          <button key={tb.id} className={tab === tb.id ? 'active' : ''} onClick={() => switchTab(tb.id)} aria-current={tab === tb.id ? 'page' : undefined}>
+            <span aria-hidden="true">{tb.icon}</span>
+            {t(`tabs.${tb.id}`)}
           </button>
         ))}
       </nav>

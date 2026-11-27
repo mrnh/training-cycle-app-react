@@ -5,6 +5,7 @@ import {
 } from '../program'
 import { currentCycle, newCycle, update } from '../store'
 import useConfirm from '../components/useConfirm'
+import { t } from '../i18n'
 
 export default function Plan({ state, onOpen }) {
   const cycle = currentCycle(state)
@@ -18,12 +19,12 @@ export default function Plan({ state, onOpen }) {
     <div className="screen plan">
       {next && (
         <button className="card next-up" onClick={() => onOpen(next.key)}>
-          <span className="muted small">{active ? 'In progress' : 'Next up'}</span>
+          <span className="muted small">{active ? t('plan.inProgress') : t('plan.nextUp')}</span>
           <strong>{sessionName(next)}</strong>
           <span className="small">
             {mainLifts(cycle, next)
-              .map((p) => `${exerciseName(state, liftOf(cycle, p))} ${p.sets}×${p.reps} @ ${fmt(targetWeight(cycle, p))} ${unit()}`)
-              .join(' · ') || `Accessory work, group ${next.group}`}
+              .map((p) => t('plan.liftLine', { name: exerciseName(state, liftOf(cycle, p)), sets: p.sets, reps: p.reps, weight: fmt(targetWeight(cycle, p)), unit: unit() }))
+              .join(' · ') || t('plan.accessoryOnly', { group: next.group })}
           </span>
         </button>
       )}
@@ -36,7 +37,7 @@ export default function Plan({ state, onOpen }) {
           return (
             <div className="week" key={week}>
               <span className="week-label">
-                Week {week}
+                {t('plan.week', { n: week })}
                 <span className="muted small">{weekRange(cycle, week)}</span>
               </span>
               <span className="dots">
@@ -48,7 +49,7 @@ export default function Plan({ state, onOpen }) {
                     <button
                       key={s}
                       className={`dot ${cls}`}
-                      aria-label={`${sessionName(plan)}${complete ? ', done' : cls === 'partial' ? ', in progress' : ''}`}
+                      aria-label={complete ? t('plan.sessionDone', { session: sessionName(plan) }) : cls === 'partial' ? t('plan.sessionInProgress', { session: sessionName(plan) }) : sessionName(plan)}
                       onClick={() => onOpen(plan.key)}
                     >
                       {s}
@@ -64,7 +65,7 @@ export default function Plan({ state, onOpen }) {
       <div className="bar" role="progressbar" aria-valuenow={doneCount} aria-valuemax={sessions.length}>
         <div style={{ width: `${(doneCount / sessions.length) * 100}%` }} />
       </div>
-      <p className="muted small">{doneCount} of {sessions.length} sessions done</p>
+      <p className="muted small">{t('plan.sessionsDone', { done: doneCount, total: sessions.length })}</p>
     </div>
   )
 }
@@ -81,9 +82,9 @@ function NextCycle({ state }) {
   const [confirmDialog, confirm] = useConfirm()
   async function start() {
     const ok = await confirm({
-      title: 'Start the next cycle?',
-      message: `A new ${program.weekCount}-week cycle with these 1RMs. This cycle stays in your history.`,
-      confirmLabel: 'Start cycle',
+      title: t('nextCycle.confirmTitle'),
+      message: t('nextCycle.confirmMessage', { weeks: program.weekCount }),
+      confirmLabel: t('nextCycle.confirm'),
     })
     if (!ok) return
     update((d) => d.cycles.push(newCycle(date, newRM, cycle.primaries, cycle.program)))
@@ -91,8 +92,8 @@ function NextCycle({ state }) {
 
   return (
     <div className="card highlight">
-      <strong>Cycle complete</strong>
-      <p className="muted small">New 1RMs from the week-{program.weekCount} re-test:</p>
+      <strong>{t('nextCycle.complete')}</strong>
+      <p className="muted small">{t('nextCycle.newRms', { week: program.weekCount })}</p>
       {lifts.map((id) => (
         <div className="row small" key={id}>
           <span>{exerciseName(state, id)}</span>
@@ -102,18 +103,18 @@ function NextCycle({ state }) {
             </span>
           ) : (
             <span>
-              <strong>{fmt(newRM[id])} {unit()}</strong> <span className="muted">kept, re-test not ticked</span>
+              <strong>{fmt(newRM[id])} {unit()}</strong> <span className="muted">{t('nextCycle.kept')}</span>
             </span>
           )}
         </div>
       ))}
-      <p className="muted small">You can still change them in Settings after starting.</p>
+      <p className="muted small">{t('nextCycle.change')}</p>
       <label className="field">
-        <span>Next cycle starts</span>
+        <span>{t('nextCycle.starts')}</span>
         <input type="date" value={date} onChange={(e) => setDate(e.target.value)} />
       </label>
       <button className="primary" onClick={start} disabled={!date}>
-        Start next cycle
+        {t('nextCycle.start')}
       </button>
       {confirmDialog}
     </div>

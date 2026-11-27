@@ -3,6 +3,7 @@ import MainLiftFields from './MainLiftFields'
 import Sheet from './Sheet'
 import { activeSession, finishSession, heaviestWeight, isoDay, mainLiftsError, programOf, sessionName, todayIso } from '../program'
 import { currentCycle, newCycle, update } from '../store'
+import { t } from '../i18n'
 
 /**
  * Start a new cycle before the current one is complete (e.g. after a break). The current
@@ -17,7 +18,7 @@ export default function NewCycleDialog({ state, onClose }) {
   const [error, setError] = useState('')
 
   function start() {
-    if (!date) return setError('Pick a start date.')
+    if (!date) return setError(t('newCycle.pickDate'))
     const liftError = mainLiftsError(lifts)
     if (liftError) return setError(liftError)
     const oneRM = Object.fromEntries(lifts.filter((l) => l.id).map((l) => [l.id, l.rm]))
@@ -33,18 +34,17 @@ export default function NewCycleDialog({ state, onClose }) {
 
   return (
     <Sheet onClose={onClose} onSubmit={start}>
-      <h2>Start a new cycle</h2>
+      <h2>{t('newCycle.title')}</h2>
       <p className="small">
-        A fresh {programOf(cycle).weekCount}-week cycle from week 1. The current cycle stays in your history; exercises, groups and preferences
-        stay as they are.
+        {t('newCycle.intro', { weeks: programOf(cycle).weekCount })}
       </p>
-      {open && <p className="warning small">{sessionName(open)} is still open. It's finished as it is and saved.</p>}
+      {open && <p className="warning small">{t('newCycle.openWarning', { session: sessionName(open) })}</p>}
       <label className="field">
-        <span>Start date</span>
+        <span>{t('newCycle.startDate')}</span>
         <input type="date" value={date} onChange={(e) => setDate(e.target.value)} />
       </label>
       <div className="field">
-        <span>Main lifts and 1RM</span>
+        <span>{t('newCycle.lifts')}</span>
         <MainLiftFields
           rows={lifts}
           catalog={state.catalog}
@@ -57,8 +57,8 @@ export default function NewCycleDialog({ state, onClose }) {
       </div>
       {error && <p className="error">{error}</p>}
       <div className="button-row end">
-        <button type="button" onClick={onClose}>Cancel</button>
-        <button type="submit" className="primary">Start cycle</button>
+        <button type="button" onClick={onClose}>{t('common.cancel')}</button>
+        <button type="submit" className="primary">{t('newCycle.start')}</button>
       </div>
     </Sheet>
   )

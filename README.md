@@ -68,6 +68,11 @@ npm install
 npm run dev
 ```
 
+All texts shown in the app are in `src/locales/en.js`, grouped by screen, and used in the code as
+`t('settings.cycle.abort')` (`src/i18n.js`: variables like `{name}`, plural forms by `count`). To add a
+language, add a file with the same keys next to it and register it in `i18n.js`. Not translated yet:
+the changelog notes, the default exercise names and the app name in `index.html` and the manifest.
+
 The training program (weeks, sessions, sets and percentages) is plain data in `src/programs.js`;
 the rules that work on it live in `src/program.js`, storage in `src/store.js`, screens in
 `src/screens/`. Each cycle stores the id of its program (`cycle.program`; cycles from before that

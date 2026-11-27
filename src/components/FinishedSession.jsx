@@ -6,6 +6,7 @@ import Planned from './Planned'
 import useConfirm from './useConfirm'
 import { MAX_SETS, exerciseName, setText, todayIso, unit } from '../program'
 import { update } from '../store'
+import { t } from '../i18n'
 
 /**
  * A finished workout (of any cycle), shown from its permanent record. "Edit" turns the same
@@ -33,9 +34,9 @@ export default function FinishedWorkout({ state, cycleIndex, planKey }) {
 
   const removeEntry = async (e) => {
     const ok = await confirm({
-      title: `Remove ${e.name}?`,
-      message: 'It is removed from this workout with all its sets.',
-      confirmLabel: 'Remove',
+      title: t('finished.removeTitle', { name: e.name }),
+      message: t('finished.removeMessage'),
+      confirmLabel: t('common.remove'),
       danger: true,
     })
     if (ok) change((rec) => (rec.entries = rec.entries.filter((x) => !same(e)(x))))
@@ -64,17 +65,17 @@ export default function FinishedWorkout({ state, cycleIndex, planKey }) {
     <>
       <div className="finished-row">
         <button className={`small-btn ${editing ? 'primary' : ''}`} onClick={toggleEditing}>
-          {editing ? 'Done' : 'Edit'}
+          {editing ? t('common.done') : t('common.edit')}
         </button>
       </div>
 
       {editing && (
         <section className="card">
-          <h2>Date</h2>
+          <h2>{t('finished.date')}</h2>
           {/* Any day up to today; an emptied field keeps the old date */}
           <input
             type="date"
-            aria-label="Date finished"
+            aria-label={t('finished.dateFinished')}
             value={record.finishedAt ?? ''}
             max={todayIso()}
             onChange={(e) => e.target.value && change((rec) => (rec.finishedAt = e.target.value))}
@@ -93,29 +94,29 @@ export default function FinishedWorkout({ state, cycleIndex, planKey }) {
       {editing && (
         <>
           <button className="add-exercise" onClick={() => setAdding(true)}>
-            + Add exercise
+            {t('finished.addExerciseButton')}
           </button>
           <section className="card">
-            <h2>Session note</h2>
-            <Note label="Add a session note" value={record.note} onChange={(t) => change((rec) => (rec.note = t))} />
+            <h2>{t('finished.sessionNote')}</h2>
+            <Note label={t('finished.addSessionNote')} value={record.note} onChange={(text) => change((rec) => (rec.note = text))} />
           </section>
           <button className="primary finish" onClick={toggleEditing}>
-            Done
+            {t('common.done')}
           </button>
         </>
       )}
       {!editing && record.note && (
         <section className="card">
-          <h2>Session note</h2>
+          <h2>{t('finished.sessionNote')}</h2>
           <p className="note-text">{record.note}</p>
         </section>
       )}
 
       {adding && (
         <PrescriptionDialog
-          title="Add exercise"
+          title={t('finished.addExerciseTitle')}
           choices={state.catalog.filter((x) => !secondaryIds.includes(x.id))}
-          saveLabel="Add"
+          saveLabel={t('common.add')}
           onSave={addExercise}
           onClose={() => setAdding(false)}
         />
@@ -136,8 +137,8 @@ function Entry({ e }) {
         <ol className="done-sets">
           <li className="muted">
             <span className="set-no" />
-            <span>No sets logged</span>
-            <span className="not-done" aria-label="not done">
+            <span>{t('finished.noSets')}</span>
+            <span className="not-done" aria-label={t('finished.notDone')}>
               ✗
             </span>
           </li>
@@ -148,7 +149,7 @@ function Entry({ e }) {
             <li key={i} className={x.done ? 'is-done' : 'muted'}>
               <span className="set-no">{i + 1}</span>
               <span>{setText(x)}</span>
-              <span className={x.done ? undefined : 'not-done'} aria-label={x.done ? 'done' : 'not done'}>
+              <span className={x.done ? undefined : 'not-done'} aria-label={x.done ? t('finished.doneAria') : t('finished.notDone')}>
                 {x.done ? '✓' : '✗'}
               </span>
             </li>
@@ -174,22 +175,22 @@ function EditEntry({ e, onChange, onRemove }) {
     <section className={`card ${e.retest ? 'highlight' : ''}`}>
       <h2>{e.name}</h2>
       {p && <Planned sets={p.sets} reps={p.reps} weight={p.weight} />}
-      {e.retest && <p className="small">The next cycle's 1RM was set when this workout was finished. Changes here don't affect it.</p>}
+      {e.retest && <p className="small">{t('finished.retestNote')}</p>}
       {e.sets.length > 0 && (
         <div className="sets-edit with-done">
-          <span className="set-head">Set</span>
+          <span className="set-head">{t('sets.set')}</span>
           <span className="set-head">{unit()}</span>
-          <span className="set-head">Reps</span>
-          <span className="set-head">Done</span>
+          <span className="set-head">{t('sets.reps')}</span>
+          <span className="set-head">{t('common.done')}</span>
           {e.sets.map((x, i) => (
             <div key={i} className="sets-edit-row">
               <span className="set-no">{i + 1}</span>
-              <NumInput value={x.w} placeholder={p?.weight} label={`Set ${i + 1} weight`} onChange={(w) => setSet(i, { w })} />
-              <NumInput value={x.r} placeholder={p?.reps} label={`Set ${i + 1} reps`} onChange={(r) => setSet(i, { r })} />
+              <NumInput value={x.w} placeholder={p?.weight} label={t('sets.weightOf', { n: i + 1 })} onChange={(w) => setSet(i, { w })} />
+              <NumInput value={x.r} placeholder={p?.reps} label={t('sets.repsOf', { n: i + 1 })} onChange={(r) => setSet(i, { r })} />
               <button
                 className={`done-toggle ${x.done ? 'is-done' : ''}`}
                 aria-pressed={x.done}
-                aria-label={`Set ${i + 1} done`}
+                aria-label={t('sets.doneOf', { n: i + 1 })}
                 onClick={() => setSet(i, { done: !x.done })}
               >
                 {x.done ? '✓' : '✗'}
@@ -200,15 +201,15 @@ function EditEntry({ e, onChange, onRemove }) {
       )}
       <div className="row">
         <button className="small-btn" disabled={!e.sets.length} onClick={() => onChange((x) => x.sets.pop())}>
-          − Remove set
+          {t('sets.removeSet')}
         </button>
         <button className="small-btn" disabled={e.sets.length >= MAX_SETS} onClick={addSet}>
-          + Add set
+          {t('sets.addSet')}
         </button>
       </div>
-      <Note label="Add a comment" value={e.note} onChange={(t) => onChange((x) => (x.note = t))} />
+      <Note label={t('common.addComment')} value={e.note} onChange={(text) => onChange((x) => (x.note = text))} />
       <button className="link danger" onClick={onRemove}>
-        Remove exercise
+        {t('common.removeExercise')}
       </button>
     </section>
   )
