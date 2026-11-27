@@ -367,13 +367,15 @@ export default function Settings({ state }) {
       </div>
     )
 
-  // Main lifts with their 1RM, empty slots left out (on the Settings card and the sub-screen)
-  const liftList = (
-    <div className="list">
+  // Main lifts, start 1RM → goal (empty slots left out): the Settings card and the Current cycle screen
+  const liftTable = (
+    <div className="lift-table">
       {lifts.map((id) => (
-        <div className="row list-row static" key={id}>
+        <div className="lift-row" key={id}>
           <span>{exerciseName(state, id)}</span>
-          <span>{fmt(cycle.oneRM[id])} {unit()}</span>
+          <span><span className="sr-only">Start </span>{fmt(cycle.oneRM[id])} {unit()}</span>
+          <span className="muted" aria-hidden="true">→</span>
+          <strong><span className="sr-only">Goal </span>{fmt(goalWeight(cycle, id))} {unit()}</strong>
         </div>
       ))}
     </div>
@@ -419,10 +421,9 @@ export default function Settings({ state }) {
           )}
 
           <div className="row subhead">
-            <h3>
-              Main lifts <span className="head-note">(current 1RMs)</span>
-            </h3>
-            {!draft && (
+            <h3>Main lifts</h3>
+            {/* Main lifts and 1RMs are fixed once the cycle has started */}
+            {!draft && !cycleStarted(cycle) && (
               <button
                 className="sec-pen"
                 aria-label="Edit main lifts"
@@ -456,7 +457,7 @@ export default function Settings({ state }) {
               </div>
             </>
           ) : (
-            liftList
+            liftTable
           )}
 
           <GroupsSummary state={state} onEdit={() => show('groups')} />
@@ -500,16 +501,7 @@ export default function Settings({ state }) {
           {cycleAborted(cycle) && <><br />Aborted on {fmtDate(cycle.abortedAt)}</>}
         </p>
         {/* Start = the 1RM the cycle is built on, → Goal = the week-9 single */}
-        <div className="lift-table">
-          {lifts.map((id) => (
-            <div className="lift-row" key={id}>
-              <span>{exerciseName(state, id)}</span>
-              <span><span className="sr-only">Start </span>{fmt(cycle.oneRM[id])} {unit()}</span>
-              <span className="muted" aria-hidden="true">→</span>
-              <strong><span className="sr-only">Goal </span>{fmt(goalWeight(cycle, id))} {unit()}</strong>
-            </div>
-          ))}
-        </div>
+        {liftTable}
       </section>
 
       <NavCard title="Exercise catalog" onClick={() => show('exercises')} />
