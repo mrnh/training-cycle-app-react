@@ -314,6 +314,7 @@ button.comment-btn {
 .group-summary { display: flex; flex-direction: column; gap: var(--space-1); }
 .group-summary h4 { margin: 0; font-size: var(--text-sm); font-weight: var(--weight-bold); color: var(--muted); }
 button.new-cycle { margin-top: var(--space-2); }
+button.new-cycle.danger { border-color: var(--danger); }
 .group-summary ul { list-style: none; margin: 0; padding: 0; }
 .group-summary li {
   display: flex; justify-content: space-between; gap: var(--space-3); padding: var(--space-1) 0;

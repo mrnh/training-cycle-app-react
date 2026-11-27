@@ -2,7 +2,8 @@ import { useEffect, useState } from 'react'
 import './App.css'
 import UpdatePrompt from './components/UpdatePrompt'
 import useEdgeSwipeBack from './useEdgeSwipeBack'
-import { activeSession, nextSession, sessionsOf } from './program'
+import AbortedCycle from './components/AbortedCycle'
+import { activeSession, cycleAborted, nextSession, sessionsOf } from './program'
 import History from './screens/History'
 import Plan from './screens/Plan'
 import Session from './screens/Session'
@@ -102,8 +103,9 @@ export default function App() {
   return (
     <>
       <main className={tab === 'overview' ? 'fit' : undefined}>
-        {tab === 'overview' && <Plan state={state} onOpen={openSession} />}
-        {tab === 'session' && <Session
+        {(tab === 'overview' || tab === 'session') && cycleAborted(cycle) && <AbortedCycle state={state} />}
+        {tab === 'overview' && !cycleAborted(cycle) && <Plan state={state} onOpen={openSession} />}
+        {tab === 'session' && !cycleAborted(cycle) && <Session
             key={sessionKey}
             state={state}
             sessionKey={sessionKey}

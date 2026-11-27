@@ -252,6 +252,17 @@ export function finishSession(state, cycle, plan, finishedAt) {
   clearDraft(cycle, plan)
 }
 
+/** An aborted cycle was ended early (cycle.abortedAt = the day); it stays in the history. */
+export const cycleAborted = (cycle) => !!cycle.abortedAt
+
+/** End the cycle here (mutates): an open session is finished as it is, nothing else is lost. */
+export function abortCycle(state, cycle, now = new Date()) {
+  const open = activeSession(cycle)
+  if (open) finishSession(state, cycle, open, isoDay(now))
+  cycle.timer = null
+  cycle.abortedAt = isoDay(now)
+}
+
 /** Cancel the open session: its draft is thrown away and no record is made (mutates the cycle). */
 export const cancelSession = clearDraft
 

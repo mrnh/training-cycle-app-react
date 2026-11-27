@@ -5,7 +5,7 @@ import NewCycleDialog from '../components/NewCycleDialog'
 import useConfirm from '../components/useConfirm'
 import Chevron from '../components/Chevron'
 import Exercises from './Exercises'
-import { DATE_FORMATS, ROUNDINGS, ROUNDING_MODES, UNITS, dateFormat, rounding, roundingMode, exerciseName, fmt, cycleEnd, cycleRange, cycleStarted, fmtDate, goalWeight, heaviestWeight, mainLiftsError, programOf, todayIso, unit } from '../program'
+import { DATE_FORMATS, ROUNDINGS, ROUNDING_MODES, UNITS, dateFormat, rounding, roundingMode, exerciseName, fmt, abortCycle, cycleAborted, cycleEnd, cycleRange, cycleStarted, fmtDate, goalWeight, heaviestWeight, mainLiftsError, programOf, todayIso, unit, activeSession, sessionName } from '../program'
 import { currentCycle, migrate, replaceState, update, updateCycle } from '../store'
 import { sampleState } from '../sampleData'
 import ScreenHeader from '../components/ScreenHeader'
@@ -379,13 +379,29 @@ export default function Settings({ state }) {
     </div>
   )
 
+  async function abort() {
+    const open = activeSession(cycle)
+    const ok = await confirm({
+      title: 'Abort this cycle?',
+      message: `The cycle ends here and can't be continued. Everything you finished stays in your history and exercise records.${
+        open ? ` ${sessionName(open)} is still open and is saved as it is.` : ''
+      } Then you can start a new cycle.`,
+      confirmLabel: 'Abort cycle',
+      danger: true,
+    })
+    if (ok) update((d) => abortCycle(d, currentCycle(d)))
+  }
+
   if (subScreen === 'cycle')
     return (
       <div className="screen">
         <ScreenHeader title="Current cycle" backLabel="Back to settings" onBack={() => show(null)} />
         <section className="card">
           <h3>{program.name}</h3>
-          <p className="muted small cycle-dates">{fmtDate(cycle.startDate)} – {fmtDate(cycleEnd(cycle))}</p>
+          <p className="muted small cycle-dates">
+            {fmtDate(cycle.startDate)} – {fmtDate(cycleEnd(cycle))}
+            {cycleAborted(cycle) && <><br />Aborted on {fmtDate(cycle.abortedAt)}</>}
+          </p>
 
           {/* Until the first session is started, the start date can still be moved */}
           {!cycleStarted(cycle) && (
@@ -445,13 +461,19 @@ export default function Settings({ state }) {
 
           <GroupsSummary state={state} onEdit={() => show('groups')} />
 
-          {!draft && (
-            <button className="new-cycle" onClick={() => setNewCycleOpen(true)}>
-              Start a new cycle
-            </button>
-          )}
+          {!draft &&
+            (cycleAborted(cycle) ? (
+              <button className="new-cycle" onClick={() => setNewCycleOpen(true)}>
+                Start a new cycle
+              </button>
+            ) : (
+              <button className="new-cycle danger" onClick={abort}>
+                Abort cycle
+              </button>
+            ))}
           {newCycleOpen && <NewCycleDialog state={state} onClose={() => setNewCycleOpen(false)} />}
         </section>
+        {confirmDialog}
       </div>
     )
 
@@ -475,6 +497,7 @@ export default function Settings({ state }) {
           {program.name}
           <br />
           {program.weekCount} weeks · {perWeek} {perWeek === '1' ? 'session' : 'sessions'} a week
+          {cycleAborted(cycle) && <><br />Aborted on {fmtDate(cycle.abortedAt)}</>}
         </p>
         {/* Start = the 1RM the cycle is built on, → Goal = the week-9 single */}
         <div className="lift-table">
