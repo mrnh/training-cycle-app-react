@@ -9,6 +9,23 @@ The current version is shown at the bottom of **Settings**.
 
 ---
 
+## 0.28.0 — 2026-11-27 · Abort a cycle
+
+| Current cycle | Confirmation | After aborting |
+|---|---|---|
+| ![Current cycle with the Abort cycle button](docs/screenshots/v0.28.0/current-cycle.jpg) | ![The abort confirmation](docs/screenshots/v0.28.0/abort-dialog.jpg) | ![Overview after aborting, offering a new cycle](docs/screenshots/v0.28.0/cycle-aborted.jpg) |
+
+### Added
+- **Abort cycle**: a red button on the Current cycle screen ends the cycle early, after a
+  confirmation. Everything you finished stays in History and the exercise records; an open session
+  is saved as it is. Overview and Session then offer to start a new cycle, with your lifts and 1RMs
+  filled in. An aborted cycle shows the day it ended.
+
+### Changed
+- **Current cycle screen**: the main lifts use the same start-to-goal table as Settings, without
+  headings. Once the cycle has started, the lifts and 1RMs can no longer be edited.
+- **Start date** is fixed once the first session is started.
+
 ## 0.27.0 — 2026-11-26 · Program on the cycle screens
 
 | Settings | Current cycle |
