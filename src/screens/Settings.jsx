@@ -420,19 +420,21 @@ export default function Settings({ state }) {
             </div>
           )}
 
-          <div className="row subhead">
-            <h3>Main lifts</h3>
-            {/* Main lifts and 1RMs are fixed once the cycle has started */}
-            {!draft && !cycleStarted(cycle) && (
-              <button
-                className="sec-pen"
-                aria-label="Edit main lifts"
-                onClick={() => setDraft(cycle.primaries.map((id) => ({ id: id ?? '', rm: id ? (cycle.oneRM[id] ?? null) : null })))}
-              >
-                ✎
-              </button>
-            )}
-          </div>
+          {/* Main lifts and 1RMs are fixed once the cycle has started: then just the table, no heading or pen */}
+          {!cycleStarted(cycle) && (
+            <div className="row subhead">
+              <h3>Main lifts</h3>
+              {!draft && (
+                <button
+                  className="sec-pen"
+                  aria-label="Edit main lifts"
+                  onClick={() => setDraft(cycle.primaries.map((id) => ({ id: id ?? '', rm: id ? (cycle.oneRM[id] ?? null) : null })))}
+                >
+                  ✎
+                </button>
+              )}
+            </div>
+          )}
 
           {draft ? (
             <>
