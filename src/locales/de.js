@@ -1,4 +1,4 @@
-// Deutsche Texte. Dieselben Schlüssel wie in en.js.
+// Deutsche Texte. Dieselben Schlüssel wie in en-US.js.
 export default {
   common: {
     cancel: 'Abbrechen',

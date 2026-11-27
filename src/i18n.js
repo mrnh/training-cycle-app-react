@@ -5,26 +5,39 @@
  * - Variables: "Session {name} is open" with t('key', { name }).
  * - Plurals: a text can be an object of plural forms, chosen by vars.count with the language's own
  *   rules (Intl.PluralRules): { one: '{count} set', other: '{count} sets' }.
- * - A key missing in the current language falls back to English; one missing there too shows the
+ * - A key missing in the current language falls back to American English; one missing there too shows the
  *   key itself (and a warning in the console), so a gap is easy to spot.
  *
  * To add a language: add src/locales/<code>.js with the same keys, register it (and its own
  * name) below.
  */
 import de from './locales/de'
-import en from './locales/en'
+import enGB from './locales/en-GB'
+import enUS from './locales/en-US'
 
-const LANGUAGES = { en, de }
-/** Languages the user can pick, with their own names (never translated). */
-export const LANGUAGE_NAMES = { en: 'English', de: 'Deutsch' }
-const FALLBACK = 'en'
+// en-GB only holds what differs from en-US and falls back to it for the rest
+const LANGUAGES = { 'en-US': enUS, 'en-GB': enGB, de }
+/** Languages the user can pick: their own name and a flag (never translated). */
+export const LANGUAGE_OPTIONS = [
+  { id: 'en-GB', name: 'English (UK)', flag: '🇬🇧' },
+  { id: 'en-US', name: 'English (US)', flag: '🇺🇸' },
+  { id: 'de', name: 'Deutsch', flag: '🇩🇪' },
+]
+const FALLBACK = 'en-US'
 let language = FALLBACK
 
-/** The device's first language that the app has texts for, else English. */
+// Countries that write British English, for following the device
+const BRITISH = ['en-GB', 'en-AU', 'en-NZ', 'en-IE', 'en-ZA', 'en-IN']
+
+/** The device's first language that the app has texts for, else American English. */
 const fromDevice = () => {
   for (const tag of navigator.languages ?? [navigator.language]) {
-    const code = tag?.slice(0, 2).toLowerCase()
-    if (code in LANGUAGES) return code
+    if (!tag) continue
+    if (tag in LANGUAGES) return tag
+    if (BRITISH.includes(tag)) return 'en-GB'
+    const base = tag.slice(0, 2).toLowerCase()
+    if (base === 'en') return 'en-US'
+    if (base in LANGUAGES) return base
   }
   return FALLBACK
 }
@@ -36,7 +49,7 @@ export const getLanguage = () => language
  * (or none) means "follow the device".
  */
 export function setLanguage(code) {
-  language = code in LANGUAGES ? code : fromDevice()
+  language = code in LANGUAGES ? code : code === 'en' ? 'en-US' : fromDevice() // 'en' = the old name of en-US
   document.documentElement.lang = language
 }
 

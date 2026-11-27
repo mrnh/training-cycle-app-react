@@ -453,6 +453,7 @@ button.icon-action {
   min-height: var(--tap-sm); min-width: 64px; padding: 0 var(--space-2); border: 1px solid transparent; border-radius: calc(var(--radius-md) - 2px);
   background: none; color: var(--muted); font-size: var(--text-sm);
 }
+.segmented button.flag { min-width: var(--tap); font-size: var(--text-lg); line-height: 1; }
 .segmented button.active { background: var(--card); border-color: var(--border); color: var(--text); font-weight: var(--weight-bold); }
 .unit-row { align-items: center; gap: var(--space-3); }
 .unit-row h3 { margin: 0; }
