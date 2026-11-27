@@ -20,12 +20,16 @@ const en = flatten(await load('en.js'))
 let problems = 0
 for (const file of readdirSync(dir).filter((f) => f.endsWith('.js') && f !== 'en.js')) {
   const other = flatten(await load(file))
-  for (const key of Object.keys(en)) {
-    if (!(key in other)) console.log(`${file}: missing ${key}`), problems++
-    else if (typeof en[key] !== typeof other[key]) console.log(`${file}: ${key} should ${typeof en[key] === 'string' ? 'be plain text' : 'have plural forms'}`), problems++
-    else if (typeof en[key] === 'string' && vars(en[key]) !== vars(other[key])) console.log(`${file}: ${key} has other {variables} than English`), problems++
+  const report = (message) => {
+    console.log(`${file}: ${message}`)
+    problems++
   }
-  for (const key of Object.keys(other)) if (!(key in en)) console.log(`${file}: ${key} is not in English`), problems++
+  for (const key of Object.keys(en)) {
+    if (!(key in other)) report(`missing ${key}`)
+    else if (typeof en[key] !== typeof other[key]) report(`${key} should ${typeof en[key] === 'string' ? 'be plain text' : 'have plural forms'}`)
+    else if (typeof en[key] === 'string' && vars(en[key]) !== vars(other[key])) report(`${key} has other {variables} than English`)
+  }
+  for (const key of Object.keys(other)) if (!(key in en)) report(`${key} is not in English`)
 }
 console.log(problems ? `${problems} problem(s)` : 'All languages match English.')
 process.exit(problems ? 1 : 0)
