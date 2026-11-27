@@ -9,6 +9,20 @@ The current version is shown at the bottom of **Settings**.
 
 ---
 
+## 0.30.0 — 2026-11-27 · Deutsch
+
+| Language setting | Session | Current cycle |
+|---|---|---|
+| ![Preferences with the new Language row](docs/screenshots/v0.30.0/language-setting.jpg) | ![The session screen in German](docs/screenshots/v0.30.0/session-german.jpg) | ![The Current cycle screen in German](docs/screenshots/v0.30.0/cycle-german.jpg) |
+
+### Added
+- **German**: the whole app is available in German. Pick the language under Settings →
+  Preferences; Auto follows your device, otherwise it is English.
+
+### Changed
+- **Under the hood**: all texts now live in one language file per language, so more languages can
+  be added later. Nothing changes in English.
+
 ## 0.29.0 — 2026-11-27 · Cycle progress
 
 | Current cycle |
