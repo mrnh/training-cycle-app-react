@@ -2,6 +2,7 @@ import {
   DEFAULT_CATALOG, DEFAULT_PRESCRIPTION, DEFAULT_PRIMARIES, DEFAULT_PROGRAM, GROUPS, finishSession, newId, secondaryKey, sessionProgress, sessionsOf, setDateFormat, setRounding, setRoundingMode, setUnit,
 } from './program'
 import { useSyncExternalStore } from 'react'
+import { setLanguage } from './i18n'
 import { get, set, del } from 'idb-keyval'
 
 // All app data lives in one object in IndexedDB. Every change is saved immediately.
@@ -14,6 +15,7 @@ let state // undefined = still loading, null = no data yet (first launch)
 const listeners = new Set()
 const emit = () => {
   setUnit(state?.unit)
+  setLanguage(state?.language)
   setDateFormat(state?.dateFormat)
   setRounding(state?.rounding)
   setRoundingMode(state?.roundingMode)

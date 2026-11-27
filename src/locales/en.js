@@ -21,8 +21,8 @@ export default {
       message: 'Finishing saves this session permanently. You can still correct it afterwards with Edit.',
       confirm: 'Finish session',
       unticked: {
-        one: '{missing} of {total} {name} set not ticked',
-        other: '{missing} of {total} {name} sets not ticked',
+        one: '{missing} of {total} {nameLower} set not ticked',
+        other: '{missing} of {total} {nameLower} sets not ticked',
       },
       button: 'Finish session',
     },
@@ -148,6 +148,9 @@ export default {
     reset: 'Reset',
     deleteAll: 'Delete all data',
     symbolHeading: 'Symbol',
+    language: 'Language',
+    languageAuto: 'Auto',
+    languageHint: 'Auto follows your device.',
   },
   rest: {
     interval: 'Rest interval {time}, change',

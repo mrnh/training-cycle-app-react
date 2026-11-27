@@ -11,7 +11,7 @@ import { sampleState } from '../sampleData'
 import ScreenHeader from '../components/ScreenHeader'
 import { SYMBOLS } from '../iconSymbols'
 import { ACCENTS, ICONS, THEMES, customIconUrl, isIconCustomised, placeholderIconUrl, getAccent, getAppIcon, getIconColor, getIconSymbol, getIconSymbolColor, setIconSymbolColor, symbolColorFor, setAppIcon, setIconColor, setIconSymbol, getCustomAccent, getTheme, setAccent, setCustomAccent, setTheme } from '../theme'
-import { t } from '../i18n'
+import { LANGUAGE_NAMES, t } from '../i18n'
 
 // Running as an installed home-screen app (not in a browser tab)
 const installed = window.matchMedia?.('(display-mode: standalone)').matches || navigator.standalone === true
@@ -161,6 +161,18 @@ export default function Settings({ state }) {
         <ScreenHeader title={t('settings.preferences')} backLabel={t('settings.back')} onBack={() => show(null)} />
         {/* One block per preference (control and its note), divided by lines */}
         <section className="card">
+          <div className="pref">
+            <div className="row unit-row">
+              <h3>{t('settings.language')}</h3>
+              <Segmented
+                label={t('settings.language')}
+                options={[{ id: 'auto', label: t('settings.languageAuto') }, ...Object.entries(LANGUAGE_NAMES).map(([id, label]) => ({ id, label }))]}
+                value={state.language ?? 'auto'}
+                onChange={(l) => update((d) => (l === 'auto' ? void delete d.language : void (d.language = l)))}
+              />
+            </div>
+            <p className="muted small">{t('settings.languageHint')}</p>
+          </div>
           <div className="pref">
             <div className="row unit-row">
               <h3>{t('settings.units')}</h3>

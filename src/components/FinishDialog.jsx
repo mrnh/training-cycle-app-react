@@ -21,7 +21,7 @@ export default function FinishDialog({
         <div className="warning small">
           {unticked.map((u) => (
             <p key={u.id}>
-              {t('session.finish.unticked', { count: u.total, missing: u.missing, total: u.total, name: u.name.toLowerCase() })}
+              {t('session.finish.unticked', { count: u.total, missing: u.missing, total: u.total, name: u.name, nameLower: u.name.toLowerCase() })}
             </p>
           ))}
         </div>
