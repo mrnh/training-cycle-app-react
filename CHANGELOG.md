@@ -9,6 +9,16 @@ The current version is shown at the bottom of **Settings**.
 
 ---
 
+## 0.29.0 — 2026-11-27 · Cycle progress
+
+| Current cycle |
+|---|
+| ![Current cycle with a progress bar next to the dates](docs/screenshots/v0.29.0/cycle-progress.jpg) |
+
+### Added
+- **Progress bar on the Current cycle screen**: next to the cycle's dates, it shows how many of its
+  sessions are done (for example 4/27), like the bar on Overview.
+
 ## 0.28.0 — 2026-11-27 · Abort a cycle
 
 | Current cycle | Confirmation | After aborting |
