@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import NewCycleDialog from './NewCycleDialog'
+import StartCycle from './StartCycle'
 import { fmtDate } from '../program'
 import { currentCycle } from '../store'
 import { t } from '../i18n'
@@ -8,6 +8,7 @@ import { t } from '../i18n'
 export default function AbortedCycle({ state }) {
   const cycle = currentCycle(state)
   const [open, setOpen] = useState(false)
+  if (open) return <StartCycle state={state} onClose={() => setOpen(false)} />
   return (
     <div className="screen">
       <div className="card highlight">
@@ -19,7 +20,6 @@ export default function AbortedCycle({ state }) {
           {t('cycleAborted.start')}
         </button>
       </div>
-      {open && <NewCycleDialog state={state} onClose={() => setOpen(false)} />}
     </div>
   )
 }

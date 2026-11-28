@@ -1,10 +1,12 @@
 /**
+ * Also checks that every text the code asks for with t('some.key') exists in en-US.js.
+ *
  * Compares the language files in src/locales with American English (en-US.js, the reference): every
  * key must exist in every language (English variants like en-GB may leave keys out), with the same
  * {variables}, and plural forms where English has them.
  * Run: npm run check-texts
  */
-import { readdirSync } from 'node:fs'
+import { readdirSync, readFileSync } from 'node:fs'
 
 const dir = new URL('../src/locales/', import.meta.url)
 const load = async (file) => (await import(new URL(file, dir))).default
@@ -36,5 +38,22 @@ for (const file of readdirSync(dir).filter((f) => f.endsWith('.js') && f !== 'en
   }
   for (const key of Object.keys(other)) if (!(key in en)) report(`${key} is not in en-US`)
 }
-console.log(problems ? `${problems} problem(s)` : 'All languages match en-US.')
+// Texts the code asks for with a fixed key (keys built with ${...} can't be checked)
+const find = (dict, key) => key.split('.').reduce((o, k) => (o == null ? o : o[k]), dict)
+const english = await load('en-US.js')
+const walk = (url) =>
+  readdirSync(url, { withFileTypes: true }).flatMap((e) => {
+    if (e.isDirectory()) return e.name === 'locales' ? [] : walk(new URL(`${e.name}/`, url))
+    return /\.jsx?$/.test(e.name) && e.name !== 'i18n.js' ? [new URL(e.name, url)] : []
+  })
+for (const file of walk(new URL('../src/', import.meta.url))) {
+  for (const m of readFileSync(file, 'utf8').matchAll(/\bt\(\s*(['`])([^'`$]+)\1/g)) {
+    if (find(english, m[2]) == null) {
+      console.log(`${file.pathname.split('/src/')[1]}: uses ${m[2]}, which is not in en-US.js`)
+      problems++
+    }
+  }
+}
+
+console.log(problems ? `${problems} problem(s)` : 'All languages match en-US, and every text in use exists.')
 process.exit(problems ? 1 : 0)

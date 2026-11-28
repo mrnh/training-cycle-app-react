@@ -207,7 +207,6 @@ export default {
   newCycle: {
     pickDate: 'Pick a start date.',
     title: 'Start a new cycle',
-    intro: 'A fresh {weeks}-week cycle from week 1. The current cycle stays in your history; exercises, groups and preferences stay as they are.',
     openWarning: '{session} is still open. It\'s finished as it is and saved.',
     startDate: 'Start date',
     lifts_rm: 'Main lifts and 1RM',
@@ -319,6 +318,7 @@ export default {
   },
   setup: {
     choose: 'Choose your program.',
+    chooseNext: 'Choose the program for the new cycle. The current cycle stays in your history.',
     continue: 'Continue',
     backToPrograms: 'Back to programs',
     title: 'New training cycle',
@@ -368,17 +368,12 @@ export default {
     sessionsDone: '{done} of {total} sessions done',
   },
   nextCycle: {
-    confirmTitle: 'Start the next cycle?',
-    confirmMessage: 'A new {weeks}-week cycle with these 1RMs. This cycle stays in your history.',
-    confirmMessage_tm: 'A new {weeks}-week cycle with these training maxes. This cycle stays in your history.',
-    confirm: 'Start cycle',
     complete: 'Cycle complete',
     newRms: 'New 1RMs from the week-{week} re-test:',
     suggested: 'Suggested 1RMs for the next cycle:',
     suggested_tm: 'Suggested training maxes for the next cycle:',
     kept: 'kept, re-test not ticked',
-    change: 'You can still change them in Settings after starting.',
-    starts: 'Next cycle starts',
+    change: 'You can change them in the next step.',
     start: 'Start next cycle',
   },
   history: {

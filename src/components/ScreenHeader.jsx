@@ -7,7 +7,7 @@ export default function ScreenHeader({ title, subtitle, onBack, backLabel = t('c
   return (
     <header className="screen-head">
       {onBack ? (
-        <button className="icon" data-back aria-label={backLabel} onClick={onBack}>
+        <button type="button" className="icon" data-back aria-label={backLabel} onClick={onBack}>
           ‹
         </button>
       ) : (

@@ -143,6 +143,22 @@ export function suggestedIncrease(cycle, id) {
   const inc = program.increase?.[cycle.primaries.indexOf(id)]
   return inc == null ? null : round1((inc * (unit() === 'lbs' ? 2 : 1)) / program.maxFactor)
 }
+/**
+ * The numbers the next cycle starts from, per main lift: { value, increase } for programs that
+ * suggest an increase, else { value, result } with the re-test result (result false: not ticked,
+ * the number is kept).
+ */
+export function nextCycleNumbers(cycle) {
+  const results = retestResults(cycle)
+  return Object.fromEntries(
+    cycle.primaries.filter(Boolean).map((id) => {
+      const increase = suggestedIncrease(cycle, id)
+      return [id, increase != null ? { value: round1(cycle.oneRM[id] + increase), increase } : { value: results[id] ?? cycle.oneRM[id], result: results[id] != null }]
+    }),
+  )
+}
+/** Empty lift rows for a program: its default lifts, no numbers yet. */
+export const emptyLifts = (program) => program.defaultLifts.map((id) => ({ id, rm: null }))
 /** Main-lift slots being edited ([{ id, rm }], id '' = empty): at least one lift, and a 1RM for each picked lift. */
 export function mainLiftsError(rows) {
   const picked = rows.filter((r) => r.id)

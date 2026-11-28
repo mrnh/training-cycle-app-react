@@ -2,7 +2,7 @@ import { useRef, useState } from 'react'
 import GroupsSummary, { GroupsEditor } from '../components/Groups'
 import MainLiftFields from '../components/MainLiftFields'
 import Segmented from '../components/Segmented'
-import NewCycleDialog from '../components/NewCycleDialog'
+import StartCycle from '../components/StartCycle'
 import useConfirm from '../components/useConfirm'
 import Chevron from '../components/Chevron'
 import Exercises from './Exercises'
@@ -411,6 +411,7 @@ export default function Settings({ state }) {
     if (ok) update((d) => abortCycle(d, currentCycle(d)))
   }
 
+  if (subScreen === 'cycle' && newCycleOpen) return <StartCycle state={state} onClose={() => setNewCycleOpen(false)} />
   if (subScreen === 'cycle')
     return (
       <div className="screen">
@@ -490,7 +491,13 @@ export default function Settings({ state }) {
 
           {!draft &&
             (cycleAborted(cycle) ? (
-              <button className="new-cycle" onClick={() => setNewCycleOpen(true)}>
+              <button
+                className="new-cycle"
+                onClick={() => {
+                  setNewCycleOpen(true)
+                  window.scrollTo(0, 0)
+                }}
+              >
                 {t('cycle.startNew')}
               </button>
             ) : (
@@ -498,7 +505,6 @@ export default function Settings({ state }) {
                 {t('cycle.abort')}
               </button>
             ))}
-          {newCycleOpen && <NewCycleDialog state={state} onClose={() => setNewCycleOpen(false)} />}
         </section>
         {confirmDialog}
       </div>

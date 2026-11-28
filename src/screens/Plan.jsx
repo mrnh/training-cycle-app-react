@@ -1,19 +1,21 @@
 import { useState } from 'react'
 import {
-  activeSession, sessionName, cycleComplete, exerciseName, fmt, round1, isFinished, liftOf, mainLifts, nextSession, programOf,
-  mainPrescription, prescriptionText, retestResults, suggestedIncrease, todayIso, unit, weekRange,
+  activeSession, sessionName, cycleComplete, exerciseName, fmt, isFinished, liftOf, mainLifts, nextCycleNumbers, nextSession, programOf,
+  mainPrescription, prescriptionText, unit, weekRange,
 } from '../program'
-import { currentCycle, newCycle, update } from '../store'
-import useConfirm from '../components/useConfirm'
+import { currentCycle } from '../store'
+import StartCycle from '../components/StartCycle'
 import { t } from '../i18n'
 
 export default function Plan({ state, onOpen }) {
   const cycle = currentCycle(state)
+  const [starting, setStarting] = useState(null) // the numbers to start the next cycle from, while its setup is open
   const active = activeSession(cycle)
   const next = active ?? nextSession(cycle)
   const program = programOf(cycle)
   const sessions = program.sessions
   const doneCount = sessions.filter((p) => isFinished(cycle, p)).length
+  if (starting) return <StartCycle state={state} numbers={starting} onClose={() => setStarting(null)} />
 
   return (
     <div className="screen plan">
@@ -29,7 +31,15 @@ export default function Plan({ state, onOpen }) {
         </button>
       )}
 
-      {cycleComplete(cycle) && <NextCycle state={state} />}
+      {cycleComplete(cycle) && (
+        <NextCycle
+          state={state}
+          onStart={(numbers) => {
+            setStarting(numbers)
+            window.scrollTo(0, 0)
+          }}
+        />
+      )}
 
       <div className="weeks">
         {program.weeks.map((plans, w) => {
@@ -70,60 +80,39 @@ export default function Plan({ state, onOpen }) {
   )
 }
 
-function NextCycle({ state }) {
+/** The finished cycle: the numbers the next one suggests, and the way into its setup. */
+function NextCycle({ state, onStart }) {
   const cycle = currentCycle(state)
   const program = programOf(cycle)
-  const results = retestResults(cycle)
-  const [date, setDate] = useState(todayIso())
-  // A re-test that wasn't ticked keeps the old 1RM (it can be changed in Settings)
-  const lifts = cycle.primaries.filter(Boolean)
-  // Programs with a re-test take the new number from it; the others suggest an increase
-  const increases = Object.fromEntries(lifts.map((id) => [id, suggestedIncrease(cycle, id)]))
-  const newRM = Object.fromEntries(lifts.map((id) => [id, increases[id] != null ? round1(cycle.oneRM[id] + increases[id]) : (results[id] ?? cycle.oneRM[id])]))
+  const numbers = nextCycleNumbers(cycle)
   const basis = program.chosen.tmInput ? '_tm' : ''
-
-  const [confirmDialog, confirm] = useConfirm()
-  async function start() {
-    const ok = await confirm({
-      title: t('nextCycle.confirmTitle'),
-      message: t(`nextCycle.confirmMessage${basis}`, { weeks: program.weekCount }),
-      confirmLabel: t('nextCycle.confirm'),
-    })
-    if (!ok) return
-    update((d) => d.cycles.push(newCycle(date, newRM, cycle.primaries, cycle.program, cycle.options)))
-  }
 
   return (
     <div className="card highlight">
       <strong>{t('nextCycle.complete')}</strong>
       <p className="muted small">{program.increase ? t(`nextCycle.suggested${basis}`) : t('nextCycle.newRms', { week: program.weekCount })}</p>
-      {lifts.map((id) => (
+      {Object.entries(numbers).map(([id, n]) => (
         <div className="row small" key={id}>
           <span>{exerciseName(state, id)}</span>
-          {increases[id] != null ? (
+          {n.increase != null ? (
             <span>
-              {fmt(cycle.oneRM[id])} → <strong>{fmt(newRM[id])} {unit()}</strong> <span className="muted">(+{fmt(increases[id])})</span>
+              {fmt(cycle.oneRM[id])} → <strong>{fmt(n.value)} {unit()}</strong> <span className="muted">(+{fmt(n.increase)})</span>
             </span>
-          ) : results[id] != null ? (
+          ) : n.result ? (
             <span>
-              {fmt(cycle.oneRM[id])} → <strong>{fmt(newRM[id])} {unit()}</strong>
+              {fmt(cycle.oneRM[id])} → <strong>{fmt(n.value)} {unit()}</strong>
             </span>
           ) : (
             <span>
-              <strong>{fmt(newRM[id])} {unit()}</strong> <span className="muted">{t('nextCycle.kept')}</span>
+              <strong>{fmt(n.value)} {unit()}</strong> <span className="muted">{t('nextCycle.kept')}</span>
             </span>
           )}
         </div>
       ))}
       <p className="muted small">{t('nextCycle.change')}</p>
-      <label className="field">
-        <span>{t('nextCycle.starts')}</span>
-        <input type="date" value={date} onChange={(e) => setDate(e.target.value)} />
-      </label>
-      <button className="primary" onClick={start} disabled={!date}>
+      <button className="primary" onClick={() => onStart(Object.fromEntries(Object.entries(numbers).map(([id, n]) => [id, n.value])))}>
         {t('nextCycle.start')}
       </button>
-      {confirmDialog}
     </div>
   )
 }

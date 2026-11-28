@@ -207,7 +207,6 @@ export default {
   newCycle: {
     pickDate: 'Wähle ein Startdatum.',
     title: 'Neuen Zyklus starten',
-    intro: 'Ein neuer {weeks}-Wochen-Zyklus ab Woche 1. Der aktuelle Zyklus bleibt im Verlauf; Übungen, Gruppen und Einstellungen bleiben unverändert.',
     openWarning: '{session} ist noch offen. Sie wird so beendet, wie sie ist, und gespeichert.',
     startDate: 'Startdatum',
     lifts_rm: 'Main Lifts und 1RM',
@@ -319,6 +318,7 @@ export default {
   },
   setup: {
     choose: 'Wähle dein Programm.',
+    chooseNext: 'Wähle das Programm für den neuen Zyklus. Der aktuelle Zyklus bleibt im Verlauf.',
     continue: 'Weiter',
     backToPrograms: 'Zurück zu den Programmen',
     title: 'Neuer Trainingszyklus',
@@ -368,17 +368,12 @@ export default {
     sessionsDone: '{done} von {total} Einheiten erledigt',
   },
   nextCycle: {
-    confirmTitle: 'Nächsten Zyklus starten?',
-    confirmMessage: 'Ein neuer {weeks}-Wochen-Zyklus mit diesen 1RMs. Dieser Zyklus bleibt im Verlauf.',
-    confirmMessage_tm: 'Ein neuer {weeks}-Wochen-Zyklus mit diesen Trainingsmaxima. Dieser Zyklus bleibt im Verlauf.',
-    confirm: 'Zyklus starten',
     complete: 'Zyklus abgeschlossen',
     newRms: 'Neue 1RMs aus dem Test in Woche {week}:',
     suggested: 'Vorgeschlagene 1RMs für den nächsten Zyklus:',
     suggested_tm: 'Vorgeschlagene Trainingsmaxima für den nächsten Zyklus:',
     kept: 'beibehalten, Test nicht abgehakt',
-    change: 'Du kannst sie nach dem Start in den Einstellungen noch ändern.',
-    starts: 'Nächster Zyklus beginnt',
+    change: 'Du kannst sie im nächsten Schritt ändern.',
     start: 'Nächsten Zyklus starten',
   },
   history: {
