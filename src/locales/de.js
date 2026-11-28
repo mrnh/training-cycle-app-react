@@ -270,9 +270,11 @@ export default {
   programs: {
     'russian-masters': {
       name: 'Russian-Masters-Programm (3 Hauptübungen)',
+      description: 'Ein 9-wöchiger Kraftzyklus für Kniebeuge, Bankdrücken und Kreuzheben. In jeder Einheit steigert sich eine Übung von Volumen zu Intensität, während eine andere bei konstanten 6×2 mit 80 % bleibt; Woche 9 endet mit einem Einzelsatz bei 105 %, der dein neues 1RM festlegt. Für Trainierende mit etwas Erfahrung, die dreimal pro Woche trainieren können und alle drei Übungen gemeinsam voranbringen wollen.',
     },
     'russian-masters-1': {
       name: 'Russian-Masters-Programm (1 Hauptübung)',
+      description: 'Dieselbe 9-Wochen-Struktur, konzentriert auf eine einzige Übung. Jede Woche hat eine gleichbleibende Einheit mit 6×2 bei 80 % und eine Einheit, die sich von Volumen zu Intensität steigert und mit einem 1×1 bei 105 % als Neutest endet. Passend, wenn du dich auf eine Übung spezialisieren willst oder nur Zeit für zwei Einheiten pro Woche hast.',
     },
   },
   tabs: {

@@ -20,6 +20,7 @@ export default function ProgramPicker({ value, onChange }) {
                 <span key={fact}>{fact}</span>
               ))}
             </span>
+            <span className="muted small">{t(`programs.${p.id}.description`)}</span>
           </span>
         </label>
       ))}

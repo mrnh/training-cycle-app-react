@@ -270,9 +270,11 @@ export default {
   programs: {
     'russian-masters': {
       name: 'Russian Masters Program (3 main lifts)',
+      description: 'A 9-week strength cycle for squat, bench press and deadlift. In each session one lift builds from volume to intensity while another stays at a steady 6×2 at 80%, and week 9 ends with a single at 105% that sets your new 1RM. Made for lifters with some experience who can train three times a week and want to push all three lifts together.',
     },
     'russian-masters-1': {
       name: 'Russian Masters Program (1 main lift)',
+      description: 'The same 9-week structure, focused on a single lift. Each week has one steady 6×2 session at 80% and one session that builds from volume to intensity, ending with a 1×1 at 105% as the re-test. A good fit when you want to specialize in one lift, or have time for only two sessions a week.',
     },
   },
   tabs: {
