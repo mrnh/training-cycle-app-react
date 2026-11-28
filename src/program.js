@@ -22,12 +22,29 @@ export const DEFAULT_CATALOG = [
 // names its program (cycle.program); cycles stored before programs existed have none and ran
 // the default one.
 export { DEFAULT_PROGRAM, PROGRAMS, sessionKey }
-export const programOf = (cycle) => PROGRAMS.find((p) => p.id === cycle.program) ?? DEFAULT_PROGRAM
+export const programById = (id) => PROGRAMS.find((p) => p.id === id) ?? DEFAULT_PROGRAM
+export const programOf = (cycle) => programById(cycle.program)
 export const sessionsOf = (cycle) => programOf(cycle).sessions
 // The main-lift slots a new cycle of the default program starts with (stored per cycle)
 export const DEFAULT_PRIMARIES = DEFAULT_PROGRAM.defaultLifts
 /** Name of a program, from the language file. */
 export const programName = (program) => t(`programs.${program.id}.name`)
+/** Sessions per week of a program as text: "3", or "2–4" when the weeks differ. */
+export function sessionsPerWeekText(program) {
+  const counts = program.weeks.map((w) => w.length)
+  const min = Math.min(...counts)
+  const max = Math.max(...counts)
+  return { text: min === max ? `${min}` : `${min}–${max}`, count: max }
+}
+/** What a program looks like at a glance: ["9 weeks", "3 sessions a week", "3 main lifts"]. */
+export function programFacts(program) {
+  const perWeek = sessionsPerWeekText(program)
+  return [
+    t('cycle.weeks', { count: program.weekCount }),
+    t('cycle.perWeek', { count: perWeek.count, value: perWeek.text }),
+    t('program.lifts', { count: program.defaultLifts.length }),
+  ]
+}
 export const exerciseName = (state, id) => state.catalog.find((e) => e.id === id)?.name ?? t('common.deletedExercise')
 
 export const round1 = (x) => Math.round(x * 10) / 10

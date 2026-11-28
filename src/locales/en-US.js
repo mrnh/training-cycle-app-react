@@ -260,6 +260,13 @@ export default {
     regular: 'Regular',
     up: 'Round up',
   },
+  program: {
+    pick: 'Program',
+    lifts: {
+      one: '{count} main lift',
+      other: '{count} main lifts',
+    },
+  },
   programs: {
     'russian-masters': {
       name: 'Russian Masters Program (3 main lifts)',
@@ -275,6 +282,9 @@ export default {
     settings: 'Settings',
   },
   setup: {
+    choose: 'Choose your program.',
+    continue: 'Continue',
+    backToPrograms: 'Back to programs',
     title: 'New training cycle',
     intro: '{weeks} weeks, {perWeek} sessions a week. Your 1RMs stay fixed for the whole cycle and are re-tested in week {weeks}.',
   },

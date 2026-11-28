@@ -260,6 +260,13 @@ export default {
     regular: 'Normal',
     up: 'Aufrunden',
   },
+  program: {
+    pick: 'Programm',
+    lifts: {
+      one: '{count} Hauptübung',
+      other: '{count} Hauptübungen',
+    },
+  },
   programs: {
     'russian-masters': {
       name: 'Russian-Masters-Programm (3 Hauptübungen)',
@@ -275,6 +282,9 @@ export default {
     settings: 'Einstellungen',
   },
   setup: {
+    choose: 'Wähle dein Programm.',
+    continue: 'Weiter',
+    backToPrograms: 'Zurück zu den Programmen',
     title: 'Neuer Trainingszyklus',
     intro: '{weeks} Wochen, {perWeek} Einheiten pro Woche. Deine 1RMs bleiben für den ganzen Zyklus fest und werden in Woche {weeks} neu getestet.',
   },

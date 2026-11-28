@@ -1,5 +1,5 @@
 import {
-  DEFAULT_CATALOG, DEFAULT_PRESCRIPTION, DEFAULT_PRIMARIES, DEFAULT_PROGRAM, finishSession, newId, secondaryKey, sessionProgress, sessionsOf, setDateFormat, setRounding, setRoundingMode, setUnit,
+  DEFAULT_CATALOG, DEFAULT_PRESCRIPTION, DEFAULT_PRIMARIES, DEFAULT_PROGRAM, finishSession, programById, newId, secondaryKey, sessionProgress, sessionsOf, setDateFormat, setRounding, setRoundingMode, setUnit,
 } from './program'
 import { useSyncExternalStore } from 'react'
 import { setLanguage } from './i18n'
@@ -85,12 +85,13 @@ export function newCycle(startDate, oneRM, primaries = DEFAULT_PROGRAM.defaultLi
   }
 }
 
-export function initialState(startDate, oneRM, primaries = DEFAULT_PROGRAM.defaultLifts, program = DEFAULT_PROGRAM.id) {
+export function initialState(startDate, oneRM, primaries = DEFAULT_PROGRAM.defaultLifts, programId = DEFAULT_PROGRAM.id) {
+  const program = programById(programId)
   return {
     version: DATA_VERSION,
     catalog: DEFAULT_CATALOG.map((e) => ({ ...e })), // [{ id, name }]
-    groups: { [DEFAULT_PROGRAM.id]: Object.fromEntries(DEFAULT_PROGRAM.groups.map((g) => [g, []])) }, // program -> group -> ordered [{ id, sets, reps, weight, rest }]
-    cycles: [newCycle(startDate, oneRM, primaries, program)],
+    groups: { [program.id]: Object.fromEntries(program.groups.map((g) => [g, []])) }, // program -> group -> ordered [{ id, sets, reps, weight, rest }]
+    cycles: [newCycle(startDate, oneRM, primaries, program.id)],
   }
 }
 

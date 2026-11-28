@@ -5,7 +5,7 @@ import NewCycleDialog from '../components/NewCycleDialog'
 import useConfirm from '../components/useConfirm'
 import Chevron from '../components/Chevron'
 import Exercises from './Exercises'
-import { DATE_FORMATS, ROUNDINGS, ROUNDING_MODES, UNITS, dateFormat, rounding, roundingMode, exerciseName, fmt, programName, abortCycle, cycleAborted, cycleEnd, cycleRange, cycleStarted, fmtDate, goalWeight, heaviestWeight, mainLiftsError, isFinished, programOf, todayIso, unit, activeSession, sessionName } from '../program'
+import { DATE_FORMATS, ROUNDINGS, ROUNDING_MODES, UNITS, dateFormat, rounding, roundingMode, exerciseName, fmt, programName, sessionsPerWeekText, abortCycle, cycleAborted, cycleEnd, cycleRange, cycleStarted, fmtDate, goalWeight, heaviestWeight, mainLiftsError, isFinished, programOf, todayIso, unit, activeSession, sessionName } from '../program'
 import { currentCycle, migrate, replaceState, update, updateCycle } from '../store'
 import { sampleState } from '../sampleData'
 import ScreenHeader from '../components/ScreenHeader'
@@ -21,8 +21,7 @@ export default function Settings({ state }) {
   const lifts = cycle.primaries.filter(Boolean) // empty slots left out
   const program = programOf(cycle)
   const doneCount = program.sessions.filter((p) => isFinished(cycle, p)).length
-  const counts = program.weeks.map((w) => w.length)
-  const perWeek = Math.min(...counts) === Math.max(...counts) ? `${counts[0]}` : `${Math.min(...counts)}–${Math.max(...counts)}`
+  const perWeek = sessionsPerWeekText(program)
   const [draft, setDraft] = useState(null) // [{ id, rm }] per main-lift slot while editing; null = not editing
   const [rmError, setRmError] = useState('')
   const [newCycleOpen, setNewCycleOpen] = useState(false)
@@ -516,7 +515,7 @@ export default function Settings({ state }) {
         <p className="cycle-program muted small">
           {programName(program)}
           <br />
-          {t('cycle.weeks', { count: program.weekCount })} · {t('cycle.perWeek', { count: Math.max(...counts), value: perWeek })}
+          {t('cycle.weeks', { count: program.weekCount })} · {t('cycle.perWeek', { count: perWeek.count, value: perWeek.text })}
           {cycleAborted(cycle) && <><br />{t('cycle.aborted', { date: fmtDate(cycle.abortedAt) })}</>}
         </p>
         {/* Start = the 1RM the cycle is built on, → Goal = the week-9 single */}
