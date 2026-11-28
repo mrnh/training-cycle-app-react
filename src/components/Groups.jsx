@@ -1,8 +1,9 @@
 import { useRef, useState } from 'react'
 import {
-  DEFAULT_PRESCRIPTION, GROUPS, MAX_SETS, REST_MAX, REST_MIN, REST_STEP, exerciseName, fmt, minSec, prescriptionText, unit,
+  DEFAULT_PRESCRIPTION, MAX_SETS, REST_MAX, REST_MIN, REST_STEP, exerciseName, fmt, groupDraft, groupList, minSec, prescriptionText, programOf, unit,
 } from '../program'
-import { update } from '../store'
+import { groupSession } from '../programs'
+import { currentCycle, update } from '../store'
 import NumInput from './NumInput'
 import Sheet from './Sheet'
 import ScreenHeader from './ScreenHeader'
@@ -13,6 +14,7 @@ import { t } from '../i18n'
  * line per exercise with its prescription and rest. The pen (only with `onEdit`) opens the editing screen.
  */
 export default function GroupsSummary({ state, onEdit }) {
+  const program = programOf(currentCycle(state))
   return (
     <>
       <div className="row subhead">
@@ -23,14 +25,14 @@ export default function GroupsSummary({ state, onEdit }) {
           </button>
         )}
       </div>
-      {GROUPS.map((g, i) => (
+      {program.groups.map((g) => (
         <div key={g} className="group-summary">
-          <h4>{t('groups.groupSession', { group: g, n: i + 1 })}</h4>
-          {state.groups[g].length === 0 ? (
+          <h4>{t('groups.groupSession', { group: g, n: groupSession(program, g) })}</h4>
+          {groupList(state, program, g).length === 0 ? (
             <p className="muted small">{t('groups.noExercises')}</p>
           ) : (
             <ul>
-              {state.groups[g].map((x) => (
+              {groupList(state, program, g).map((x) => (
                 <li key={x.id}>
                   <span>{exerciseName(state, x.id)}</span>
                   <span className="muted">
@@ -48,6 +50,7 @@ export default function GroupsSummary({ state, onEdit }) {
 
 /** Sub-screen of Settings: add, remove and set up the exercises of each group. */
 export function GroupsEditor({ state, onBack }) {
+  const program = programOf(currentCycle(state))
   return (
     <div className="screen">
       <ScreenHeader title={t('groups.accessoryWork')} backLabel={t('groups.backToCycle')} onBack={onBack} />
@@ -55,16 +58,16 @@ export function GroupsEditor({ state, onBack }) {
         <p className="muted small">
           {t('groups.intro')}
         </p>
-        {GROUPS.map((g, i) => (
-          <Group key={g} state={state} group={g} session={i + 1} />
+        {program.groups.map((g) => (
+          <Group key={g} state={state} program={program} group={g} session={groupSession(program, g)} />
         ))}
       </section>
     </div>
   )
 }
 
-function Group({ state, group, session }) {
-  const entries = state.groups[group]
+function Group({ state, program, group, session }) {
+  const entries = groupList(state, program, group)
   const available = state.catalog.filter((e) => !entries.some((x) => x.id === e.id))
   const [pick, setPick] = useState('')
   const [editing, setEditing] = useState(null) // exercise id
@@ -72,18 +75,18 @@ function Group({ state, group, session }) {
   function add(e) {
     e.preventDefault()
     if (!pick) return
-    update((d) => void d.groups[group].push({ id: pick, ...DEFAULT_PRESCRIPTION }))
+    update((d) => void groupDraft(d, program, group).push({ id: pick, ...DEFAULT_PRESCRIPTION }))
     setPick('')
   }
-  const remove = (id) => update((d) => void (d.groups[group] = d.groups[group].filter((x) => x.id !== id)))
+  const remove = (id) => update((d) => void (d.groups[program.id][group] = groupDraft(d, program, group).filter((x) => x.id !== id)))
   const save = (id, values) =>
     update((d) => {
-      Object.assign(d.groups[group].find((x) => x.id === id), values)
+      Object.assign(groupDraft(d, program, group).find((x) => x.id === id), values)
     })
   const current = entries.find((x) => x.id === editing)
   const move = (from, to) =>
     update((d) => {
-      const list = d.groups[group]
+      const list = groupDraft(d, program, group)
       list.splice(to, 0, ...list.splice(from, 1))
     })
   const { listRef, handleProps, rowStyle } = useReorder(entries.length, move)

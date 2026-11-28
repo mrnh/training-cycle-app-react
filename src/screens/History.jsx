@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import FinishedWorkout from '../components/FinishedSession'
 import Sheet from '../components/Sheet'
-import { GROUPS, entryAsPrescribed, entryNotDone, exerciseName, finishedDate, finishedWorkouts, fmtDateShort, sessionName } from '../program'
+import { entryAsPrescribed, entryNotDone, exerciseName, finishedDate, finishedWorkouts, fmtDateShort, groupList, programOf, sessionName } from '../program'
 import { currentCycle, update } from '../store'
 import Chevron from '../components/Chevron'
 import ExerciseHistory from './ExerciseHistory'
@@ -157,7 +157,8 @@ const DEFAULT_PICKS = 3 // shown until exercises are picked: the first ones of t
  */
 function pickedExercises(state, mainIds) {
   const picked = state.historyExercises
-  const ids = picked ?? GROUPS.flatMap((g) => state.groups[g].map((x) => x.id))
+  const program = programOf(currentCycle(state))
+  const ids = picked ?? program.groups.flatMap((g) => groupList(state, program, g).map((x) => x.id))
   const usable = (id) => !mainIds.includes(id) && state.catalog.some((e) => e.id === id)
   return [...new Set(ids)].filter(usable).slice(0, picked ? PICKS : DEFAULT_PICKS)
 }

@@ -34,9 +34,11 @@ export function sampleState(keep = {}, now = new Date()) {
     ...(keep.dateFormat && { dateFormat: keep.dateFormat }),
     catalog: DEFAULT_CATALOG.map((e) => ({ ...e })),
     groups: {
-      A: [{ id: 'overhead-press', sets: 3, reps: 8, weight: 40, rest: 90 }, { id: 'pullups', sets: 3, reps: 8, weight: 0, rest: 120 }],
-      B: [{ id: 'dips', sets: 3, reps: 10, weight: 0, rest: 90 }, { id: 'seal-rows', sets: 3, reps: 10, weight: 30, rest: 90 }],
-      C: [{ id: 'bulgarian-split-squat', sets: 3, reps: 8, weight: 20, rest: 90 }, { id: 'nordic-curls', sets: 3, reps: 5, weight: 0, rest: 120 }],
+      [DEFAULT_PROGRAM.id]: {
+        A: [{ id: 'overhead-press', sets: 3, reps: 8, weight: 40, rest: 90 }, { id: 'pullups', sets: 3, reps: 8, weight: 0, rest: 120 }],
+        B: [{ id: 'dips', sets: 3, reps: 10, weight: 0, rest: 90 }, { id: 'seal-rows', sets: 3, reps: 10, weight: 30, rest: 90 }],
+        C: [{ id: 'bulgarian-split-squat', sets: 3, reps: 8, weight: 20, rest: 90 }, { id: 'nordic-curls', sets: 3, reps: 5, weight: 0, rest: 120 }],
+      },
     },
     cycles: [
       {

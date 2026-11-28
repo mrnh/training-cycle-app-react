@@ -2,14 +2,16 @@ import { useState } from 'react'
 import CommentIcon from '../components/CommentIcon'
 import Sheet from '../components/Sheet'
 import useConfirm from '../components/useConfirm'
-import { GROUPS, bestByReps, exerciseHistory, fmt, fmtDate, fmtDateShort, sessionName, setsSummary } from '../program'
-import { update } from '../store'
+import { bestByReps, exerciseHistory, fmt, fmtDate, fmtDateShort, groupList, programOf, sessionName, setsSummary } from '../program'
+import { currentCycle, update } from '../store'
 import ScreenHeader from '../components/ScreenHeader'
 import { t } from '../i18n'
 
 /** One exercise: name and best weights, every finished session it was done in (newest first), delete. */
 export default function ExerciseHistory({ state, ex, onBack, backLabel = t('common.back') }) {
-  const groups = GROUPS.filter((g) => state.groups[g].some((e) => e.id === ex.id))
+  // Groups of the current program that use it (deleting is blocked until it is removed there)
+  const program = programOf(currentCycle(state))
+  const groups = program.groups.filter((g) => groupList(state, program, g).some((e) => e.id === ex.id))
   const mainLift = state.cycles.some((c) => c.primaries.includes(ex.id))
   // Main-lift and accessory entries together; only ticked sets count
   const rows = exerciseHistory(state, ex.id) // oldest first
@@ -29,7 +31,11 @@ export default function ExerciseHistory({ state, ex, onBack, backLabel = t('comm
     })
     if (!ok) return
     onBack()
-    update((d) => void (d.catalog = d.catalog.filter((e) => e.id !== ex.id)))
+    update((d) => {
+      d.catalog = d.catalog.filter((e) => e.id !== ex.id)
+      // Also from the accessory work of other programs, where it can't be removed by hand from here
+      for (const lists of Object.values(d.groups)) for (const g of Object.keys(lists)) lists[g] = lists[g].filter((e) => e.id !== ex.id)
+    })
   }
   // Sessions finished before dates were recorded fall back to their name
   const when = (h) => (h.date ? fmtDate(h.date) : sessionName(h))

@@ -264,6 +264,9 @@ export default {
     'russian-masters': {
       name: 'Russian-Masters-Programm (3 Hauptübungen)',
     },
+    'russian-masters-1': {
+      name: 'Russian-Masters-Programm (1 Hauptübung)',
+    },
   },
   tabs: {
     overview: 'Übersicht',

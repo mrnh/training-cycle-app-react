@@ -28,8 +28,13 @@ function defineProgram({ id, defaultLifts, weeks }) {
       primaries: s.lifts.map((l) => ({ retest: false, ...l })),
     })),
   )
-  return { id, defaultLifts, weeks: plans, weekCount: plans.length, sessions: plans.flat() }
+  const sessions = plans.flat()
+  // The accessory work groups the sessions use, in order of first use (each program has its own lists)
+  const groups = [...new Set(sessions.map((p) => p.group))]
+  return { id, defaultLifts, weeks: plans, weekCount: plans.length, sessions, groups }
 }
+/** Number of the session (within a week) that adds a group. */
+export const groupSession = (program, group) => program.weeks[0].find((s) => s.group === group)?.session ?? 1
 
 /*
  * Russian Masters Program (3 main lifts). Each session has one
@@ -68,5 +73,19 @@ export const RUSSIAN_MASTERS = defineProgram({
   ),
 })
 
-export const PROGRAMS = [RUSSIAN_MASTERS]
+/*
+ * The same program with one main lift: two sessions a week, 9 weeks, 18 sessions. Session 1 of each
+ * week is 6×2 at 80%, session 2 follows the weekly steps of the table above, so the last session
+ * (week 9, session 2) is the 1×1 re-test. Each session adds its own accessory group (A, B).
+ */
+export const RUSSIAN_MASTERS_1 = defineProgram({
+  id: 'russian-masters-1',
+  defaultLifts: ['squat'],
+  weeks: V2.map((v2, w) => [
+    { group: 'A', lifts: [{ slot: 0, ...V1 }] },
+    { group: 'B', lifts: [{ slot: 0, ...v2, retest: w === V2.length - 1 }] },
+  ]),
+})
+
+export const PROGRAMS = [RUSSIAN_MASTERS, RUSSIAN_MASTERS_1]
 export const DEFAULT_PROGRAM = RUSSIAN_MASTERS

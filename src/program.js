@@ -17,7 +17,6 @@ export const DEFAULT_CATALOG = [
   { id: 'tuck-ups', name: 'Tuck-Ups' },
   { id: 'v-ups', name: 'V-Ups' },
 ]
-export const GROUPS = ['A', 'B', 'C']
 
 // The plan itself (weeks, sessions, sets and percentages) is data in programs.js. Each cycle
 // names its program (cycle.program); cycles stored before programs existed have none and ran
@@ -128,14 +127,21 @@ export const restOf = (cycle, card, fallback = DEFAULT_REST) => cycle.rest?.[car
 // Secondary exercises: each group entry carries its prescription (fixed for the cycle) and the
 // rest interval the timer starts with. Weight 0 = bodyweight.
 export const DEFAULT_PRESCRIPTION = { sets: 3, reps: 10, weight: 0, rest: DEFAULT_REST }
-export const groupEntry = (state, group, id) => state.groups[group].find((e) => e.id === id) ?? null
+// Accessory work is kept per program: state.groups[programId][group] = ordered [{ id, sets, reps, weight, rest }]
+export const groupList = (state, program, group) => state.groups[program.id]?.[group] ?? []
+/** The list of a group in a draft copy of the state, created when missing (mutates). */
+export function groupDraft(draft, program, group) {
+  draft.groups[program.id] ??= {}
+  return (draft.groups[program.id][group] ??= [])
+}
+export const groupEntry = (state, cycle, group, id) => groupList(state, programOf(cycle), group).find((e) => e.id === id) ?? null
 // Exercises added during a workout, for that session only: cycle.extras[sessionKey] =
 // [{ id, sets, reps, weight, rest }] like a group entry. Removable until the session is finished.
 export const sessionExtras = (cycle, plan) => cycle.extras?.[plan.key] ?? []
 export const isExtra = (cycle, plan, id) => sessionExtras(cycle, plan).some((e) => e.id === id)
 /** The prescription of an accessory exercise in a session: its group entry, else the one added there. */
 export const sessionEntry = (state, cycle, plan, id) =>
-  groupEntry(state, plan.group, id) ?? sessionExtras(cycle, plan).find((e) => e.id === id) ?? null
+  groupEntry(state, cycle, plan.group, id) ?? sessionExtras(cycle, plan).find((e) => e.id === id) ?? null
 /** "3×10 @ 30 kg" */
 export const prescriptionText = (p) => `${p.sets}×${p.reps} @ ${fmt(p.weight)} ${unit()}`
 /** 125 -> "2:05" */
@@ -181,7 +187,7 @@ export function startSession(state, cycle, plan, now = new Date()) {
 
 /** Catalog ids of the secondary exercises in a draft: its group, the ones added, plus any already logged. */
 export function draftSecondaries(state, cycle, plan) {
-  const ids = state.groups[plan.group].map((e) => e.id)
+  const ids = groupList(state, programOf(cycle), plan.group).map((e) => e.id)
   for (const e of sessionExtras(cycle, plan)) if (!ids.includes(e.id)) ids.push(e.id)
   for (const obj of [cycle.logs, cycle.setCounts, cycle.notes]) {
     for (const k of Object.keys(obj)) {

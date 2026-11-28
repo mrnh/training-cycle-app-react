@@ -1,5 +1,5 @@
 import {
-  DEFAULT_CATALOG, DEFAULT_PRESCRIPTION, DEFAULT_PRIMARIES, DEFAULT_PROGRAM, GROUPS, finishSession, newId, secondaryKey, sessionProgress, sessionsOf, setDateFormat, setRounding, setRoundingMode, setUnit,
+  DEFAULT_CATALOG, DEFAULT_PRESCRIPTION, DEFAULT_PRIMARIES, DEFAULT_PROGRAM, finishSession, newId, secondaryKey, sessionProgress, sessionsOf, setDateFormat, setRounding, setRoundingMode, setUnit,
 } from './program'
 import { useSyncExternalStore } from 'react'
 import { setLanguage } from './i18n'
@@ -7,7 +7,9 @@ import { get, set, del } from 'idb-keyval'
 
 // All app data lives in one object in IndexedDB. Every change is saved immediately.
 const KEY = 'training-plan'
-export const DATA_VERSION = 7
+// Before v8 there was one program and its three groups, stored directly in data.groups
+const LEGACY_GROUPS = ['A', 'B', 'C']
+export const DATA_VERSION = 8
 // Untouched copy of the data from before an upgrade, kept in case a conversion goes wrong
 const BACKUP_KEY = (v) => `training-plan-before-v${v}`
 
@@ -87,7 +89,7 @@ export function initialState(startDate, oneRM, primaries = DEFAULT_PROGRAM.defau
   return {
     version: DATA_VERSION,
     catalog: DEFAULT_CATALOG.map((e) => ({ ...e })), // [{ id, name }]
-    groups: Object.fromEntries(GROUPS.map((g) => [g, []])), // group -> ordered [{ id, sets, reps, weight, rest }]
+    groups: { [DEFAULT_PROGRAM.id]: Object.fromEntries(DEFAULT_PROGRAM.groups.map((g) => [g, []])) }, // program -> group -> ordered [{ id, sets, reps, weight, rest }]
     cycles: [newCycle(startDate, oneRM, primaries, program)],
   }
 }
@@ -115,7 +117,7 @@ export function migrate(data) {
       version: 2,
       // Only the main lifts were built in at v1; later defaults are added by the v5 step
       catalog: [...DEFAULT_CATALOG.filter((e) => DEFAULT_PRIMARIES.includes(e.id)).map((e) => ({ ...e })), ...secondary.map(({ id, name }) => ({ id, name }))],
-      groups: Object.fromEntries(GROUPS.map((g) => [g, secondary.filter((e) => e.group === g).map((e) => e.id)])),
+      groups: Object.fromEntries(LEGACY_GROUPS.map((g) => [g, secondary.filter((e) => e.group === g).map((e) => e.id)])),
       cycles: data.cycles.map((c) => ({
         ...c,
         primaries: [...DEFAULT_PRIMARIES],
@@ -159,7 +161,7 @@ export function migrate(data) {
     data = {
       ...data,
       version: 6,
-      groups: Object.fromEntries(GROUPS.map((g) => [g, (data.groups[g] ?? []).map((id) => ({ id, ...DEFAULT_PRESCRIPTION }))])),
+      groups: Object.fromEntries(LEGACY_GROUPS.map((g) => [g, (data.groups[g] ?? []).map((id) => ({ id, ...DEFAULT_PRESCRIPTION }))])),
     }
   }
   if (data.version === 6) {
@@ -182,6 +184,10 @@ export function migrate(data) {
         finished: Object.fromEntries(Object.entries(c.finished).map(([k, rec]) => [k, { ...rec, entries: rec.entries.map(mainEntry) }])),
       })),
     }
+  }
+  if (data.version === 7) {
+    // v8: accessory work is kept per program (there was only the Russian Masters program with 3 lifts)
+    data = { ...data, version: 8, groups: { 'russian-masters': data.groups } }
   }
   return data.version === DATA_VERSION ? data : null
 }

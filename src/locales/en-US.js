@@ -264,6 +264,9 @@ export default {
     'russian-masters': {
       name: 'Russian Masters Program (3 main lifts)',
     },
+    'russian-masters-1': {
+      name: 'Russian Masters Program (1 main lift)',
+    },
   },
   tabs: {
     overview: 'Overview',
