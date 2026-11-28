@@ -32,7 +32,7 @@ export default defineConfig(({ command, isPreview }) => ({
       manifest: {
         name: 'Training Cycle',
         short_name: 'Training',
-        description: 'A 9-week strength cycle with sessions, rest timers and history.',
+        description: 'Strength training cycles with sessions, rest timers and history.',
         lang: 'en',
         display: 'standalone',
         orientation: 'portrait',

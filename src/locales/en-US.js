@@ -263,6 +263,12 @@ export default {
     up: 'Round up',
   },
   program: {
+    sessions: {
+      one: '{sessions} session ({weeks})',
+      other: '{sessions} sessions ({weeks})',
+    },
+    range: '{min} to {max}',
+    weeksRange: '{min} to {max} weeks',
     pick: 'Program',
     about: 'About {name}',
     lifts: {
@@ -421,6 +427,7 @@ export default {
     mainLifts: 'Main lifts',
     editMainLifts: 'Edit main lifts',
     liftsWarning: 'Main lifts and 1RMs are fixed for the whole cycle. Saving a change recalculates every weight in sessions you haven\'t finished yet. Finished sessions keep what you did.',
+    liftsWarning_tm: 'Main lifts and training maxes are fixed for the whole cycle. Saving a change recalculates every weight in sessions you haven\'t finished yet. Finished sessions keep what you did.',
     prefillHint: 'Picking another exercise fills in the heaviest weight from its history.',
     startNew: 'Start a new cycle',
     abort: 'Abort cycle',

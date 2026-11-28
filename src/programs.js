@@ -54,6 +54,14 @@ function defineProgram({ id, defaultLifts, options = {}, increase, maxFactor = (
   }
   return variant()
 }
+/** Every combination of a program's options as a variant (just the program itself when it has none). */
+export function allVariants(program) {
+  let combos = [{}]
+  for (const [name, option] of Object.entries(program.options)) {
+    combos = combos.flatMap((c) => option.values.map((value) => ({ ...c, [name]: value })))
+  }
+  return combos.map((c) => program.variant(c))
+}
 /** Number of the session (within the first week) that adds a group; null when the group isn't used in week 1. */
 export const groupSession = (program, group) => program.weeks[0].find((s) => s.group === group)?.session ?? null
 

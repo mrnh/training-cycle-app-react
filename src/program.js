@@ -1,4 +1,4 @@
-import { DEFAULT_PROGRAM, PROGRAMS, sessionKey } from './programs'
+import { DEFAULT_PROGRAM, PROGRAMS, allVariants, sessionKey } from './programs'
 import { t } from './i18n'
 
 // Every exercise lives in the catalog; the main lifts of a cycle are ordinary entries.
@@ -41,12 +41,25 @@ export function sessionsPerWeekText(program) {
   const max = Math.max(...regular)
   return { text: min === max ? `${min}` : `${min}–${max}`, count: max }
 }
-/** What a program looks like at a glance: ["9 weeks", "3 sessions a week", "3 main lifts"]. */
+/**
+ * What a program looks like at a glance, over all its options (the weeks depend on the training
+ * days): ["16 sessions (4 to 6 weeks)", "4 main lifts"].
+ */
 export function programFacts(program) {
-  const perWeek = sessionsPerWeekText(program)
+  const variants = allVariants(program)
+  const range = (numbers) => {
+    const min = Math.min(...numbers)
+    const max = Math.max(...numbers)
+    return { min, max, same: min === max }
+  }
+  const sessions = range(variants.map((v) => v.sessions.length))
+  const weeks = range(variants.map((v) => v.weekCount))
   return [
-    t('cycle.weeks', { count: program.weekCount }),
-    t('cycle.perWeek', { count: perWeek.count, value: perWeek.text }),
+    t('program.sessions', {
+      count: sessions.max,
+      sessions: sessions.same ? `${sessions.min}` : t('program.range', sessions),
+      weeks: weeks.same ? t('cycle.weeks', { count: weeks.min }) : t('program.weeksRange', weeks),
+    }),
     t('program.lifts', { count: program.defaultLifts.length }),
   ]
 }
@@ -116,7 +129,7 @@ function retestOf(cycle, slot) {
 }
 /** The planned weight at a percentage of a main lift's number (1RM, or training max), rounded like every planned weight. */
 const plannedWeight = (cycle, id, pct) => roundToStep((cycle.oneRM[id] * pct) / 100)
-/** The cycle's goal for a main lift: its re-test (week 9: the single at 105%). Null for programs without one. */
+/** The cycle's goal for a main lift: its re-test single, the heaviest planned weight. Null for programs without a re-test. */
 export function goalWeight(cycle, id) {
   const r = retestOf(cycle, cycle.primaries.indexOf(id))
   return r ? plannedWeight(cycle, id, r.p.pct) : null
@@ -364,7 +377,7 @@ export function untickedSets(cycle, plan) {
 }
 
 /**
- * The week-9 single for each main lift as it was ticked when its re-test session was finished;
+ * The re-test single for each main lift as it was ticked when its re-test session was finished;
  * null if not ticked. Records from before 0.20.0 have no stored result: their ticked set counts.
  */
 export function retestResults(cycle) {

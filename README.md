@@ -1,20 +1,32 @@
 # Training Cycle App
 
-A mobile-first React app for a 9-week strength cycle with three sessions a week, based on the
-Russian Masters Program, with squat, bench press and deadlift by default.
+A mobile-first React app for strength training cycles: pick a program, enter your main lifts
+and numbers, and log every session. It comes with three programs, each with its own plan:
 
-- **Overview:** all 27 sessions at a glance, with progress
+- **Russian Masters Program:** 9 weeks, three sessions a week, squat, bench press and deadlift
+- **Russian Squat Program:** the same idea for a single lift, 18 sessions in 6 to 9 weeks
+- **5/3/1** (Jim Wendler): 4-week blocks for squat, bench press, overhead press and deadlift, on
+  three or four days a week
+
+Programs are plain data (see Development), so more can be added.
+
+- **Programs:** choose a program when you start a cycle, with its options (such as training days
+  per week) and a description of its aim and who it suits. The same screen starts every later
+  cycle, which can use another program.
+- **Overview:** all sessions of the cycle at a glance, with progress
 - **Session:** start a session (in any order; a warning shows when earlier ones are unfinished),
   tick sets and log weight and reps; values save instantly, and "Finish session" stores the
   workout permanently. One session is open at a time; starting another finishes it, and "Cancel session" discards the open one without a trace. Each exercise has a rest timer, and exercises can be added for the
   session
 - **History:** every finished workout, newest first, with a check per exercise for done as
   prescribed; tap one for its sets and weights, and "Edit" to correct what was logged wrong
-- **Settings:** start date, up to three main lifts with their 1RM, accessory work groups A/B/C with
-  sets, reps, weight and rest for each, the exercise catalog (each exercise with its history and
-  personal bests for 1 to 5 reps), kg/lbs, date format and rounding of planned weights, backup export/import and sample data
+- **Settings:** the current cycle (its program, dates, main lifts and numbers, and the accessory
+  work of each group, which belongs to the program), aborting a cycle, the exercise catalog (each
+  exercise with its history and personal bests for 1 to 5 reps), kg/lbs, date format and rounding
+  of planned weights, language, appearance and app icon, backup export/import and sample data
 
-The week-9 single at 105% is the re-test and becomes the 1RM for the next cycle.
+Programs with a re-test (the two Russian ones) end with a single at 105%, which becomes the 1RM
+for the next cycle. 5/3/1 suggests the usual increases for the next cycle instead.
 
 **Use it:** [mrnh.github.io/training-cycle-app-react](https://mrnh.github.io/training-cycle-app-react/)
 (published from `main` on every push).
@@ -35,10 +47,10 @@ Move your data once: in Safari, Settings → *Export backup*; in the installed a
 *Reload*; it never switches in the middle of a workout on its own.
 
 <p>
-  <img src="docs/screenshots/v0.10.0/overview.jpg" width="200" alt="Overview screen">
-  <img src="docs/screenshots/v0.15.0/session.jpg" width="200" alt="Session screen">
+  <img src="docs/screenshots/v0.31.0/program-picker.jpg" width="200" alt="Choosing a program">
+  <img src="docs/screenshots/v0.31.0/session-531.jpg" width="200" alt="A 5/3/1 session">
   <img src="docs/screenshots/v0.18.0/history.jpg" width="200" alt="History screen">
-  <img src="docs/screenshots/v0.16.0/settings.jpg" width="200" alt="Settings screen">
+  <img src="docs/screenshots/v0.29.0/cycle-progress.jpg" width="200" alt="Current cycle screen">
 </p>
 
 See the [changelog](CHANGELOG.md) for how the app has developed, with screenshots of each version.
@@ -75,10 +87,10 @@ language, add a file with the same keys next to it (as `de.js` does for German; 
 Preferences; the app starts in American English and does not follow the device. Not translated yet:
 the changelog notes, the default exercise names and the app name in `index.html` and the manifest.
 
-The training program (weeks, sessions, sets and percentages) is plain data in `src/programs.js`;
-the rules that work on it live in `src/program.js`, storage in `src/store.js`, screens in
-`src/screens/`. Each cycle stores the id of its program (`cycle.program`; cycles from before that
-field existed use the default program).
+The training programs (weeks, sessions, sets and percentages, and their options) are plain data in
+`src/programs.js`; the rules that work on them live in `src/program.js`, storage in `src/store.js`,
+screens in `src/screens/`. Each cycle stores the id of its program and the options chosen
+(`cycle.program`, `cycle.options`; cycles from before programs existed use the default program).
 
 ## License
 

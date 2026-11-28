@@ -263,6 +263,12 @@ export default {
     up: 'Aufrunden',
   },
   program: {
+    sessions: {
+      one: '{sessions} Einheit ({weeks})',
+      other: '{sessions} Einheiten ({weeks})',
+    },
+    range: '{min} bis {max}',
+    weeksRange: '{min} bis {max} Wochen',
     pick: 'Programm',
     about: 'Info zu {name}',
     lifts: {
@@ -421,6 +427,7 @@ export default {
     mainLifts: 'Main Lifts',
     editMainLifts: 'Main Lifts bearbeiten',
     liftsWarning: 'Main Lifts und 1RMs bleiben für den ganzen Zyklus fest. Beim Speichern einer Änderung werden alle Gewichte in noch nicht beendeten Einheiten neu berechnet. Beendete Einheiten behalten, was du gemacht hast.',
+    liftsWarning_tm: 'Main Lifts und Trainingsmaxima bleiben für den ganzen Zyklus fest. Beim Speichern einer Änderung werden alle Gewichte in noch nicht beendeten Einheiten neu berechnet. Beendete Einheiten behalten, was du gemacht hast.',
     prefillHint: 'Wenn du eine andere Übung wählst, wird das schwerste Gewicht aus ihrem Verlauf eingetragen.',
     startNew: 'Neuen Zyklus starten',
     abort: 'Zyklus abbrechen',

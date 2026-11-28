@@ -465,7 +465,7 @@ export default function Settings({ state }) {
 
           {draft ? (
             <>
-              <p className="warning small">{t('cycle.liftsWarning')}</p>
+              <p className="warning small">{t(`cycle.liftsWarning${basisOf(program) === 'tm' ? '_tm' : ''}`)}</p>
               <MainLiftFields
                 basis={basisOf(program)}
                 rows={draft}
@@ -532,7 +532,7 @@ export default function Settings({ state }) {
           {t('cycle.weeks', { count: program.weekCount })} · {t('cycle.perWeek', { count: perWeek.count, value: perWeek.text })}
           {cycleAborted(cycle) && <><br />{t('cycle.aborted', { date: fmtDate(cycle.abortedAt) })}</>}
         </p>
-        {/* Start = the 1RM the cycle is built on, → Goal = the week-9 single */}
+        {/* Start = the number the cycle is built on, → Goal = the re-test single (programs with a re-test) */}
         {liftTable}
       </section>
 

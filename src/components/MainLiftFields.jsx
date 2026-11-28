@@ -3,7 +3,7 @@ import { unit } from '../program'
 import { t } from '../i18n'
 
 /**
- * The three main-lift slots, each an exercise from the catalog and its 1RM. `rows` is
+ * The main-lift slots of a program, each an exercise from the catalog and its number (1RM or training max). `rows` is
  * [{ id, rm }] in slot order; id '' = empty slot (its sets are left out of the cycle). An
  * exercise can only be in one slot: options taken by another slot are disabled. `prefill(id)`
  * gives the 1RM suggested when a slot switches exercise.
