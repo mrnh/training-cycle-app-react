@@ -298,10 +298,19 @@ export default {
       intro: '{weeks} weeks, {perWeek} sessions a week. Your 1RMs stay fixed for the whole cycle and are re-tested in week {weeks}.',
       description: 'A 9-week strength cycle for squat, bench press and deadlift. In each session one lift builds from volume to intensity while another stays at a steady 6×2 at 80%, and week 9 ends with a single at 105% that sets your new 1RM. Made for lifters with some experience who can train three times a week and want to push all three lifts together.',
     },
-    'russian-masters-1': {
-      name: 'Russian Masters Program (1 main lift)',
+    'russian-squat-1': {
+      name: 'Russian Squat Program (1 main lift)',
       intro: '{weeks} weeks, {perWeek} sessions a week. Your 1RMs stay fixed for the whole cycle and are re-tested in week {weeks}.',
-      description: 'The same 9-week structure, focused on a single lift. Each week has one steady 6×2 session at 80% and one session that builds from volume to intensity, ending with a 1×1 at 105% as the re-test. A good fit when you want to specialize in one lift, or have time for only two sessions a week.',
+      description: 'A block of 18 sessions spanning 6 or 9 weeks, focused on a single lift, usually back squats, and accessory work.<br>It alternates between two types of sessions: one repeats the same 6×2 @ 80% each time, while the other session builds from volume to intensity, ending with a 1×1 @ 105%. A good fit when you want to specialize in one lift. This program can be completed doing two or three sessions a week, depending on other training and personal volume tolerance.',
+      options: {
+        days: 'Training days per week',
+      },
+      optionValues: {
+        days: {
+          2: '2 days',
+          3: '3 days',
+        },
+      },
     },
   },
   tabs: {

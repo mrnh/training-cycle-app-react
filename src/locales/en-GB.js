@@ -22,7 +22,7 @@ export default {
   },
   programs: {
     'russian-squat-1': {
-      description: 'A block of 18 sessions spanning 6 or 9 weeks, focused on a single lift, usually back squats, and accessory work.<br>It alternates between two types of sessions: one repeats the same 6×2 @ 80% each time, while the other session builds from volume to intensity, ending with a 1×1 @ 105%. A good fit when you want to specialise in one lift. This program can be copleted doing two or three sessions a week, depending on other training and personal volume tolerance.',
+      description: 'A block of 18 sessions spanning 6 or 9 weeks, focused on a single lift, usually back squats, and accessory work.<br>It alternates between two types of sessions: one repeats the same 6×2 @ 80% each time, while the other session builds from volume to intensity, ending with a 1×1 @ 105%. A good fit when you want to specialise in one lift. This program can be completed doing two or three sessions a week, depending on other training and personal volume tolerance.',
     },
   },
 }

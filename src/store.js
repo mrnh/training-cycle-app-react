@@ -9,7 +9,7 @@ import { get, set, del } from 'idb-keyval'
 const KEY = 'training-plan'
 // Before v8 there was one program and its three groups, stored directly in data.groups
 const LEGACY_GROUPS = ['A', 'B', 'C']
-export const DATA_VERSION = 8
+export const DATA_VERSION = 9
 // Untouched copy of the data from before an upgrade, kept in case a conversion goes wrong
 const BACKUP_KEY = (v) => `training-plan-before-v${v}`
 
@@ -190,6 +190,16 @@ export function migrate(data) {
   if (data.version === 7) {
     // v8: accessory work is kept per program (there was only the Russian Masters program with 3 lifts)
     data = { ...data, version: 8, groups: { 'russian-masters': data.groups } }
+  }
+  if (data.version === 8) {
+    // v9: the 1-lift program was renamed from russian-masters-1 to russian-squat-1
+    const rename = (id) => (id === 'russian-masters-1' ? 'russian-squat-1' : id)
+    data = {
+      ...data,
+      version: 9,
+      groups: Object.fromEntries(Object.entries(data.groups).map(([id, lists]) => [rename(id), lists])),
+      cycles: data.cycles.map((c) => (c.program ? { ...c, program: rename(c.program) } : c)),
+    }
   }
   return data.version === DATA_VERSION ? data : null
 }

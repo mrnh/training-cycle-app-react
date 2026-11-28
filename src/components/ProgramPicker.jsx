@@ -39,7 +39,12 @@ export default function ProgramPicker({ value, onChange }) {
             <h2>{programName(info)}</h2>
             <p className="muted small">{programFacts(info).join(' · ')}</p>
           </div>
-          <p>{t(`programs.${info.id}.description`)}</p>
+          {/* A <br> in the text starts a new paragraph */}
+          {t(`programs.${info.id}.description`)
+            .split(/<br\s*\/?>/)
+            .map((paragraph, i) => (
+              <p key={i}>{paragraph}</p>
+            ))}
           <div className="button-row end">
             <button type="submit" className="primary">{t('common.close')}</button>
           </div>

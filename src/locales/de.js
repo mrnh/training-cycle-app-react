@@ -298,10 +298,19 @@ export default {
       intro: '{weeks} Wochen, {perWeek} Einheiten pro Woche. Deine 1RMs bleiben für den ganzen Zyklus fest und werden in Woche {weeks} neu getestet.',
       description: 'Ein 9-wöchiger Kraftzyklus für Kniebeuge, Bankdrücken und Kreuzheben. In jeder Einheit steigert sich eine Übung von Volumen zu Intensität, während eine andere bei konstanten 6×2 mit 80 % bleibt; Woche 9 endet mit einem Einzelsatz bei 105 %, der dein neues 1RM festlegt. Für Trainierende mit etwas Erfahrung, die dreimal pro Woche trainieren können und alle drei Übungen gemeinsam voranbringen wollen.',
     },
-    'russian-masters-1': {
-      name: 'Russian-Masters-Programm (1 Main Lift)',
+    'russian-squat-1': {
+      name: 'Russian-Squat-Programm (1 Main Lift)',
       intro: '{weeks} Wochen, {perWeek} Einheiten pro Woche. Deine 1RMs bleiben für den ganzen Zyklus fest und werden in Woche {weeks} neu getestet.',
-      description: 'Dieselbe 9-Wochen-Struktur, konzentriert auf eine einzige Übung. Jede Woche hat eine gleichbleibende Einheit mit 6×2 bei 80 % und eine Einheit, die sich von Volumen zu Intensität steigert und mit einem 1×1 bei 105 % als Neutest endet. Passend, wenn du dich auf eine Übung spezialisieren willst oder nur Zeit für zwei Einheiten pro Woche hast.',
+      description: 'Ein Block aus 18 Einheiten über 6 oder 9 Wochen, konzentriert auf eine einzige Übung, meist Kniebeugen, plus Zusatzübungen.<br>Es wechseln zwei Arten von Einheiten: Die eine wiederholt jedes Mal dasselbe 6×2 bei 80 %, die andere steigert sich von Volumen zu Intensität und endet mit einem 1×1 bei 105 %. Passend, wenn du dich auf eine Übung spezialisieren willst. Das Programm lässt sich mit zwei oder drei Einheiten pro Woche absolvieren, je nach weiterem Training und persönlicher Volumentoleranz.',
+      options: {
+        days: 'Trainingstage pro Woche',
+      },
+      optionValues: {
+        days: {
+          2: '2 Tage',
+          3: '3 Tage',
+        },
+      },
     },
   },
   tabs: {

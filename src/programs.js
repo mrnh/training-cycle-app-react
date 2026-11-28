@@ -95,17 +95,24 @@ export const RUSSIAN_MASTERS = defineProgram({
 })
 
 /*
- * The same program with one main lift: two sessions a week, 9 weeks, 18 sessions. Session 1 of each
- * week is 6×2 at 80%, session 2 follows the weekly steps of the table above, so the last session
- * (week 9, session 2) is the 1×1 re-test. Each session adds its own accessory group (A, B).
+ * Russian Squat Program (1 main lift): 18 sessions that alternate between 6×2 at 80% (group A) and
+ * the weekly steps of the table above (group B), so the last session, the 18th, is the 1×1
+ * re-test. Option days: 2 sessions a week (9 weeks) or 3 (6 weeks); the sessions just continue
+ * across the weeks.
  */
-export const RUSSIAN_MASTERS_1 = defineProgram({
-  id: 'russian-masters-1',
+export const RUSSIAN_SQUAT_1 = defineProgram({
+  id: 'russian-squat-1',
   defaultLifts: ['squat'],
-  weeks: V2.map((v2, w) => [
-    { group: 'A', lifts: [{ slot: 0, ...V1 }] },
-    { group: 'B', lifts: [{ slot: 0, ...v2, retest: w === V2.length - 1 }] },
-  ]),
+  options: { days: { values: [2, 3], default: 2 } },
+  build: ({ days }) => {
+    const all = V2.flatMap((v2, w) => [
+      { group: 'A', lifts: [{ slot: 0, ...V1 }] },
+      { group: 'B', lifts: [{ slot: 0, ...v2, retest: w === V2.length - 1 }] },
+    ])
+    const weeks = []
+    for (let i = 0; i < all.length; i += days) weeks.push(all.slice(i, i + days))
+    return weeks
+  },
 })
 
 /*
@@ -143,5 +150,5 @@ export const WENDLER_531 = defineProgram({
   },
 })
 
-export const PROGRAMS = [RUSSIAN_MASTERS, RUSSIAN_MASTERS_1, WENDLER_531]
+export const PROGRAMS = [RUSSIAN_MASTERS, RUSSIAN_SQUAT_1, WENDLER_531]
 export const DEFAULT_PROGRAM = RUSSIAN_MASTERS
