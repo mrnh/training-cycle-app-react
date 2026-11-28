@@ -12,6 +12,7 @@ export default {
     addComment: 'Add a comment',
     removeExercise: 'Remove exercise',
     ok: 'OK',
+    close: 'Close',
     deletedExercise: 'Deleted exercise',
     loading: 'Loading…',
   },
@@ -262,6 +263,7 @@ export default {
   },
   program: {
     pick: 'Program',
+    about: 'About {name}',
     lifts: {
       one: '{count} main lift',
       other: '{count} main lifts',

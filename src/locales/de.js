@@ -12,6 +12,7 @@ export default {
     addComment: 'Kommentar hinzufügen',
     removeExercise: 'Übung entfernen',
     ok: 'OK',
+    close: 'Schließen',
     deletedExercise: 'Gelöschte Übung',
     loading: 'Lädt …',
   },
@@ -262,6 +263,7 @@ export default {
   },
   program: {
     pick: 'Programm',
+    about: 'Info zu {name}',
     lifts: {
       one: '{count} Hauptübung',
       other: '{count} Hauptübungen',

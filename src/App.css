@@ -541,12 +541,14 @@ button.link.inline { display: inline; padding: 0; min-height: 0; font-size: inhe
 
 /* App icon picker (Appearance): the two icons as they look on the home screen */
 .program-card { min-width: 0; margin: 0; gap: 0; padding: 0; overflow: hidden; }
-.program-option { display: flex; align-items: flex-start; gap: var(--space-3); padding: var(--space-3) var(--space-4); cursor: pointer; }
+.program-option { display: flex; align-items: flex-start; }
 /* The chosen program is shaded */
 .program-option:has(input:checked) { background: var(--accent-soft); }
 .program-option + .program-option { border-top: 1px solid var(--border); }
+.program-option label { flex: 1; min-width: 0; display: flex; align-items: flex-start; gap: var(--space-3); padding: var(--space-3) 0 var(--space-3) var(--space-4); cursor: pointer; }
 .program-option input { flex-shrink: 0; width: 20px; height: 20px; margin: 2px 0 0; accent-color: var(--accent); }
-.program-option > span { display: flex; flex-direction: column; gap: var(--space-1); }
+.program-option label > span { display: flex; flex-direction: column; gap: var(--space-1); }
+.program-info { flex-shrink: 0; margin: var(--space-1) var(--space-1) 0 0; }
 .program-facts { display: flex; flex-wrap: wrap; column-gap: var(--space-1); }
 .program-facts span { white-space: nowrap; }
 .program-facts span:not(:last-child)::after { content: ' ·'; }
