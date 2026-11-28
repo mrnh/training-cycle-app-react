@@ -152,8 +152,6 @@ export default {
     deleteAll: 'Delete all data',
     symbolHeading: 'Symbol',
     language: 'Language',
-    languageAuto: 'Auto',
-    languageHint: 'Auto follows your device.',
   },
   rest: {
     interval: 'Rest interval {time}, change',

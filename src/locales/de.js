@@ -152,8 +152,6 @@ export default {
     deleteAll: 'Alle Daten löschen',
     symbolHeading: 'Motiv',
     language: 'Sprache',
-    languageAuto: 'Auto',
-    languageHint: 'Auto folgt deinem Gerät.',
   },
   rest: {
     interval: 'Pausenzeit {time}, ändern',

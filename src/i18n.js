@@ -5,11 +5,14 @@
  * - Variables: "Session {name} is open" with t('key', { name }).
  * - Plurals: a text can be an object of plural forms, chosen by vars.count with the language's own
  *   rules (Intl.PluralRules): { one: '{count} set', other: '{count} sets' }.
- * - A key missing in the current language falls back to American English (the complete English
- *   file); one missing there too shows the key itself (and a warning in the console), so a gap is easy to spot.
+ * - A key missing in the current language falls back to American English; one missing there too
+ *   shows the key itself (and a warning in the console), so a gap is easy to spot.
+ *
+ * The app always starts in American English; the language is only switched by the user's choice
+ * (Settings → Preferences), it does not follow the device.
  *
  * To add a language: add src/locales/<code>.js with the same keys, register it (and its own
- * name) below.
+ * name and flag) below.
  */
 import de from './locales/de'
 import enGB from './locales/en-GB'
@@ -23,43 +26,26 @@ export const LANGUAGE_OPTIONS = [
   { id: 'en-US', name: 'English (US)', flag: '🇺🇸' },
   { id: 'de', name: 'Deutsch', flag: '🇩🇪' },
 ]
-// Texts missing in a language come from here (en-GB itself only lists what differs from it)
-const FALLBACK = 'en-US'
-// The default language: used until a choice is read, and when the device's language isn't offered
-const DEFAULT = 'en-GB'
+// American English is the default language, and the one texts missing in another language come from
+// (en-US is the complete English file; en-GB only lists what differs from it)
+const DEFAULT = 'en-US'
 let language = DEFAULT
-
-// Countries that write British English, for following the device
-const BRITISH = ['en-GB', 'en-AU', 'en-NZ', 'en-IE', 'en-ZA', 'en-IN']
-
-/** The device's first language that the app has texts for, else the default (British English). */
-const fromDevice = () => {
-  for (const tag of navigator.languages ?? [navigator.language]) {
-    if (!tag) continue
-    if (tag in LANGUAGES) return tag
-    if (BRITISH.includes(tag)) return 'en-GB'
-    const base = tag.slice(0, 2).toLowerCase()
-    if (base === 'en') return DEFAULT
-    if (base in LANGUAGES) return base
-  }
-  return DEFAULT
-}
 
 /** Current language code. */
 export const getLanguage = () => language
 /**
- * Switch the language of every text looked up from now on. A code the app has no texts for
- * (or none) means "follow the device".
+ * Switch the language of every text looked up from now on. No code, or one the app has no texts
+ * for, means the default (American English); the device's language is not followed.
  */
 export function setLanguage(code) {
-  language = code in LANGUAGES ? code : code === 'en' ? 'en-US' : fromDevice() // 'en' = the old name of en-US
+  language = code in LANGUAGES ? code : code === 'en' ? 'en-US' : DEFAULT // 'en' = the old name of en-US
   document.documentElement.lang = language
 }
 
 const find = (dict, key) => key.split('.').reduce((o, k) => (o == null ? o : o[k]), dict)
 
 export function t(key, vars) {
-  let text = find(LANGUAGES[language], key) ?? find(LANGUAGES[FALLBACK], key)
+  let text = find(LANGUAGES[language], key) ?? find(LANGUAGES[DEFAULT], key)
   if (text == null) {
     console.warn(`Missing text: ${key}`)
     return key

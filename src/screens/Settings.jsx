@@ -12,7 +12,7 @@ import { sampleState } from '../sampleData'
 import ScreenHeader from '../components/ScreenHeader'
 import { SYMBOLS } from '../iconSymbols'
 import { ACCENTS, ICONS, THEMES, customIconUrl, isIconCustomised, placeholderIconUrl, getAccent, getAppIcon, getIconColor, getIconSymbol, getIconSymbolColor, setIconSymbolColor, symbolColorFor, setAppIcon, setIconColor, setIconSymbol, getCustomAccent, getTheme, setAccent, setCustomAccent, setTheme } from '../theme'
-import { LANGUAGE_OPTIONS, t } from '../i18n'
+import { LANGUAGE_OPTIONS, getLanguage, t } from '../i18n'
 
 // Running as an installed home-screen app (not in a browser tab)
 const installed = window.matchMedia?.('(display-mode: standalone)').matches || navigator.standalone === true
@@ -166,12 +166,11 @@ export default function Settings({ state }) {
               <h3>{t('settings.language')}</h3>
               <Segmented
                 label={t('settings.language')}
-                options={[{ id: 'auto', label: t('settings.languageAuto') }, ...LANGUAGE_OPTIONS.map((l) => ({ id: l.id, label: l.flag, name: l.name, flag: true }))]}
-                value={LANGUAGE_OPTIONS.some((l) => l.id === state.language) ? state.language : state.language === 'en' ? 'en-US' : 'auto'} // 'en' = chosen in 0.30.0
-                onChange={(l) => update((d) => (l === 'auto' ? void delete d.language : void (d.language = l)))}
+                options={LANGUAGE_OPTIONS.map((l) => ({ id: l.id, label: l.flag, name: l.name, flag: true }))}
+                value={getLanguage()}
+                onChange={(l) => update((d) => void (d.language = l))}
               />
             </div>
-            <p className="muted small">{t('settings.languageHint')}</p>
           </div>
           <div className="pref">
             <div className="row unit-row">

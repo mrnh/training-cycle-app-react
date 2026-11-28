@@ -72,7 +72,7 @@ All texts shown in the app are in `src/locales/en-US.js`, grouped by screen, and
 `t('settings.cycle.abort')` (`src/i18n.js`: variables like `{name}`, plural forms by `count`). To add a
 language, add a file with the same keys next to it (as `de.js` does for German; `en-GB.js` only lists what differs from American English) and register it in
 `i18n.js`; `npm run check-texts` lists missing keys. The language is picked in Settings →
-Preferences (Auto follows the device). Not translated yet:
+Preferences; the app starts in American English and does not follow the device. Not translated yet:
 the changelog notes, the default exercise names and the app name in `index.html` and the manifest.
 
 The training program (weeks, sessions, sets and percentages) is plain data in `src/programs.js`;
