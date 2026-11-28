@@ -9,6 +9,33 @@ The current version is shown at the bottom of **Settings**.
 
 ---
 
+## 0.31.0 — 2026-11-28 · Choose your program
+
+| Programs | Program info | 5/3/1 options | 5/3/1 session |
+|---|---|---|---|
+| ![The program choice at the first start](docs/screenshots/v0.31.0/program-picker.jpg) | ![The description of a program in an overlay](docs/screenshots/v0.31.0/program-info.jpg) | ![The options of 5/3/1: training days and the number you enter](docs/screenshots/v0.31.0/setup-531.jpg) | ![A 5/3/1 session with different weights per set](docs/screenshots/v0.31.0/session-531.jpg) |
+
+### Added
+- **Choose a program**: the first start now begins with the programs to pick from, each with its
+  length, sessions a week and number of main lifts; the ⓘ button explains its aim and who it
+  suits. The main lifts and weights come on the next step, for the chosen program.
+- **Russian Squat Program**: the Russian Masters idea for a single lift, 18 sessions that
+  alternate between 6×2 at 80% and the weekly progression, ending with the 1×1 re-test. Train it
+  two days a week (9 weeks) or three (6 weeks).
+- **5/3/1**: Jim Wendler's 4-week block for squat, bench press, overhead press and deadlift, as
+  four days a week or three with the lifts rotating. Sets can have their own weight, the last
+  set of a working week is "as many reps as you can" (5+), and the next cycle suggests the usual
+  increases. Enter a 1RM (the program uses 90% of it) or the training max directly.
+- **British and American English**: pick 🇬🇧, 🇺🇸 or 🇩🇪 in Settings → Preferences.
+
+### Changed
+- **The app starts in American English** and no longer follows the device's language; pick
+  another language in Preferences.
+- **Accessory work belongs to a program**: each program has its own groups and exercise lists.
+  Your existing lists stay with the Russian Masters Program. Existing data is converted
+  automatically.
+- **German**: "Main Lift" instead of "Hauptübung".
+
 ## 0.30.0 — 2026-11-27 · Deutsch
 
 | Language setting | Session | Current cycle |
