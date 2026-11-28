@@ -275,7 +275,7 @@ export default {
   },
   programs: {
     'wendler-531': {
-      name: '5/3/1 (4 main lifts)',
+      name: '5/3/1',
       description: 'A 4-week block of Jim Wendler\'s 5/3/1 for squat, bench press, overhead press and deadlift: a week of fives, a week of threes, a 5/3/1 week and a light deload week. Weights are percentages of your training max (90% of your 1RM), and the last set of each working week is as many reps as you can. Slow, steady progress for lifters who prefer submaximal training; train four days a week, or three with the lifts rotating.',
       intro: '{weeks} weeks, {perWeek} sessions a week. Your numbers stay fixed for the cycle; at the end, the app suggests the usual increases for the next one.',
       options: {
@@ -294,12 +294,12 @@ export default {
       },
     },
     'russian-masters': {
-      name: 'Russian Masters Program (3 main lifts)',
+      name: 'Russian Masters Program',
       intro: '{weeks} weeks, {perWeek} sessions a week. Your 1RMs stay fixed for the whole cycle and are re-tested in week {weeks}.',
       description: 'A 9-week strength cycle for squat, bench press and deadlift. In each session one lift builds from volume to intensity while another stays at a steady 6×2 at 80%, and week 9 ends with a single at 105% that sets your new 1RM. Made for lifters with some experience who can train three times a week and want to push all three lifts together.',
     },
     'russian-squat-1': {
-      name: 'Russian Squat Program (1 main lift)',
+      name: 'Russian Squat Program',
       intro: '{weeks} weeks, {perWeek} sessions a week. Your 1RMs stay fixed for the whole cycle and are re-tested in week {weeks}.',
       description: 'A block of 18 sessions spanning 6 or 9 weeks, focused on a single lift, usually back squats, and accessory work.<br>It alternates between two types of sessions: one repeats the same 6×2 @ 80% each time, while the other session builds from volume to intensity, ending with a 1×1 @ 105%. A good fit when you want to specialize in one lift. This program can be completed doing two or three sessions a week, depending on other training and personal volume tolerance.',
       options: {

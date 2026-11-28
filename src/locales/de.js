@@ -275,7 +275,7 @@ export default {
   },
   programs: {
     'wendler-531': {
-      name: '5/3/1 (4 Main Lifts)',
+      name: '5/3/1',
       description: 'Ein 4-Wochen-Block von Jim Wendlers 5/3/1 für Kniebeuge, Bankdrücken, Schulterdrücken und Kreuzheben: eine Woche mit Fünfern, eine mit Dreiern, eine 5/3/1-Woche und eine leichte Entlastungswoche. Die Gewichte sind Prozentwerte deines Trainingsmaximums (90 % deines 1RM), und der letzte Satz jeder Arbeitswoche ist „so viele Wiederholungen wie möglich“. Langsamer, stetiger Fortschritt für alle, die lieber submaximal trainieren; vier Tage pro Woche oder drei mit rotierenden Übungen.',
       intro: '{weeks} Wochen, {perWeek} Einheiten pro Woche. Deine Zahlen bleiben für den ganzen Zyklus fest; am Ende schlägt die App die üblichen Steigerungen für den nächsten vor.',
       options: {
@@ -294,12 +294,12 @@ export default {
       },
     },
     'russian-masters': {
-      name: 'Russian-Masters-Programm (3 Main Lifts)',
+      name: 'Russian-Masters-Programm',
       intro: '{weeks} Wochen, {perWeek} Einheiten pro Woche. Deine 1RMs bleiben für den ganzen Zyklus fest und werden in Woche {weeks} neu getestet.',
       description: 'Ein 9-wöchiger Kraftzyklus für Kniebeuge, Bankdrücken und Kreuzheben. In jeder Einheit steigert sich eine Übung von Volumen zu Intensität, während eine andere bei konstanten 6×2 mit 80 % bleibt; Woche 9 endet mit einem Einzelsatz bei 105 %, der dein neues 1RM festlegt. Für Trainierende mit etwas Erfahrung, die dreimal pro Woche trainieren können und alle drei Übungen gemeinsam voranbringen wollen.',
     },
     'russian-squat-1': {
-      name: 'Russian-Squat-Programm (1 Main Lift)',
+      name: 'Russian-Squat-Programm',
       intro: '{weeks} Wochen, {perWeek} Einheiten pro Woche. Deine 1RMs bleiben für den ganzen Zyklus fest und werden in Woche {weeks} neu getestet.',
       description: 'Ein Block aus 18 Einheiten über 6 oder 9 Wochen, konzentriert auf eine einzige Übung, meist Kniebeugen, plus Zusatzübungen.<br>Es wechseln zwei Arten von Einheiten: Die eine wiederholt jedes Mal dasselbe 6×2 bei 80 %, die andere steigert sich von Volumen zu Intensität und endet mit einem 1×1 bei 105 %. Passend, wenn du dich auf eine Übung spezialisieren willst. Das Programm lässt sich mit zwei oder drei Einheiten pro Woche absolvieren, je nach weiterem Training und persönlicher Volumentoleranz.',
       options: {
