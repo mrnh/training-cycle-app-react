@@ -5,8 +5,8 @@
  * - Variables: "Session {name} is open" with t('key', { name }).
  * - Plurals: a text can be an object of plural forms, chosen by vars.count with the language's own
  *   rules (Intl.PluralRules): { one: '{count} set', other: '{count} sets' }.
- * - A key missing in the current language falls back to American English; one missing there too shows the
- *   key itself (and a warning in the console), so a gap is easy to spot.
+ * - A key missing in the current language falls back to American English (the complete English
+ *   file); one missing there too shows the key itself (and a warning in the console), so a gap is easy to spot.
  *
  * To add a language: add src/locales/<code>.js with the same keys, register it (and its own
  * name) below.
@@ -23,23 +23,26 @@ export const LANGUAGE_OPTIONS = [
   { id: 'en-US', name: 'English (US)', flag: '🇺🇸' },
   { id: 'de', name: 'Deutsch', flag: '🇩🇪' },
 ]
+// Texts missing in a language come from here (en-GB itself only lists what differs from it)
 const FALLBACK = 'en-US'
-let language = FALLBACK
+// The default language: used until a choice is read, and when the device's language isn't offered
+const DEFAULT = 'en-GB'
+let language = DEFAULT
 
 // Countries that write British English, for following the device
 const BRITISH = ['en-GB', 'en-AU', 'en-NZ', 'en-IE', 'en-ZA', 'en-IN']
 
-/** The device's first language that the app has texts for, else American English. */
+/** The device's first language that the app has texts for, else the default (British English). */
 const fromDevice = () => {
   for (const tag of navigator.languages ?? [navigator.language]) {
     if (!tag) continue
     if (tag in LANGUAGES) return tag
     if (BRITISH.includes(tag)) return 'en-GB'
     const base = tag.slice(0, 2).toLowerCase()
-    if (base === 'en') return 'en-US'
+    if (base === 'en') return DEFAULT
     if (base in LANGUAGES) return base
   }
-  return FALLBACK
+  return DEFAULT
 }
 
 /** Current language code. */
