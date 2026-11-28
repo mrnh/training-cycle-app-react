@@ -21,8 +21,8 @@ export default {
     deleteMessage: 'It disappears from your exercise catalogue. Sessions you already finished keep their record of it.',
   },
   programs: {
-    'russian-masters-1': {
-      description: 'The same 9-week structure, focused on a single lift. Each week has one steady 6×2 session at 80% and one session that builds from volume to intensity, ending with a 1×1 at 105% as the re-test. A good fit when you want to specialise in one lift, or have time for only two sessions a week.',
+    'russian-squat-1': {
+      description: 'A block of 18 sessions spanning 6 or 9 weeks, focused on a single lift, usually back squats, and accessory work.<br>It alternates between two types of sessions: one repeats the same 6×2 @ 80% each time, while the other session builds from volume to intensity, ending with a 1×1 @ 105%. A good fit when you want to specialise in one lift. This program can be copleted doing two or three sessions a week, depending on other training and personal volume tolerance.',
     },
   },
 }
