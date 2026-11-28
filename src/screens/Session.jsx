@@ -8,7 +8,7 @@ import SetsCard from '../components/SetsCard'
 import useConfirm from '../components/useConfirm'
 import {
   activeSession, cancelSession, isExtra, removeExtra, restOf, sessionEntry, sessionName, clockTime, draftSecondaries, exerciseHistory, exerciseName, finishSession, finishedDate,
-  liftOf, mainLifts, parseKey, secondaryKey, sessionPlan, sessionsOf, setKey, setsSummary, startSession, targetWeight, unfinishedBefore,
+  liftOf, mainLifts, parseKey, secondaryKey, sessionPlan, sessionsOf, setKey, setsSummary, startSession, mainPrescription, unfinishedBefore,
   todayIso, untickedSets, weekRange,
 } from '../program'
 import { currentCycle, update, updateCycle } from '../store'
@@ -169,7 +169,7 @@ function PrimaryBlock({ state, cycle, plan, p, open }) {
       plan={plan}
       entry={lift}
       name={exerciseName(state, lift)}
-      pres={{ sets: p.sets, reps: p.reps, weight: targetWeight(cycle, p) }}
+      pres={mainPrescription(cycle, p)}
       open={open}
       highlight={p.retest}
       hint={p.retest && t('session.retestHint')}
@@ -224,7 +224,9 @@ function ExerciseCard({ cycle, plan, entry, name, pres, last, lastLine, open, hi
   const count = cycle.setCounts[countKey] ?? pres?.sets ?? Math.max(last?.sets.length ?? 3, 1)
   const keys = Array.from({ length: count }, (_, i) => setKey(plan.key, entry, i))
   // What an empty set stands for: the prescription, else last time's set
-  const hints = keys.map((_, i) => (pres ? { w: pres.weight, r: pres.reps } : (last?.sets[i] ?? last?.sets.at(-1) ?? {})))
+  const hints = keys.map((_, i) =>
+    pres ? (pres.perSet ? (pres.perSet[i] ?? pres.perSet.at(-1)) : { w: pres.weight, r: pres.reps }) : (last?.sets[i] ?? last?.sets.at(-1) ?? {}),
+  )
   const sets = keys.map((k) => ({ w: cycle.logs[k]?.w ?? null, r: cycle.logs[k]?.r ?? null, done: !!cycle.logs[k]?.done }))
   // Save from the dialog: new set count, weight and reps per set (ticks stay)
   const saveSets = (rows) =>

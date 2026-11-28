@@ -27,7 +27,7 @@ export default function GroupsSummary({ state, onEdit }) {
       </div>
       {program.groups.map((g) => (
         <div key={g} className="group-summary">
-          <h4>{t('groups.groupSession', { group: g, n: groupSession(program, g) })}</h4>
+          <h4>{groupTitle(g, groupSession(program, g))}</h4>
           {groupList(state, program, g).length === 0 ? (
             <p className="muted small">{t('groups.noExercises')}</p>
           ) : (
@@ -47,6 +47,9 @@ export default function GroupsSummary({ state, onEdit }) {
     </>
   )
 }
+
+/** "Group A · session 1", or just "Group D" when it isn't part of the first week. */
+const groupTitle = (group, session) => (session == null ? t('groups.group', { group }) : t('groups.groupSession', { group, n: session }))
 
 /** Sub-screen of Settings: add, remove and set up the exercises of each group. */
 export function GroupsEditor({ state, onBack }) {
@@ -93,7 +96,7 @@ function Group({ state, program, group, session }) {
 
   return (
     <div className="group">
-      <h3>{t('groups.groupSession', { group, n: session })}</h3>
+      <h3>{groupTitle(group, session)}</h3>
       {entries.length === 0 && <p className="muted small">{t('groups.noExercises')}</p>}
       <ul className="group-list" ref={listRef}>
         {entries.map((x, i) => (

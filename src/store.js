@@ -67,10 +67,11 @@ export const currentCycle = (s) => s.cycles[s.cycles.length - 1]
 /** Mutate the current cycle. */
 export const updateCycle = (mutate) => update((d) => mutate(currentCycle(d), d))
 
-export function newCycle(startDate, oneRM, primaries = DEFAULT_PROGRAM.defaultLifts, program = DEFAULT_PROGRAM.id) {
+export function newCycle(startDate, oneRM, primaries = DEFAULT_PROGRAM.defaultLifts, program = DEFAULT_PROGRAM.id, options) {
   return {
     id: newId(),
     program, // id of the program the cycle follows (programs.js)
+    ...(options && { options }), // the program's options chosen at the start (e.g. training days)
     startDate,
     primaries: [...primaries], // catalog ids of the program's main-lift slots; null = empty slot
     oneRM, // catalog id -> kg, fixed for the cycle
@@ -85,13 +86,13 @@ export function newCycle(startDate, oneRM, primaries = DEFAULT_PROGRAM.defaultLi
   }
 }
 
-export function initialState(startDate, oneRM, primaries = DEFAULT_PROGRAM.defaultLifts, programId = DEFAULT_PROGRAM.id) {
+export function initialState(startDate, oneRM, primaries = DEFAULT_PROGRAM.defaultLifts, programId = DEFAULT_PROGRAM.id, options) {
   const program = programById(programId)
   return {
     version: DATA_VERSION,
     catalog: DEFAULT_CATALOG.map((e) => ({ ...e })), // [{ id, name }]
     groups: { [program.id]: Object.fromEntries(program.groups.map((g) => [g, []])) }, // program -> group -> ordered [{ id, sets, reps, weight, rest }]
-    cycles: [newCycle(startDate, oneRM, primaries, program.id)],
+    cycles: [newCycle(startDate, oneRM, primaries, program.id, options)],
   }
 }
 

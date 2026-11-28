@@ -8,7 +8,7 @@ import { t } from '../i18n'
  * exercise can only be in one slot: options taken by another slot are disabled. `prefill(id)`
  * gives the 1RM suggested when a slot switches exercise.
  */
-export default function MainLiftFields({ rows, catalog, onChange, prefill = () => null }) {
+export default function MainLiftFields({ rows, catalog, onChange, prefill = () => null, basis = 'rm' }) {
   const setRow = (i, patch) => onChange(rows.map((r, j) => (j === i ? { ...r, ...patch } : r)))
   const taken = (id, i) => rows.some((r, j) => j !== i && r.id === id)
 
@@ -31,8 +31,8 @@ export default function MainLiftFields({ rows, catalog, onChange, prefill = () =
           <span className="weight-input">
             <NumInput
               value={r.rm}
-              placeholder={r.id ? t('settings.rmPlaceholder') : ''}
-              label={t('settings.rmForLift', { n: i + 1 })}
+              placeholder={r.id ? t(`settings.${basis}Placeholder`) : ''}
+              label={t(`settings.${basis}ForLift`, { n: i + 1 })}
               disabled={!r.id}
               onChange={(rm) => setRow(i, { rm })}
             />

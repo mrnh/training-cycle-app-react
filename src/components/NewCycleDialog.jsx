@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import MainLiftFields from './MainLiftFields'
 import Sheet from './Sheet'
-import { activeSession, finishSession, heaviestWeight, isoDay, mainLiftsError, programOf, sessionName, todayIso } from '../program'
+import { activeSession, finishSession, basisOf, heaviestWeight, isoDay, mainLiftsError, programOf, sessionName, todayIso } from '../program'
 import { currentCycle, newCycle, update } from '../store'
 import { t } from '../i18n'
 
@@ -27,7 +27,7 @@ export default function NewCycleDialog({ state, onClose }) {
       const openNow = activeSession(old)
       if (openNow) finishSession(d, old, openNow, isoDay(new Date()))
       old.timer = null
-      d.cycles.push(newCycle(date, oneRM, lifts.map((l) => l.id || null), old.program))
+      d.cycles.push(newCycle(date, oneRM, lifts.map((l) => l.id || null), old.program, old.options))
     })
     onClose()
   }
@@ -44,8 +44,9 @@ export default function NewCycleDialog({ state, onClose }) {
         <input type="date" value={date} onChange={(e) => setDate(e.target.value)} />
       </label>
       <div className="field">
-        <span>{t('newCycle.lifts')}</span>
+        <span>{t(`newCycle.lifts_${basisOf(programOf(cycle))}`)}</span>
         <MainLiftFields
+          basis={basisOf(programOf(cycle))}
           rows={lifts}
           catalog={state.catalog}
           prefill={(id) => heaviestWeight(state, id)}

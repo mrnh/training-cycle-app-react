@@ -51,7 +51,7 @@ export default function SetsCard({
       </div>
       {(pres || lastLine) && (
         <div className="card-plan">
-          {pres && <Planned sets={pres.sets} reps={pres.reps} weight={pres.weight} />}
+          {pres && <Planned sets={pres.sets} reps={pres.reps} weight={pres.weight} perSet={pres.perSet} />}
           {lastLine && <p className="muted small">{lastLine}</p>}
         </div>
       )}

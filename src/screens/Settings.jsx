@@ -1,11 +1,12 @@
 import { useRef, useState } from 'react'
 import GroupsSummary, { GroupsEditor } from '../components/Groups'
 import MainLiftFields from '../components/MainLiftFields'
+import Segmented from '../components/Segmented'
 import NewCycleDialog from '../components/NewCycleDialog'
 import useConfirm from '../components/useConfirm'
 import Chevron from '../components/Chevron'
 import Exercises from './Exercises'
-import { DATE_FORMATS, ROUNDINGS, ROUNDING_MODES, UNITS, dateFormat, rounding, roundingMode, exerciseName, fmt, programName, sessionsPerWeekText, abortCycle, cycleAborted, cycleEnd, cycleRange, cycleStarted, fmtDate, goalWeight, heaviestWeight, mainLiftsError, isFinished, programOf, todayIso, unit, activeSession, sessionName } from '../program'
+import { DATE_FORMATS, ROUNDINGS, ROUNDING_MODES, UNITS, dateFormat, rounding, roundingMode, exerciseName, fmt, basisOf, programName, sessionsPerWeekText, abortCycle, cycleAborted, cycleEnd, cycleRange, cycleStarted, fmtDate, goalWeight, heaviestWeight, mainLiftsError, isFinished, programOf, todayIso, unit, activeSession, sessionName } from '../program'
 import { currentCycle, migrate, replaceState, update, updateCycle } from '../store'
 import { sampleState } from '../sampleData'
 import ScreenHeader from '../components/ScreenHeader'
@@ -385,9 +386,16 @@ export default function Settings({ state }) {
       {lifts.map((id) => (
         <div className="lift-row" key={id}>
           <span>{exerciseName(state, id)}</span>
-          <span><span className="sr-only">{t('cycle.start')} </span>{fmt(cycle.oneRM[id])} {unit()}</span>
-          <span className="muted" aria-hidden="true">→</span>
-          <strong><span className="sr-only">{t('cycle.goal')} </span>{fmt(goalWeight(cycle, id))} {unit()}</strong>
+          {goalWeight(cycle, id) == null ? (
+            // No goal (no re-test in the program): just the number
+            <span className="lift-only">{fmt(cycle.oneRM[id])} {unit()}</span>
+          ) : (
+            <>
+              <span><span className="sr-only">{t('cycle.start')} </span>{fmt(cycle.oneRM[id])} {unit()}</span>
+              <span className="muted" aria-hidden="true">→</span>
+              <strong><span className="sr-only">{t('cycle.goal')} </span>{fmt(goalWeight(cycle, id))} {unit()}</strong>
+            </>
+          )}
         </div>
       ))}
     </div>
@@ -459,6 +467,7 @@ export default function Settings({ state }) {
             <>
               <p className="warning small">{t('cycle.liftsWarning')}</p>
               <MainLiftFields
+                basis={basisOf(program)}
                 rows={draft}
                 catalog={state.catalog}
                 prefill={(id) => heaviestWeight(state, id)}
@@ -545,25 +554,5 @@ function NavCard({ title, onClick }) {
       </span>
       <Chevron />
     </button>
-  )
-}
-
-/** Two or more mutually exclusive options as one row of buttons. */
-function Segmented({ label, options, value, onChange }) {
-  return (
-    <div className="segmented" role="radiogroup" aria-label={label}>
-      {options.map((o) => (
-        <button
-          key={o.id}
-          role="radio"
-          aria-checked={value === o.id}
-          aria-label={o.name}
-          className={[value === o.id && 'active', o.flag && 'flag'].filter(Boolean).join(' ') || undefined}
-          onClick={() => onChange(o.id)}
-        >
-          {o.label}
-        </button>
-      ))}
-    </div>
   )
 }

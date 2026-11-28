@@ -131,7 +131,7 @@ function Entry({ e }) {
   return (
     <section className={`card ${e.retest ? 'highlight' : ''}`}>
       <h2>{e.name}</h2>
-      {e.prescription && <Planned sets={e.prescription.sets} reps={e.prescription.reps} weight={e.prescription.weight} />}
+      {e.prescription && <Planned sets={e.prescription.sets} reps={e.prescription.reps} weight={e.prescription.weight} perSet={e.prescription.perSet} />}
       {e.sets.length === 0 ? (
         // Same row layout as the sets, with a red cross like the History tab
         <ol className="done-sets">
@@ -174,7 +174,7 @@ function EditEntry({ e, onChange, onRemove }) {
   return (
     <section className={`card ${e.retest ? 'highlight' : ''}`}>
       <h2>{e.name}</h2>
-      {p && <Planned sets={p.sets} reps={p.reps} weight={p.weight} />}
+      {p && <Planned sets={p.sets} reps={p.reps} weight={p.weight} perSet={p.perSet} />}
       {e.retest && <p className="small">{t('finished.retestNote')}</p>}
       {e.sets.length > 0 && (
         <div className="sets-edit with-done">

@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import {
-  activeSession, sessionName, cycleComplete, exerciseName, fmt, isFinished, liftOf, mainLifts, nextSession, programOf,
-  retestResults, targetWeight, todayIso, unit, weekRange,
+  activeSession, sessionName, cycleComplete, exerciseName, fmt, round1, isFinished, liftOf, mainLifts, nextSession, programOf,
+  mainPrescription, prescriptionText, retestResults, suggestedIncrease, todayIso, unit, weekRange,
 } from '../program'
 import { currentCycle, newCycle, update } from '../store'
 import useConfirm from '../components/useConfirm'
@@ -23,7 +23,7 @@ export default function Plan({ state, onOpen }) {
           <strong>{sessionName(next)}</strong>
           <span className="small">
             {mainLifts(cycle, next)
-              .map((p) => t('plan.liftLine', { name: exerciseName(state, liftOf(cycle, p)), sets: p.sets, reps: p.reps, weight: fmt(targetWeight(cycle, p)), unit: unit() }))
+              .map((p) => t('plan.liftLine', { name: exerciseName(state, liftOf(cycle, p)), text: prescriptionText(mainPrescription(cycle, p)) }))
               .join(' · ') || t('plan.accessoryOnly', { group: next.group })}
           </span>
         </button>
@@ -77,27 +77,34 @@ function NextCycle({ state }) {
   const [date, setDate] = useState(todayIso())
   // A re-test that wasn't ticked keeps the old 1RM (it can be changed in Settings)
   const lifts = cycle.primaries.filter(Boolean)
-  const newRM = Object.fromEntries(lifts.map((id) => [id, results[id] ?? cycle.oneRM[id]]))
+  // Programs with a re-test take the new number from it; the others suggest an increase
+  const increases = Object.fromEntries(lifts.map((id) => [id, suggestedIncrease(cycle, id)]))
+  const newRM = Object.fromEntries(lifts.map((id) => [id, increases[id] != null ? round1(cycle.oneRM[id] + increases[id]) : (results[id] ?? cycle.oneRM[id])]))
+  const basis = program.chosen.tmInput ? '_tm' : ''
 
   const [confirmDialog, confirm] = useConfirm()
   async function start() {
     const ok = await confirm({
       title: t('nextCycle.confirmTitle'),
-      message: t('nextCycle.confirmMessage', { weeks: program.weekCount }),
+      message: t(`nextCycle.confirmMessage${basis}`, { weeks: program.weekCount }),
       confirmLabel: t('nextCycle.confirm'),
     })
     if (!ok) return
-    update((d) => d.cycles.push(newCycle(date, newRM, cycle.primaries, cycle.program)))
+    update((d) => d.cycles.push(newCycle(date, newRM, cycle.primaries, cycle.program, cycle.options)))
   }
 
   return (
     <div className="card highlight">
       <strong>{t('nextCycle.complete')}</strong>
-      <p className="muted small">{t('nextCycle.newRms', { week: program.weekCount })}</p>
+      <p className="muted small">{program.increase ? t(`nextCycle.suggested${basis}`) : t('nextCycle.newRms', { week: program.weekCount })}</p>
       {lifts.map((id) => (
         <div className="row small" key={id}>
           <span>{exerciseName(state, id)}</span>
-          {results[id] != null ? (
+          {increases[id] != null ? (
+            <span>
+              {fmt(cycle.oneRM[id])} → <strong>{fmt(newRM[id])} {unit()}</strong> <span className="muted">(+{fmt(increases[id])})</span>
+            </span>
+          ) : results[id] != null ? (
             <span>
               {fmt(cycle.oneRM[id])} → <strong>{fmt(newRM[id])} {unit()}</strong>
             </span>

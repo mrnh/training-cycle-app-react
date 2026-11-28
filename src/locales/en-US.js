@@ -55,6 +55,8 @@ export default {
     mainLiftN: 'Main lift {n}',
     rmPlaceholder: '1RM',
     rmForLift: '1RM for main lift {n}',
+    tmPlaceholder: 'TM',
+    tmForLift: 'Training max for main lift {n}',
     title: 'Settings',
     back: 'Back to settings',
     version: 'Version {version}',
@@ -210,7 +212,8 @@ export default {
     intro: 'A fresh {weeks}-week cycle from week 1. The current cycle stays in your history; exercises, groups and preferences stay as they are.',
     openWarning: '{session} is still open. It\'s finished as it is and saved.',
     startDate: 'Start date',
-    lifts: 'Main lifts and 1RM',
+    lifts_rm: 'Main lifts and 1RM',
+    lifts_tm: 'Main lifts and training max',
     start: 'Start cycle',
   },
   update: {
@@ -226,6 +229,7 @@ export default {
     accessoryWork: 'Accessory work',
     editAccessory: 'Edit accessory work',
     groupSession: 'Group {group} · session {n}',
+    group: 'Group {group}',
     noExercises: 'No exercises yet',
     line: '{prescription} · rest {rest}',
     backToCycle: 'Back to current cycle',
@@ -270,12 +274,33 @@ export default {
     },
   },
   programs: {
+    'wendler-531': {
+      name: '5/3/1 (4 main lifts)',
+      description: 'A 4-week block of Jim Wendler\'s 5/3/1 for squat, bench press, overhead press and deadlift: a week of fives, a week of threes, a 5/3/1 week and a light deload week. Weights are percentages of your training max (90% of your 1RM), and the last set of each working week is as many reps as you can. Slow, steady progress for lifters who prefer submaximal training; train four days a week, or three with the lifts rotating.',
+      intro: '{weeks} weeks, {perWeek} sessions a week. Your numbers stay fixed for the cycle; at the end, the app suggests the usual increases for the next one.',
+      options: {
+        days: 'Training days per week',
+        tmInput: 'Number you enter',
+      },
+      optionValues: {
+        days: {
+          3: '3 days',
+          4: '4 days',
+        },
+        tmInput: {
+          'false': '1RM',
+          'true': 'Training max',
+        },
+      },
+    },
     'russian-masters': {
       name: 'Russian Masters Program (3 main lifts)',
+      intro: '{weeks} weeks, {perWeek} sessions a week. Your 1RMs stay fixed for the whole cycle and are re-tested in week {weeks}.',
       description: 'A 9-week strength cycle for squat, bench press and deadlift. In each session one lift builds from volume to intensity while another stays at a steady 6×2 at 80%, and week 9 ends with a single at 105% that sets your new 1RM. Made for lifters with some experience who can train three times a week and want to push all three lifts together.',
     },
     'russian-masters-1': {
       name: 'Russian Masters Program (1 main lift)',
+      intro: '{weeks} weeks, {perWeek} sessions a week. Your 1RMs stay fixed for the whole cycle and are re-tested in week {weeks}.',
       description: 'The same 9-week structure, focused on a single lift. Each week has one steady 6×2 session at 80% and one session that builds from volume to intensity, ending with a 1×1 at 105% as the re-test. A good fit when you want to specialize in one lift, or have time for only two sessions a week.',
     },
   },
@@ -290,7 +315,6 @@ export default {
     continue: 'Continue',
     backToPrograms: 'Back to programs',
     title: 'New training cycle',
-    intro: '{weeks} weeks, {perWeek} sessions a week. Your 1RMs stay fixed for the whole cycle and are re-tested in week {weeks}.',
   },
   cycleAborted: {
     title: 'Cycle aborted',
@@ -329,7 +353,7 @@ export default {
   plan: {
     inProgress: 'In progress',
     nextUp: 'Next up',
-    liftLine: '{name} {sets}×{reps} @ {weight} {unit}',
+    liftLine: '{name} {text}',
     accessoryOnly: 'Accessory work, group {group}',
     week: 'Week {n}',
     sessionDone: '{session}, done',
@@ -339,9 +363,12 @@ export default {
   nextCycle: {
     confirmTitle: 'Start the next cycle?',
     confirmMessage: 'A new {weeks}-week cycle with these 1RMs. This cycle stays in your history.',
+    confirmMessage_tm: 'A new {weeks}-week cycle with these training maxes. This cycle stays in your history.',
     confirm: 'Start cycle',
     complete: 'Cycle complete',
     newRms: 'New 1RMs from the week-{week} re-test:',
+    suggested: 'Suggested 1RMs for the next cycle:',
+    suggested_tm: 'Suggested training maxes for the next cycle:',
     kept: 'kept, re-test not ticked',
     change: 'You can still change them in Settings after starting.',
     starts: 'Next cycle starts',

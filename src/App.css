@@ -339,6 +339,7 @@ button.new-cycle.danger { border-color: var(--danger); }
 .lift-row:last-child { border-bottom: none; }
 .lift-row > :not(:first-child) { text-align: right; font-variant-numeric: tabular-nums; }
 .lift-row > :nth-child(3) { text-align: center; }
+.lift-row > .lift-only { grid-column: 2 / 5; }
 .group-summary li span:last-child { text-align: right; flex-shrink: 0; }
 .group-list { list-style: none; margin: 0; padding: 0; }
 .group-list li { min-height: var(--tap); background: var(--card); gap: var(--space-1); }

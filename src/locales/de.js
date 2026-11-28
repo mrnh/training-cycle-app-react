@@ -55,6 +55,8 @@ export default {
     mainLiftN: 'Hauptübung {n}',
     rmPlaceholder: '1RM',
     rmForLift: '1RM für Hauptübung {n}',
+    tmPlaceholder: 'TM',
+    tmForLift: 'Trainingsmaximum für Hauptübung {n}',
     title: 'Einstellungen',
     back: 'Zurück zu den Einstellungen',
     version: 'Version {version}',
@@ -210,7 +212,8 @@ export default {
     intro: 'Ein neuer {weeks}-Wochen-Zyklus ab Woche 1. Der aktuelle Zyklus bleibt im Verlauf; Übungen, Gruppen und Einstellungen bleiben unverändert.',
     openWarning: '{session} ist noch offen. Sie wird so beendet, wie sie ist, und gespeichert.',
     startDate: 'Startdatum',
-    lifts: 'Hauptübungen und 1RM',
+    lifts_rm: 'Hauptübungen und 1RM',
+    lifts_tm: 'Hauptübungen und Trainingsmaximum',
     start: 'Zyklus starten',
   },
   update: {
@@ -226,6 +229,7 @@ export default {
     accessoryWork: 'Zusatzübungen',
     editAccessory: 'Zusatzübungen bearbeiten',
     groupSession: 'Gruppe {group} · Einheit {n}',
+    group: 'Gruppe {group}',
     noExercises: 'Noch keine Übungen',
     line: '{prescription} · Pause {rest}',
     backToCycle: 'Zurück zum aktuellen Zyklus',
@@ -270,12 +274,33 @@ export default {
     },
   },
   programs: {
+    'wendler-531': {
+      name: '5/3/1 (4 Hauptübungen)',
+      description: 'Ein 4-Wochen-Block von Jim Wendlers 5/3/1 für Kniebeuge, Bankdrücken, Schulterdrücken und Kreuzheben: eine Woche mit Fünfern, eine mit Dreiern, eine 5/3/1-Woche und eine leichte Entlastungswoche. Die Gewichte sind Prozentwerte deines Trainingsmaximums (90 % deines 1RM), und der letzte Satz jeder Arbeitswoche ist „so viele Wiederholungen wie möglich“. Langsamer, stetiger Fortschritt für alle, die lieber submaximal trainieren; vier Tage pro Woche oder drei mit rotierenden Übungen.',
+      intro: '{weeks} Wochen, {perWeek} Einheiten pro Woche. Deine Zahlen bleiben für den ganzen Zyklus fest; am Ende schlägt die App die üblichen Steigerungen für den nächsten vor.',
+      options: {
+        days: 'Trainingstage pro Woche',
+        tmInput: 'Eingegebene Zahl',
+      },
+      optionValues: {
+        days: {
+          3: '3 Tage',
+          4: '4 Tage',
+        },
+        tmInput: {
+          'false': '1RM',
+          'true': 'Trainingsmaximum',
+        },
+      },
+    },
     'russian-masters': {
       name: 'Russian-Masters-Programm (3 Hauptübungen)',
+      intro: '{weeks} Wochen, {perWeek} Einheiten pro Woche. Deine 1RMs bleiben für den ganzen Zyklus fest und werden in Woche {weeks} neu getestet.',
       description: 'Ein 9-wöchiger Kraftzyklus für Kniebeuge, Bankdrücken und Kreuzheben. In jeder Einheit steigert sich eine Übung von Volumen zu Intensität, während eine andere bei konstanten 6×2 mit 80 % bleibt; Woche 9 endet mit einem Einzelsatz bei 105 %, der dein neues 1RM festlegt. Für Trainierende mit etwas Erfahrung, die dreimal pro Woche trainieren können und alle drei Übungen gemeinsam voranbringen wollen.',
     },
     'russian-masters-1': {
       name: 'Russian-Masters-Programm (1 Hauptübung)',
+      intro: '{weeks} Wochen, {perWeek} Einheiten pro Woche. Deine 1RMs bleiben für den ganzen Zyklus fest und werden in Woche {weeks} neu getestet.',
       description: 'Dieselbe 9-Wochen-Struktur, konzentriert auf eine einzige Übung. Jede Woche hat eine gleichbleibende Einheit mit 6×2 bei 80 % und eine Einheit, die sich von Volumen zu Intensität steigert und mit einem 1×1 bei 105 % als Neutest endet. Passend, wenn du dich auf eine Übung spezialisieren willst oder nur Zeit für zwei Einheiten pro Woche hast.',
     },
   },
@@ -290,7 +315,6 @@ export default {
     continue: 'Weiter',
     backToPrograms: 'Zurück zu den Programmen',
     title: 'Neuer Trainingszyklus',
-    intro: '{weeks} Wochen, {perWeek} Einheiten pro Woche. Deine 1RMs bleiben für den ganzen Zyklus fest und werden in Woche {weeks} neu getestet.',
   },
   cycleAborted: {
     title: 'Zyklus abgebrochen',
@@ -329,7 +353,7 @@ export default {
   plan: {
     inProgress: 'Läuft',
     nextUp: 'Als Nächstes',
-    liftLine: '{name} {sets}×{reps} @ {weight} {unit}',
+    liftLine: '{name} {text}',
     accessoryOnly: 'Zusatzübungen, Gruppe {group}',
     week: 'Woche {n}',
     sessionDone: '{session}, erledigt',
@@ -339,9 +363,12 @@ export default {
   nextCycle: {
     confirmTitle: 'Nächsten Zyklus starten?',
     confirmMessage: 'Ein neuer {weeks}-Wochen-Zyklus mit diesen 1RMs. Dieser Zyklus bleibt im Verlauf.',
+    confirmMessage_tm: 'Ein neuer {weeks}-Wochen-Zyklus mit diesen Trainingsmaxima. Dieser Zyklus bleibt im Verlauf.',
     confirm: 'Zyklus starten',
     complete: 'Zyklus abgeschlossen',
     newRms: 'Neue 1RMs aus dem Test in Woche {week}:',
+    suggested: 'Vorgeschlagene 1RMs für den nächsten Zyklus:',
+    suggested_tm: 'Vorgeschlagene Trainingsmaxima für den nächsten Zyklus:',
     kept: 'beibehalten, Test nicht abgehakt',
     change: 'Du kannst sie nach dem Start in den Einstellungen noch ändern.',
     starts: 'Nächster Zyklus beginnt',

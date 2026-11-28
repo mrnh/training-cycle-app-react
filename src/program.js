@@ -23,17 +23,22 @@ export const DEFAULT_CATALOG = [
 // the default one.
 export { DEFAULT_PROGRAM, PROGRAMS, sessionKey }
 export const programById = (id) => PROGRAMS.find((p) => p.id === id) ?? DEFAULT_PROGRAM
-export const programOf = (cycle) => programById(cycle.program)
+/** The plan a cycle follows: its program with the options chosen when it was started. */
+export const programOf = (cycle) => programById(cycle.program).variant(cycle.options)
 export const sessionsOf = (cycle) => programOf(cycle).sessions
 // The main-lift slots a new cycle of the default program starts with (stored per cycle)
 export const DEFAULT_PRIMARIES = DEFAULT_PROGRAM.defaultLifts
+/** What a program's main-lift numbers are: 'rm' (a 1RM) or 'tm' (a training max, entered directly). */
+export const basisOf = (program) => (program.chosen.tmInput ? 'tm' : 'rm')
 /** Name of a program, from the language file. */
 export const programName = (program) => t(`programs.${program.id}.name`)
 /** Sessions per week of a program as text: "3", or "2–4" when the weeks differ. */
 export function sessionsPerWeekText(program) {
   const counts = program.weeks.map((w) => w.length)
-  const min = Math.min(...counts)
-  const max = Math.max(...counts)
+  // A shorter last week is just what is left over; it doesn't count
+  const regular = counts.length > 1 && counts.at(-1) < Math.max(...counts) ? counts.slice(0, -1) : counts
+  const min = Math.min(...regular)
+  const max = Math.max(...regular)
   return { text: min === max ? `${min}` : `${min}–${max}`, count: max }
 }
 /** What a program looks like at a glance: ["9 weeks", "3 sessions a week", "3 main lifts"]. */
@@ -109,12 +114,35 @@ function retestOf(cycle, slot) {
   }
   return null
 }
-/** The cycle's goal for a main lift: its re-test (week 9: the single at 105%), rounded like every planned weight. */
+/** The planned weight at a percentage of a main lift's number (1RM, or training max), rounded like every planned weight. */
+const plannedWeight = (cycle, id, pct) => roundToStep((cycle.oneRM[id] * pct) / 100)
+/** The cycle's goal for a main lift: its re-test (week 9: the single at 105%). Null for programs without one. */
 export function goalWeight(cycle, id) {
   const r = retestOf(cycle, cycle.primaries.indexOf(id))
-  return r ? roundToStep((cycle.oneRM[id] * r.p.pct) / 100) : null
+  return r ? plannedWeight(cycle, id, r.p.pct) : null
 }
-export const targetWeight = (cycle, p) => roundToStep((cycle.oneRM[liftOf(cycle, p)] * p.pct) / 100)
+/** The planned sets of a main lift in a session: [{ w, r, plus }], the same for every set unless the plan has setPlan. */
+export function plannedSets(cycle, p) {
+  const id = liftOf(cycle, p)
+  const setPlan = p.setPlan ?? Array.from({ length: p.sets }, () => ({ reps: p.reps, pct: p.pct }))
+  return setPlan.map((s) => ({ w: plannedWeight(cycle, id, s.pct), r: s.reps, ...(s.plus && { plus: true }) }))
+}
+/** The weight of a planned main lift: of its (last) top set. */
+export const targetWeight = (cycle, p) => plannedSets(cycle, p).at(-1).w
+/** { sets, reps, weight } of a planned main lift, plus perSet [{ w, r, plus }] when its sets differ. */
+export function mainPrescription(cycle, p) {
+  return { sets: p.sets, reps: p.reps, weight: targetWeight(cycle, p), ...(p.setPlan && { perSet: plannedSets(cycle, p) }) }
+}
+/**
+ * What the next cycle suggests to add to a main lift's number (programs without a re-test), else
+ * null. The program's increase is for the maximum the percentages apply to; with a 1RM entered
+ * (maxFactor 0.9) that is a little more.
+ */
+export function suggestedIncrease(cycle, id) {
+  const program = programOf(cycle)
+  const inc = program.increase?.[cycle.primaries.indexOf(id)]
+  return inc == null ? null : round1((inc * (unit() === 'lbs' ? 2 : 1)) / program.maxFactor)
+}
 /** Main-lift slots being edited ([{ id, rm }], id '' = empty): at least one lift, and a 1RM for each picked lift. */
 export function mainLiftsError(rows) {
   const picked = rows.filter((r) => r.id)
@@ -160,7 +188,11 @@ export const isExtra = (cycle, plan, id) => sessionExtras(cycle, plan).some((e) 
 export const sessionEntry = (state, cycle, plan, id) =>
   groupEntry(state, cycle, plan.group, id) ?? sessionExtras(cycle, plan).find((e) => e.id === id) ?? null
 /** "3×10 @ 30 kg" */
-export const prescriptionText = (p) => `${p.sets}×${p.reps} @ ${fmt(p.weight)} ${unit()}`
+export function prescriptionText(p) {
+  // Sets that differ: "5 / 5 / 5+ @ 82 / 95 / 107 kg"
+  if (p.perSet) return `${p.perSet.map((s) => `${s.r}${s.plus ? '+' : ''}`).join(' / ')} @ ${p.perSet.map((s) => fmt(s.w)).join(' / ')} ${unit()}`
+  return `${p.sets}×${p.reps} @ ${fmt(p.weight)} ${unit()}`
+}
 /** 125 -> "2:05" */
 export const minSec = (s) => `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, '0')}`
 
@@ -220,10 +252,11 @@ export function buildRecord(state, cycle, plan, finishedAt) {
   // Main lifts: every set is kept (ticked or not); an untouched set stands for the prescription
   const main = mainLifts(cycle, plan).map((p) => {
     const id = liftOf(cycle, p)
-    const planned = targetWeight(cycle, p)
+    const planned = plannedSets(cycle, p)
     const sets = Array.from({ length: mainSetCount(cycle, plan, p) }, (_, i) => {
       const log = cycle.logs[setKey(plan.key, id, i)]
-      return { w: log?.w ?? planned, r: log?.r ?? p.reps, done: !!log?.done }
+      const target = planned[i] ?? planned.at(-1)
+      return { w: log?.w ?? target.w, r: log?.r ?? target.r, done: !!log?.done }
     })
     return {
       kind: 'main',
@@ -234,7 +267,7 @@ export function buildRecord(state, cycle, plan, finishedAt) {
       // The re-test's 1RM for the next cycle, fixed when the session is finished: correcting the
       // workout later doesn't change it
       ...(p.retest && { result: sets[0]?.done ? sets[0].w : null }),
-      prescription: { sets: p.sets, reps: p.reps, weight: planned },
+      prescription: mainPrescription(cycle, p),
       sets,
       rest: restOf(cycle, `${plan.key}:${id}`),
       note: cycle.notes[`${plan.key}:${id}`] || undefined,
@@ -480,7 +513,8 @@ export function entryAsPrescribed(e) {
   if (!e.sets.length || !e.sets.every((s) => s.done)) return false
   if (!p) return true
   if (e.sets.length < p.sets) return false
-  return e.kind !== 'main' || e.sets.every((s) => meetsPlan(s, { w: p.weight, r: p.reps }))
+  if (e.kind !== 'main') return true
+  return e.sets.every((s, i) => meetsPlan(s, p.perSet ? { w: (p.perSet[i] ?? p.perSet.at(-1)).w, r: (p.perSet[i] ?? p.perSet.at(-1)).r } : { w: p.weight, r: p.reps }))
 }
 
 /** No set of a finished exercise entry was ticked at all: no work done. */
